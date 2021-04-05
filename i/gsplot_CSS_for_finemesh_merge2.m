@@ -11,7 +11,7 @@ function gsplot_CCS_for_finemesh_merge2(suffix)
 
     saveflag = 1;
     % 保存するdir
-    save_dir = "GSPLOT_OUTPUT";
+    save_dir = "GSPLOT_OUTPUT/r800z602";
     if not(exist(save_dir, 'dir'))
         mkdir(save_dir);
     end
@@ -26,7 +26,7 @@ function gsplot_CCS_for_finemesh_merge2(suffix)
     psi_v_3c = flux3c';
     
     % 部分的な解のデータ
-    data_dir = "OUTPUT/z2033_r602/";
+    data_dir = "OUTPUT/z0800_r602/";
     vars = load(data_dir + "vars");
     env = vars.param;
     flux = vars.psi;
@@ -190,7 +190,7 @@ function gsplot_CCS_for_finemesh_merge2(suffix)
     datanum = length(r_CCS);
 
     if (saveflag)
-        fp = fopen([save_dir '\CCS_' suffix '.txt'], 'w');
+        fp = fopen(save_dir + '\CCS.txt', 'w');
         fprintf(fp, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
 
         for i = 1:datanum
@@ -199,16 +199,16 @@ function gsplot_CCS_for_finemesh_merge2(suffix)
 
         fclose(fp);
 
-        fp = fopen([save_dir '\CCS_thin_' suffix '.txt'], 'w');
+        fp = fopen(save_dir + '\Sensor_.txt', 'w');
         fprintf(fp, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
 
-        for i = 1:5:datanum
+        for i = 1:100:datanum
             fprintf(fp, '%f\t%f\t%f\t%f\t%f\n', r_CCS(i), z_CCS(i), psi_CCS(i), Bz_CCS(i), Br_CCS(i));
         end
 
         fclose(fp);
 
-        fp = fopen([save_dir '\flux_' suffix '.txt'], 'w');
+        fp = fopen(save_dir + '\FluxProfile_2D.txt', 'w');
         %fprintf(fp,'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
         for i = 1:length(z)
 
@@ -222,90 +222,7 @@ function gsplot_CCS_for_finemesh_merge2(suffix)
         fclose(fp);
     end
 
-    % %% Plasma surface & LCFS
-    %
-    % num_PS1=1;
-    % num_LCFS1=1;
-    % for j=1:length(z)
-    %     if(min(psi(:,j))<0)
-    %         i_r_psimin=find(psi(:,j)==min(psi(:,j)));
-    %         z_PS(num_PS1)=z(j);
-    %         r_PS(num_PS1)=interp1(psi(1:i_r_psimin(1),j),r(1:i_r_psimin(1)),0);
-    %         num_PS1=num_PS1+1;
-    %     end
-    %     if(min(psi(:,j))<5e-3)
-    %         i_r_psimin=find(psi(:,j)==min(psi(:,j)));
-    %         z_LCFS(num_LCFS1)=z(j);
-    %         r_LCFS(num_LCFS1)=interp1(psi(1:i_r_psimin(1),j),r(1:i_r_psimin(1)),5e-3);
-    %         num_LCFS1=num_LCFS1+1;
-    %     end
-    % end
-    %
-    % num_PS2=num_PS1;
-    % num_LCFS2=num_LCFS1;
-    % for j=length(z):-1:1
-    %     if(min(psi(:,j))<0)
-    %         i_r_psimin=find(psi(:,j)==min(psi(:,j)));
-    %         z_PS(num_PS2)=z(j);
-    %         r_PS(num_PS2)=interp1(psi(i_r_psimin(end):length(r),j),r(i_r_psimin(end):length(r)),0);
-    %         num_PS2=num_PS2+1;
-    %     end
-    %     if(min(psi(:,j))<5e-3)
-    %         i_r_psimin=find(psi(:,j)==min(psi(:,j)));
-    %         z_LCFS(num_LCFS2)=z(j);
-    %         r_LCFS(num_LCFS2)=interp1(psi(i_r_psimin(end):length(r),j),r(i_r_psimin(end):length(r)),5e-3);
-    %         num_LCFS2=num_LCFS2+1;
-    %     end
-    % end
-    %
-    % num_PS3=num_PS2;
-    % num_LCFS3=num_LCFS2;
-    % for i=1:length(r)
-    %     if((r(i)>r_PS(num_PS1-2))&&(r(i)<r_PS(num_PS1+1)))
-    %         r_PS(num_PS3)=r(i);
-    %         z_PS(num_PS3)=interp1(psi(i,floor(length(z)/2)+1:length(z)),z(floor(length(z)/2)+1:length(z)),0);
-    %         num_PS3=num_PS3+1;
-    %     end
-    %     if((r(i)>r_LCFS(num_LCFS1-2))&&(r(i)<r_LCFS(num_LCFS1+1)))
-    %         r_LCFS(num_LCFS3)=r(i);
-    %         z_LCFS(num_LCFS3)=interp1(psi(i,floor(length(z)/2)+1:length(z)),z(floor(length(z)/2)+1:length(z)),5e-3);
-    %         num_LCFS3=num_LCFS3+1;
-    %     end
-    % end
-    % num_PS4=num_PS3;
-    % num_LCFS4=num_LCFS3;
-    % for i=length(r):-1:1
-    %     if((r(i)>r_PS(num_PS1-2))&&(r(i)<r_PS(num_PS1+1)))
-    %         r_PS(num_PS4)=r(i);
-    %         z_PS(num_PS4)=interp1(psi(i,1:floor(length(z)/2)-1),z(1:floor(length(z)/2)-1),0);
-    %         num_PS4=num_PS4+1;
-    %     end
-    %     if((r(i)>r_LCFS(num_LCFS1-2))&&(r(i)<r_LCFS(num_LCFS1+1)))
-    %         r_LCFS(num_LCFS4)=r(i);
-    %         z_LCFS(num_LCFS4)=interp1(psi(i,1:floor(length(z)/2)-1),z(1:floor(length(z)/2)-1),5e-3);
-    %         num_LCFS4=num_LCFS4+1;
-    %     end
-    % end
-    % r_PS=[r_PS(2:num_PS1-2) r_PS(num_PS2:num_PS3-1) r_PS(num_PS1+1:num_PS2-2) r_PS(num_PS3:num_PS4-1)];
-    % z_PS=[z_PS(2:num_PS1-2) z_PS(num_PS2:num_PS3-1) z_PS(num_PS1+1:num_PS2-2) z_PS(num_PS3:num_PS4-1)];
-    % r_LCFS=[r_LCFS(1:num_LCFS1-1) r_LCFS(num_LCFS2:num_LCFS3-1) r_LCFS(num_LCFS1:num_LCFS2-1) r_LCFS(num_LCFS3:num_LCFS4-1)];
-    % z_LCFS=[z_LCFS(1:num_LCFS1-1) z_LCFS(num_LCFS2:num_LCFS3-1) z_LCFS(num_LCFS1:num_LCFS2-1) z_LCFS(num_LCFS3:num_LCFS4-1)];
-    %
-    % %save('PS','r_PS','z_PS','r_LCFS','z_LCFS');
-    % fp=fopen('PS_5c.txt','w');
-    % for j=1:length(z_PS)
-    %     fprintf(fp,'%f\t%f\n',r_PS(j),z_PS(j));
-    % end
-    % fclose(fp);
-    %
-    % fp=fopen('LCFS_5c.txt','w');
-    % for j=1:length(z_LCFS)
-    %     fprintf(fp,'%f\t%f\n',r_LCFS(j),z_LCFS(j));
-    % end
-    % fclose(fp);
-    %
-
-    %%
+    
     fh = figure;
     set(fh, 'position', [50 50 600 600], 'Name', ['psi contour'], 'NumberTitle', 'off');
 
@@ -431,7 +348,7 @@ function gsplot_CCS_for_finemesh_merge2(suffix)
     jeddy = [jt1 jt2' jt3 jt4' jt5 jt5(end:-1:1) jt4(end:-1:1)' jt3(end:-1:1) jt2(end:-1:1)' jt1(end:-1:1)];
 
     if (saveflag)
-        fp = fopen([save_dir '\jeddy_' suffix '.txt'], 'w');
+        fp = fopen(save_dir + '\jeddy.txt', 'w');
 
         for j = 1:length(Length)
             fprintf(fp, '%f\t%f\n', Length(j), jeddy(j));
@@ -445,7 +362,5 @@ function gsplot_CCS_for_finemesh_merge2(suffix)
     plot(Length, cumtrapz(Length, jeddy))
 
     if (saveflag)
-        save(['merged_' suffix '.mat'], 'env', 'delr', 'delz', 'psi', 'psi_v_3c', 'jt', 'r', 'rr', 'z', 'zz');
+        save([save_dir + '\merged.mat'], 'env', 'delr', 'delz', 'psi', 'psi_v_3c', 'jt', 'r', 'rr', 'z', 'zz');
     end
-
-    

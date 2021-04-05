@@ -35,7 +35,7 @@ param.Sw_init = 1;
 %             "z0080_r602"];
             
 % filenames = ["z0240_r602" "z0200_r602" "z0160_r602" "z0120_r602" "z0080_r602"];
-filenames = ["z1600_r602"];
+filenames = ["z2033_r602"];
 
 for fileNum = 1:length(filenames)
     disp(["****  " + filenames(fileNum) + "  " + fileNum + "/" + length(filenames) + "  ****"])
