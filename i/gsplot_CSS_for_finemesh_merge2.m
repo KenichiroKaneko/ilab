@@ -2,7 +2,7 @@
 
 
 
-function gsplot_CCS_for_finemesh_merge2(suffix)
+function gsplot_CCS_for_finemesh_merge2(dirname)
 
     % CCS03cはUTST装置全体の解
     % CCS05は（途中に仮想壁を置いた）部分的な解
@@ -11,7 +11,7 @@ function gsplot_CCS_for_finemesh_merge2(suffix)
 
     saveflag = 1;
     % 保存するdir
-    save_dir = "GSPLOT_OUTPUT/r800z602";
+    save_dir = "GSPLOT_OUTPUT/" + dirname;
     if not(exist(save_dir, 'dir'))
         mkdir(save_dir);
     end
@@ -26,7 +26,7 @@ function gsplot_CCS_for_finemesh_merge2(suffix)
     psi_v_3c = flux3c';
     
     % 部分的な解のデータ
-    data_dir = "OUTPUT/z0800_r602/";
+    data_dir = "OUTPUT/"+ dirname + "/";
     vars = load(data_dir + "vars");
     env = vars.param;
     flux = vars.psi;
