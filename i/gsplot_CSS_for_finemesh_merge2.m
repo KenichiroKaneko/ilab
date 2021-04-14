@@ -202,7 +202,7 @@ function gsplot_CCS_for_finemesh_merge2(suffix)
         fp = fopen(save_dir + '\Sensor_.txt', 'w');
         fprintf(fp, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
 
-        for i = 1:100:datanum
+        for i = 1:60:datanum
             fprintf(fp, '%f\t%f\t%f\t%f\t%f\n', r_CCS(i), z_CCS(i), psi_CCS(i), Bz_CCS(i), Br_CCS(i));
         end
 
