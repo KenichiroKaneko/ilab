@@ -1,7 +1,3 @@
-
-
-
-
 function gsplot_CCS_for_finemesh_merge2(dirname)
 
     % CCS03cはUTST装置全体の解
@@ -364,3 +360,4 @@ function gsplot_CCS_for_finemesh_merge2(dirname)
     if (saveflag)
         save([save_dir + '\merged.mat'], 'env', 'delr', 'delz', 'psi', 'psi_v_3c', 'jt', 'r', 'rr', 'z', 'zz');
     end
+end
