@@ -2,11 +2,20 @@
 %% loadsensordata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 %% loadsensordata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 %% loadsensordata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP] = loadsensordata(PARAM)
+function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
 
     sensordata_B0 = fileread([PARAM.input_file_directory '\Sensor_B.txt']);
     sensordata_B =  strsplit(sensordata_B0,{'\n','\t','\r'});
     sensornum_B =   (length(sensordata_B)-1)/5 - 1;
+
+    for i=1:sensornum_B
+        R(i) = str2double(sensordata_B{6+(i-1)*5});
+        Z(i) = str2double(sensordata_B{7+(i-1)*5});
+    end
+    figure()
+    plot(R, Z, 'o');
+    R = 0;
+    Z = 0;
 
     chnum = 0;
     for i=1:sensornum_B
@@ -30,10 +39,45 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP] = loadsensordata(PARAM)
             SENSOR_TPRB.TPRB(chnum*2) =      sqrt(BR^2 + BZ^2);
             SENSOR_TPRB.ITYPE(chnum*2-1) =   1;
             SENSOR_TPRB.ITYPE(chnum*2) =     1;
+            RR(chnum) = R;
+            ZZ(chnum) = Z;
+            B(chnum) = sqrt(BR^2 + BZ^2);
         end
     end
     SENSOR_TPRB.NUM = chnum*2;
     disp(['Number of TPRB =  ' num2str(SENSOR_TPRB.NUM)]);
+
+    figure()
+    plot(SENSOR_TPRB.R, SENSOR_TPRB.Z, 'o');
+    % error('fin')
+
+    % „Ç§„É≥„Éú„Éº„ÉâÂÅ¥„ÅÆÁ£ÅÊùü„ÅÆ„Éó„É≠„ÉÉ„Éà„Å®„ÄÅCCSÈù¢„ÅÆÊ±∫ÂÆö2021Âπ¥4Êúà18Êó•
+    figure()
+    RR = [flip(RR) RR ];
+    ZZ = [-flip(ZZ) ZZ];
+    B = [flip(B) B ];
+    RR0index = RR < 0.15;
+    B = B(RR0index);
+    ZZ = ZZ(RR0index);
+    plot(B, ZZ)
+    lmin = islocalmin(B);
+    lmax = islocalmax(B);
+    hold on
+    plot(B(lmin), ZZ(lmin), 'r*');
+    hold on
+    plot(B(lmax), ZZ(lmax), 'b*');
+    lmin = ZZ(lmin);
+    matrix = [B(lmax)' ZZ(lmax)'];
+    matrix = sortrows(matrix, 'descend');
+    if length(ZZ(lmax)) > 1
+        for i = 1:2
+            CCS(i) = matrix(i, 2);
+        end
+    else
+        CCS(1) = matrix(1, 2);
+    end
+    % „Åì„Åì„Åæ„Åß
+
  
     %% No NPRB
     SENSOR_NPRB.NUM = 0;
@@ -121,7 +165,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP] = loadsensordata(PARAM)
 %     fprintf(fp,'%s\n','****** MINR * MAXR * MINZ * MAXZ ****');
 %     fprintf(fp,'%s\n','10   90  -100  100');
 %     fprintf(fp,'%s\n','*********');
-%     fprintf(fp,'%s\n','* ---ÉRÉCÉãìdó¨ÉfÅ[É^ÇÃï¿Ç—---íPà [kA]');
+%     fprintf(fp,'%s\n','* ---ÔøΩRÔøΩCÔøΩÔøΩÔøΩdÔøΩÔøΩÔøΩfÔøΩ[ÔøΩ^ÔøΩÃïÔøΩÔøΩÔøΩ---ÔøΩPÔøΩÔøΩ[kA]');
 %     fprintf(fp,'%s\n','* EF');
 %     fprintf(fp,'%s\n','* PF#1');
 %     fprintf(fp,'%s\n','* PF#2');
