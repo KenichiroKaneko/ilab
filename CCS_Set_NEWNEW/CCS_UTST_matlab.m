@@ -12,13 +12,19 @@ function CCS_UTST_matlab(inputfile)
     
     REF =   loadreference(PARAM);
     
-    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP] = loadsensordata(PARAM);
+    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM);
+
+    % CCSñ Çé©ìÆÇ≈ê›íË
+    for i=1:PARAM.CCS
+        PARAM.Z0(i)=    CCS(i);
+    end
     
     WALL =  loadwalldata(PARAM);
     
     ExtCOIL = loadcoildata(PARAM);
     
     FFDAT = makeFFdata(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP);
+
     
     GHR = zeros(1,300); 
     GHZ = zeros(1,300); 

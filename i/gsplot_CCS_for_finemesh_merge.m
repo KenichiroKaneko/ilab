@@ -173,6 +173,9 @@ function gsplot_CCS_for_finemesh_merge(suffix)
     end
 
     datanum = length(r_CCS);
+    % figure()
+    % plot( r_CCS, z_CCS, 'o');
+    % error('fin')
 
     if (saveflag)
         fp = fopen(['CCS_' suffix '.txt'], 'w');

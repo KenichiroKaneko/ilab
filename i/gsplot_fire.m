@@ -1,13 +1,13 @@
-% filenames = ["z0120_r602"  "z0080_r602"];
+filenames = ["z0840_r602"];
 
 
-filenames = ["z2033_r602" "z1000_r602" "z0960_r602" "z0920_r602" ...
-             "z0880_r602" "z0840_r602" "z0800_r602" "z0760_r602" ...
-             "z0720_r602" "z0680_r602" "z0640_r602" "z0600_r602" ...
-             "z0560_r602" "z0520_r602" "z0480_r602" "z0440_r602" ...
-             "z0400_r602" "z0360_r602" "z0320_r602" "z0280_r602" ...
-             "z0240_r602" "z0200_r602" "z0160_r602" "z0120_r602" ...
-             "z0080_r602"];
+% filenames = ["z2033_r602" "z1000_r602" "z0960_r602" "z0920_r602" ...
+%              "z0880_r602" "z0840_r602" "z0800_r602" "z0760_r602" ...
+%              "z0720_r602" "z0680_r602" "z0640_r602" "z0600_r602" ...
+%              "z0560_r602" "z0520_r602" "z0480_r602" "z0440_r602" ...
+%              "z0400_r602" "z0360_r602" "z0320_r602" "z0280_r602" ...
+%              "z0240_r602" "z0200_r602" "z0160_r602" "z0120_r602" ...
+%              "z0080_r602"];
 tic
 for i = 1:length(filenames)
     gsplot_CCS_for_finemesh_merge22(filenames(i))
@@ -110,23 +110,7 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
     % ah = subplot(1, 5, 4);
     % contour(r, z, psi' * 1000, v, 'r')
     psi = psi - psi222;
-    % ah = subplot(1, 5, 5);
-    % contour(r, z, psi' * 1000, v, 'r')
-    % error('fin')
-
-    % jt_center=jt_center*0-15;
-    % psi_virtualj=rr*0;
-    % for k=1:length(jt_center)
-    %     kk = 4 * rr*r(k+1)./((rr+r(k+1)+1e-6).^2+(zz-0).^2);
-    %     [K,E]=ellipke(kk);
-    % %    K(~isfinite(K))=0;
-    % %    E(~isfinite(E))=0;
-    %     psi_virtualj= psi_virtualj+2*pi*4*pi*1e-7*jt_center(k)./(pi*sqrt(kk)).*sqrt(rr*r(k+1)).*((1-kk/2).*K-E);
-    % end
-    % psi222=psi_v_3c*0;
-    % psi222(1:602,1:1017)=psi_virtualj(1:1017,1:602)';
-    % psi222(1:602,end:-1:end-1017+1+1)=psi_virtualj(1:1017-1,1:602)';
-    % psi=psi-psi222;
+    
 
     %% Calc Bz and Br from psi
     zdiff = z(2:end - 1);
@@ -217,7 +201,7 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
         fprintf(fpB, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
         fprintf(fpF, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
 
-        for i = 1:60:datanum
+        for i = 1:88:datanum
             fprintf(fpB, '%f\t%f\t%f\t%f\t%f\n', r_CCS(i), z_CCS(i), psi_CCS(i), Bz_CCS(i), Br_CCS(i));
             fprintf(fpF, '%f\t%f\t%f\t%f\t%f\n', r_CCS(i), z_CCS(i), psi_CCS(i), Bz_CCS(i), Br_CCS(i));
         end
@@ -240,71 +224,6 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
     end
 
     
-    % fh = figure;
-    % set(fh, 'position', [50 50 600 600], 'Name', ['psi contour'], 'NumberTitle', 'off');
-
-    % ah = subplot(3, 1, 1);
-    % set(ah, 'box', 'on', 'FontSize', fs, 'FontName', FONT);
-
-    % hold on
-    % pcolor(z, r, sqrt(Bz.^2 + Br.^2) * 1e3)
-    % axis equal
-    % shading interp
-
-    % ca = [-100 100];
-    % caxis(ca);
-
-    % v = linspace(-100, 100, 31);
-    % contour(z, r, sqrt(Bz.^2 + Br.^2) * 10000, v, 'k')
-    % v = linspace(0, 5, 11);
-    % contour(z, r, sqrt(Bz.^2 + Br.^2) * 10000, v, 'k')
-    % plot([env3c.zmin env3c.zmin env3c.z1 env3c.z2 env3c.z3 env3c.z4 env3c.zmax env3c.zmax], [env3c.rmin env3c.rmirror env3c.rmirror env3c.rmax env3c.rmax env3c.rmirror env3c.rmirror env3c.rmin], 'r', 'LineWidth', 2);
-    % title('|Bp| [mT]');
-    % set(ah, 'Box', 'on', 'FontSize', fs, 'FontName', FONT, 'FontWeight', 'bold'); %,'xlim', [-1.2 1.2], 'ylim', [0 0.8]);
-
-    % ah = subplot(3, 1, 2);
-    % set(ah, 'box', 'on', 'FontSize', fs, 'FontName', FONT);
-
-    % hold on
-    % pcolor(z, r, psi * -1000)
-    % axis equal
-    % shading interp
-
-    % ca = [-5 5];
-    % caxis(ca);
-
-    % v = linspace(-15, 15, 11);
-    % contour(z, r, psi * -1000, v, 'k')
-    % v = linspace(-5, 5, 11);
-    % contour(z, r, psi * -1000, v, 'w')
-    % %contour(z,r,psi*-1000,-2:0.1:0,'r')
-    % plot([env3c.zmin env3c.zmin env3c.z1 env3c.z2 env3c.z3 env3c.z4 env3c.zmax env3c.zmax], [env3c.rmin env3c.rmirror env3c.rmirror env3c.rmax env3c.rmax env3c.rmirror env3c.rmirror env3c.rmin], 'r', 'LineWidth', 2);
-
-    % % plot(z_PS,r_PS,'r','LineWidth',2);
-    % % plot(z_LCFS,r_LCFS,'g','LineWidth',2);
-    % title('poloidal flux [mWb]');
-    % set(ah, 'Box', 'on', 'FontSize', fs, 'FontName', FONT, 'FontWeight', 'bold'); %,'xlim', [-1.2 1.2], 'ylim', [0 0.8]);
-
-    % ah = subplot(3, 1, 3);
-    % set(ah, 'box', 'on', 'FontSize', fs, 'FontName', FONT);
-
-    % hold on
-    % pcolor(z, r, -jt / 1e3)
-    % axis equal
-    % shading interp
-
-    % ca = [-500 500];
-    % caxis(ca);
-
-    % v = linspace(-500, 500, 11);
-    % contour(z, r, -jt / 1e3, v, 'k')
-    % v = linspace(-5, 5, 11);
-    % contour(z, r, -jt / 1e3, v, 'w')
-    % contour(z, r, -jt / 1e3, 10:1:-10, 'r')
-    % plot([env3c.zmin env3c.zmin env3c.z1 env3c.z2 env3c.z3 env3c.z4 env3c.zmax env3c.zmax], [env3c.rmin env3c.rmirror env3c.rmirror env3c.rmax env3c.rmax env3c.rmirror env3c.rmirror env3c.rmin], 'r', 'LineWidth', 2);
-    % title('current density [kA/m2]');
-    % set(ah, 'Box', 'on', 'FontSize', fs, 'FontName', FONT, 'FontWeight', 'bold'); %,'xlim', [-1.2 1.2], 'ylim', [0 0.8]);
-
     %% Calc eddy current
     psi_eddy = psi - psi_v_3c + psi222;
 
