@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 r= []
 z= []
 
-with open("python/SENPOS0.txt", mode="r", encoding="utf-8") as f:
+with open("python/SENPOS1.txt", mode="r", encoding="utf-8") as f:
     for row in f:
         s = row.strip().split(" ")
         if len(s) > 1:
@@ -33,18 +33,20 @@ for rr,zz in zip(r,z):
     print(rr,zz)
     rr -= rmin
     if rr%delr < (delr/2):
-        matrix_r.append(rr//delr)
+        matrix_r.append(int(rr//delr))
     else:
-        matrix_r.append(rr//delr + 1)
+        matrix_r.append(int(rr//delr + 1))
     
     if zz%delz < (delz/2):
-        matrix_z.append(zz//delz + 1017)
+        matrix_z.append(int(zz//delz + 1017))
     else:
-        matrix_z.append(zz//delz + 1018)
+        matrix_z.append(int(zz//delz + 1018))
     
+with open('senpos1rz.txt', mode="w", encoding="utf-8")as f:
+    for rr, zz in zip(matrix_r,matrix_z):
+        f.writelines("{0} {1}\n".format(rr,zz))
 
-print(matrix_r,matrix_z)
-
-plt.figure()
-plt.plot(matrix_r, matrix_z, "o")
-plt.show()
+# print(matrix_r,matrix_z)
+# plt.figure()
+# plt.plot(matrix_r, matrix_z, "o")
+# plt.show()
