@@ -7,7 +7,7 @@ function gsplot_CCS_for_finemesh_merge2(dirname)
 
     saveflag = 1;
     % 保存するdir
-    save_dir = "GSPLOT_OUTPUT/" + dirname;
+    save_dir = "GSPLOT_OUTPUT/" + dirname + "2021";
     if not(exist(save_dir, 'dir'))
         mkdir(save_dir);
     end
@@ -134,54 +134,68 @@ function gsplot_CCS_for_finemesh_merge2(dirname)
     % 2028 ... Nzから5点内側
     % 6    ... Nzから５点内側
 
+    SEN0 = dlmread('i/sensorCoordinate0.txt');
+    rpos = SEN0(:, 1)-1
+    zpos = SEN0(:, 2)-1
 
-    for i = 1:length(z(1017:2028))
-        r_CCS(i) = r(6);
-        z_CCS(i) = z(1016 + i);
-        psi_CCS(i) = psi(6, 1016 + i);
-        Bz_CCS(i) = Bz(6, 1016 + i);
-        Br_CCS(i) = Br(6, 1016 + i);
+    for i = 1:length(rpos)
+        r_CCS(i) = rpos(i);
+        z_CCS(i) = zpos(i);
+        psi_CCS(i) = psi(rpos(i), zpos(i));
+        Bz_CCS(i) = Bz(rpos(i), zpos(i));
+        Br_CCS(i) = Br(rpos(i), zpos(i));
     end
 
-    datanum = length(r_CCS);
 
-    for i = 1:length(r(7:499))
-        r_CCS(datanum + i) = r(6 + i);
-        z_CCS(datanum + i) = z(2028);
-        psi_CCS(datanum + i) = psi(6 + i, 2028);
-        Bz_CCS(datanum + i) = Bz(6 + i, 2028);
-        Br_CCS(datanum + i) = Br(6 + i, 2028);
-    end
 
-    datanum = length(r_CCS);
 
-    for i = 1:length(z(1302:2027))
-        r_CCS(datanum + i) = r(499);
-        z_CCS(datanum + i) = z(2028 - i);
-        psi_CCS(datanum + i) = psi(499, 2028 - i);
-        Bz_CCS(datanum + i) = Bz(499, 2028 - i);
-        Br_CCS(datanum + i) = Br(499, 2028 - i);
-    end
+    % for i = 1:length(z(1017:2028))
+    %     r_CCS(i) = r(6);
+    %     z_CCS(i) = z(1016 + i);
+    %     psi_CCS(i) = psi(6, 1016 + i);
+    %     Bz_CCS(i) = Bz(6, 1016 + i);
+    %     Br_CCS(i) = Br(6, 1016 + i);
+    % end
 
-    datanum = length(r_CCS);
+    % datanum = length(r_CCS);
 
-    for i = 1:length(r(500:597))
-        r_CCS(datanum + i) = r(499 + i);
-        z_CCS(datanum + i) = z(1302);
-        psi_CCS(datanum + i) = psi(499 + i, 1302);
-        Bz_CCS(datanum + i) = Bz(499 + i, 1302);
-        Br_CCS(datanum + i) = Br(499 + i, 1302);
-    end
+    % for i = 1:length(r(7:499))
+    %     r_CCS(datanum + i) = r(6 + i);
+    %     z_CCS(datanum + i) = z(2028);
+    %     psi_CCS(datanum + i) = psi(6 + i, 2028);
+    %     Bz_CCS(datanum + i) = Bz(6 + i, 2028);
+    %     Br_CCS(datanum + i) = Br(6 + i, 2028);
+    % end
 
-    datanum = length(r_CCS);
+    % datanum = length(r_CCS);
 
-    for i = 1:length(z(1017:1301))
-        r_CCS(datanum + i) = r(597);
-        z_CCS(datanum + i) = z(1302 - i);
-        psi_CCS(datanum + i) = psi(597, 1302 - i);
-        Bz_CCS(datanum + i) = Bz(597, 1302 - i);
-        Br_CCS(datanum + i) = Br(597, 1302 - i);
-    end
+    % for i = 1:length(z(1302:2027))
+    %     r_CCS(datanum + i) = r(499);
+    %     z_CCS(datanum + i) = z(2028 - i);
+    %     psi_CCS(datanum + i) = psi(499, 2028 - i);
+    %     Bz_CCS(datanum + i) = Bz(499, 2028 - i);
+    %     Br_CCS(datanum + i) = Br(499, 2028 - i);
+    % end
+
+    % datanum = length(r_CCS);
+
+    % for i = 1:length(r(500:597))
+    %     r_CCS(datanum + i) = r(499 + i);
+    %     z_CCS(datanum + i) = z(1302);
+    %     psi_CCS(datanum + i) = psi(499 + i, 1302);
+    %     Bz_CCS(datanum + i) = Bz(499 + i, 1302);
+    %     Br_CCS(datanum + i) = Br(499 + i, 1302);
+    % end
+
+    % datanum = length(r_CCS);
+
+    % for i = 1:length(z(1017:1301))
+    %     r_CCS(datanum + i) = r(597);
+    %     z_CCS(datanum + i) = z(1302 - i);
+    %     psi_CCS(datanum + i) = psi(597, 1302 - i);
+    %     Bz_CCS(datanum + i) = Bz(597, 1302 - i);
+    %     Br_CCS(datanum + i) = Br(597, 1302 - i);
+    % end
 
     datanum = length(r_CCS);
 
