@@ -39,9 +39,6 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
             SENSOR_TPRB.TPRB(chnum*2) =      sqrt(BR^2 + BZ^2);
             SENSOR_TPRB.ITYPE(chnum*2-1) =   1;
             SENSOR_TPRB.ITYPE(chnum*2) =     1;
-            RR(chnum) = R;
-            ZZ(chnum) = Z;
-            B(chnum) = sqrt(BR^2 + BZ^2);
         end
     end
     SENSOR_TPRB.NUM = chnum*2;
@@ -51,32 +48,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
     plot(SENSOR_TPRB.R, SENSOR_TPRB.Z, 'o');
     % error('fin')
 
-    % インボード側の磁束のプロットと、CCS面の決定2021年4月18日
-    figure()
-    RR = [flip(RR) RR ];
-    ZZ = [-flip(ZZ) ZZ];
-    B = [flip(B) B ];
-    RR0index = RR < 0.15;
-    B = B(RR0index);
-    ZZ = ZZ(RR0index);
-    plot(B, ZZ)
-    lmin = islocalmin(B);
-    lmax = islocalmax(B);
-    hold on
-    plot(B(lmin), ZZ(lmin), 'r*');
-    hold on
-    plot(B(lmax), ZZ(lmax), 'b*');
-    lmin = ZZ(lmin);
-    matrix = [B(lmax)' ZZ(lmax)'];
-    matrix = sortrows(matrix, 'descend');
-    if length(ZZ(lmax)) > 1
-        for i = 1:2
-            CCS(i) = matrix(i, 2);
-        end
-    else
-        CCS(1) = matrix(1, 2);
-    end
-    % ここまで
+    
 
  
     %% No NPRB
@@ -112,10 +84,44 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
 	    SENSOR_FLXLP.TET(chnum*2) =       0.0D0;
 	    SENSOR_FLXLP.ITYPE(chnum*2-1) =   0;
 	    SENSOR_FLXLP.ITYPE(chnum*2) =     0;
+        RR(chnum) = R;
+        ZZ(chnum) = Z;
+        B(chnum) = sqrt(BR^2 + BZ^2);
     end
     
     SENSOR_FLXLP.NUM=chnum*2;
     disp(['Number of FLXLP = ' num2str(SENSOR_FLXLP.NUM)]);
+
+    % インボード側の磁束のプロットと、CCS面の決定2021年4月18日
+    figure()
+    % RR = [flip(RR) RR ];
+    % ZZ = [-flip(ZZ) ZZ];
+    % B = [flip(B) B ];
+    RR0index = RR < 0.15;
+    B = B(RR0index)
+    ZZ = ZZ(RR0index);
+    RR
+    ZZ
+    plot(B, ZZ);
+    lmin = islocalmin(B);
+    lmax = islocalmax(B);
+    hold on
+    plot(B(lmin), ZZ(lmin), 'r*');
+    hold on
+    plot(B(lmax), ZZ(lmax), 'b*');
+    lmin = ZZ(lmin);
+    matrix = [B(lmax)' ZZ(lmax)'];
+    matrix = sortrows(matrix, 'descend');
+    error("test")
+    if length(ZZ(lmax)) > 1
+        for i = 1:2
+            CCS(i) = matrix(i, 2);
+        end
+    else
+        size(matrix)
+        CCS(1) = matrix(1, 2);
+    end
+    % ここまで
 
 %     %% Write files for CCS
 %     fp = fopen([PARAM.temporary_file_directory '\SENPOS0.txt'],'w'); % 110
