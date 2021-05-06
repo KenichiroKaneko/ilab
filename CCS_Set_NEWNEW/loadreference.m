@@ -5,7 +5,7 @@
 %% loadreference!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 function REF = loadreference(PARAM)
 
-    REF.Flux = dlmread([PARAM.input_file_directory '\FluxProfile_2D.txt']);
+    REF.Flux = dlmread([PARAM.input_file_directory '/FluxProfile_2D.txt']);
 
     if PARAM.IUTST==5
         REF.Flux =REF.Flux-0.0042459;

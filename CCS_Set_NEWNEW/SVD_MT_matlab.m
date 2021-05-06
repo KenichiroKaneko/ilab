@@ -38,7 +38,7 @@ KUP0 = 0; %ushiki
 %   MP=Max. capacity of M,                  NP=Max. capacity of N
 % *****************************************************************
 %
-IPRN =   fopen([PARAM.temporary_file_directory '\@SVDCHK.txt'],'w');
+IPRN =   fopen([PARAM.temporary_file_directory '/@SVDCHK.txt'],'w');
 % fprintf('%s%d\r\n','IT=',IT);
 % if (IT > 1) %1001
 % else
@@ -70,8 +70,8 @@ IPRN =   fopen([PARAM.temporary_file_directory '\@SVDCHK.txt'],'w');
 % 
     LRSVCHK = 0;
     if (LRSVCHK > 0)     
-        fprintf(IPRN,'%s\r\n','Left SV Vector ÇÃ check ÇÇµÇ‹Ç∑');
-        fprintf('%s\r\n','Left SV Vector ÇÃ check ÇÇµÇ‹Ç∑');
+        fprintf(IPRN,'%s\r\n','Left SV Vector ÔøΩÔøΩ check ÔøΩÔøΩÔøΩÔøΩÔøΩ‹ÇÔøΩ');
+        fprintf('%s\r\n','Left SV Vector ÔøΩÔøΩ check ÔøΩÔøΩÔøΩÔøΩÔøΩ‹ÇÔøΩ');
 %        !Check Left Singular vectors  (Columns of U(I,J))
 %        for J = 1:M 
 %            WRITE(ClNo,"(I4)") J+1000
@@ -83,14 +83,14 @@ IPRN =   fopen([PARAM.temporary_file_directory '\@SVDCHK.txt'],'w');
 %c      PAUSE 'OK?'
 %        end
     else
-        fprintf(IPRN,'%s\r\n','Left SV Vector ÇÃ check ÇÇµÇ‹ÇπÇÒ');
-        fprintf('%s\r\n','Left SV Vector ÇÃ check ÇÇµÇ‹ÇπÇÒ');
+        fprintf(IPRN,'%s\r\n','Left SV Vector ÔøΩÔøΩ check ÔøΩÔøΩÔøΩÔøΩÔøΩ‹ÇÔøΩÔøΩÔøΩ');
+        fprintf('%s\r\n','Left SV Vector ÔøΩÔøΩ check ÔøΩÔøΩÔøΩÔøΩÔøΩ‹ÇÔøΩÔøΩÔøΩ');
     end      
 %
     LRSVCHK = 1;
     if (LRSVCHK > 0)     
-        fprintf(IPRN,'%s\r\n','Right SV Vector ÇÃ check ÇÇµÇ‹Ç∑');
-        fprintf('%s\r\n','Right SV Vector ÇÃ check ÇÇµÇ‹Ç∑');
+        fprintf(IPRN,'%s\r\n','Right SV Vector ÔøΩÔøΩ check ÔøΩÔøΩÔøΩÔøΩÔøΩ‹ÇÔøΩ');
+        fprintf('%s\r\n','Right SV Vector ÔøΩÔøΩ check ÔøΩÔøΩÔøΩÔøΩÔøΩ‹ÇÔøΩ');
 %        !Check Right Singular vector (Columns of V(I,J))
 %         for J = 1:N 
 %             WRITE(ClNo,"(I4)") J+1000
@@ -102,8 +102,8 @@ IPRN =   fopen([PARAM.temporary_file_directory '\@SVDCHK.txt'],'w');
 % %c      PAUSE 'OK?'
 %         end   
     else
-        fprintf(IPRN,'%s\r\n','Right SV Vector ÇÃ check ÇÇµÇ‹ÇπÇÒ');
-        fprintf('%s\r\n','Right SV Vector ÇÃ check ÇÇµÇ‹ÇπÇÒ');
+        fprintf(IPRN,'%s\r\n','Right SV Vector ÔøΩÔøΩ check ÔøΩÔøΩÔøΩÔøΩÔøΩ‹ÇÔøΩÔøΩÔøΩ');
+        fprintf('%s\r\n','Right SV Vector ÔøΩÔøΩ check ÔøΩÔøΩÔøΩÔøΩÔøΩ‹ÇÔøΩÔøΩÔøΩ');
     end
 %   !  Find maximum singular value
     for K = 1:N
@@ -158,7 +158,7 @@ IPRN =   fopen([PARAM.temporary_file_directory '\@SVDCHK.txt'],'w');
             fprintf(IPRN,'%s %d %s\r\n','You truncate SVs smaller than', KUP0,'-th SV');
             fprintf('%s %d %s\r\n','You truncate SVs smaller than', KUP0,'-th SV');
         end
-        fid209 = fopen([PARAM.temporary_file_directory '\@Determined_Gap.txt'],'w'); % 209
+        fid209 = fopen([PARAM.temporary_file_directory '/@Determined_Gap.txt'],'w'); % 209
         CKUP = KUP0+KUP0+1;
         CKUP = CKUP/2.0D0;
 %            fprintf(fid209,'%d %d\r\n' ,CKUP,W(KUP0));ushiki
@@ -263,7 +263,7 @@ IPRN =   fopen([PARAM.temporary_file_directory '\@SVDCHK.txt'],'w');
 %
     end
 end
-%    !Å´Ç±Ç±ÅAâ∫ë ÇÃåèÇ≈éËíºÇµÇ™Ç¢ÇÈÅB   
+%    !ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩAÔøΩÔøΩÔøΩ ÇÃåÔøΩÔøΩ≈éËíºÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩB   
 %XGETA = GETA.*(ITSKP > 0);
 XGETA = GETA;
 C(1:M) = (B(1:M)-XGETA).*and(1:M > NAPB, 1:M <= (NAPB+NFLX))...
@@ -289,7 +289,7 @@ C(1:M) = A(1:M,1:N)*X(1:N)';
 %   
 %***************************
 %***************************
-%        !Å´Ç±Ç±ÅAâ∫ë ÇÃåèÇ≈éËíºÇµÇ™Ç¢ÇÈÅB   
+%        !ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩAÔøΩÔøΩÔøΩ ÇÃåÔøΩÔøΩ≈éËíºÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩB   
 RESD(1:M) = (C(1:M)-(B(1:M)-XGETA)).*and(1:M > NAPB, 1:M <= (NAPB+NFLX))...
           + (C(1:M)-B(1:M)).*or(1:M <= NAPB, 1:M > (NAPB+NFLX));
 %***************************
@@ -298,11 +298,11 @@ for K = 1:M
     fprintf(IPRN,'%d\r\n',C(K));
 end
 fprintf(IPRN,'%s\r\n', ' ');
-	fid101 = fopen([PARAM.temporary_file_directory '\Comparison_FieldSignal.txt'],'w');%101
-	fid102 = fopen([PARAM.temporary_file_directory '\Comparison_FluxSignal.txt'],'w');%102
-	fid201 = fopen([PARAM.temporary_file_directory '\Comparison_TotField.txt'],'w');%201
-	fid202 = fopen([PARAM.temporary_file_directory '\Comparison_TotFlux.txt'],'w');%202
-	fid103 = fopen([PARAM.temporary_file_directory '\Line45deg.txt'],'w');%103
+	fid101 = fopen([PARAM.temporary_file_directory '/Comparison_FieldSignal.txt'],'w');%101
+	fid102 = fopen([PARAM.temporary_file_directory '/Comparison_FluxSignal.txt'],'w');%102
+	fid201 = fopen([PARAM.temporary_file_directory '/Comparison_TotField.txt'],'w');%201
+	fid202 = fopen([PARAM.temporary_file_directory '/Comparison_TotFlux.txt'],'w');%202
+	fid103 = fopen([PARAM.temporary_file_directory '/Line45deg.txt'],'w');%103
 	VAL = 1.0D03;
 	fprintf(fid103,'%d %d\r\n', -VAL,-VAL);
 	fprintf(fid103,'%d %d\r\n', +VAL,+VAL);
@@ -319,8 +319,8 @@ fprintf(IPRN,'%s\r\n', ' ');
 	    fprintf(fid201,'%d %d\r\n',BSNSR(K),C(K)+FC(K));
     else
         if(K <= NAPB+NFLX)
-	        fprintf(fid102,'%d %d\r\n', B(K)-XGETA,C(K)); % ! B(K),C(K)ã§Ç…â∫ë Ç™ç∑Çµà¯Ç©ÇÍÇƒÇ¢ÇÈÅB
-	        fprintf(fid202,'%d %d\r\n',FLXLP(K-NAPB),C(K)+FC(K)+GETA);% ! ë™íËíl FLXLP() Ç…ÇÕâ∫ë Ç™ä‹Ç‹ÇÍÇÈÅB
+	        fprintf(fid102,'%d %d\r\n', B(K)-XGETA,C(K)); % ! B(K),C(K)ÔøΩÔøΩÔøΩ…âÔøΩÔøΩ ÇÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩƒÇÔøΩÔøΩÔøΩB
+	        fprintf(fid202,'%d %d\r\n',FLXLP(K-NAPB),C(K)+FC(K)+GETA);% ! ÔøΩÔøΩÔøΩÔøΩl FLXLP() ÔøΩ…ÇÕâÔøΩÔøΩ ÇÔøΩÔøΩ‹Ç‹ÇÔøΩÔøΩB
         end
     end
     if or(K == NAPB, K == (NFLX+NAPB))	
@@ -343,7 +343,7 @@ fprintf(IPRN,'%s\r\n', ' ');
         end
         if (MTS > 0)
            if (ITRNC > 0)
-%         ! KUPìôÅAñ¢íËã`ïœêîÇ…íçà”ÇµÇƒå„ì˙í˘ê≥ÇÃÇ±Ç∆ÅB         
+%         ! KUPÔøΩÔøΩÔøΩAÔøΩÔøΩÔøΩÔøΩ`ÔøΩœêÔøΩÔøΩ…íÔøΩÔøΩ”ÇÔøΩÔøΩƒåÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÃÇÔøΩÔøΩ∆ÅB         
                [XMT,X] = MTSVD(V,X,NP,N,KUP,sum(NCCN),KNN,KSN); % OK
            else
            end
@@ -354,7 +354,7 @@ fprintf(IPRN,'%s\r\n', ' ');
     else
     end
     
-      fid84 = fopen([PARAM.temporary_file_directory '\SmallSVs.txt'],'w'); 
+      fid84 = fopen([PARAM.temporary_file_directory '/SmallSVs.txt'],'w'); 
       if (KUP < N)
           for I = KUP+1:N
               fprintf(fid84,'%d %d\r\n', I,SVS(I));

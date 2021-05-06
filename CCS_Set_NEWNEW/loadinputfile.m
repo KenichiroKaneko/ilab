@@ -4,8 +4,8 @@
 %% loadinputfile!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 function PARAM = loadinputfile(filename)
 
-    %inputdata0=fileread('CCS_input\input.txt');
-    inputdata0=fileread(['CCS_input\' filename]);
+    %inputdata0=fileread('CCS_input/input.txt');
+    inputdata0=fileread(['CCS_input/' filename]);
     inputdata=strsplit(inputdata0,{'\n','\t','\r'});
 
     % file direcory

@@ -57,7 +57,7 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
 % if (IT > 1)
 % else
 % **********************************************************************
-%ˆêŽü‚ÅŒ³‚ÌˆÊ’u‚É–ß‚é
+%ï¿½ï¿½ï¿½ï¿½ÅŒï¿½ï¿½ÌˆÊ’uï¿½É–ß‚ï¿½
 % for I = 1:CCS
 %     RCCS(I,NCCS(I)+1) = RCCS(I,1);
 %     ZCCS(I,NCCS(I)+1) = ZCCS(I,1);
@@ -71,8 +71,8 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
 %    !    FF                             |   CCS   |
 %    !
 %
-%     fprintf(WAHAHA,'%s\r\n','*****ƒZƒ“ƒT[M†‚©‚çƒRƒCƒ‹“d—¬Šñ—^‚Ì·ˆø‚«*****');
-%  ‡–â‘è‚Ì‰ðFF‚ðì¬IIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+%     fprintf(WAHAHA,'%s\r\n','*****ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Mï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Rï¿½Cï¿½ï¿½ï¿½dï¿½ï¿½ï¿½ï¿½^ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½*****');
+%  ï¿½ï¿½ï¿½ï¿½ï¿½Ì‰ï¿½FFï¿½ï¿½ï¿½ì¬ï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½I
 %    !FLUX-LOOP 
 %     fprintf(WAHAHA,'%s\r\n','FLUX-LOOP     PSI  caused by external coils');
     
@@ -85,8 +85,8 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
 	    
         PSIFLX(L) = PSIFLX(L) + sum(PPSIFLX(1:KCMX).*ECI(1:KCMX)*RMYU0);
 %        fprintf(WAHAHA,'%d %d\r\n',L,PSIFLX(L));
-        FF(L+NAPB) = FF(L+NAPB) - PSIFLX(L);                %! ‰º‘Êˆ—‚ðŠÜ‚Þ
-        FC(L+NAPB) = PSIFLX(L);                             %! ƒRƒCƒ‹“d—¬Šñ—^
+        FF(L+NAPB) = FF(L+NAPB) - PSIFLX(L);                %! ï¿½ï¿½ï¿½Êï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½
+        FC(L+NAPB) = PSIFLX(L);                             %! ï¿½Rï¿½Cï¿½ï¿½ï¿½dï¿½ï¿½ï¿½ï¿½^
     end
 %    !T-PROBE & N-PROBE
 %    fprintf(WAHAHA,'%s\r\n','T-PROBE & N-PROBE   B  caused by external coils');
@@ -103,7 +103,7 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
         BBB = BR(L)*cos(TET(L+NFLX))+BZ(L)*sin(TET(L+NFLX));
 %        fprintf(WAHAHA,'%d %d\r\n',L,BBB);
         FF(L) = FF(L) - BBB;
-        FC(L) = BBB;                                        %! ƒRƒCƒ‹“d—¬Šñ—^           
+        FC(L) = BBB;                                        %! ï¿½Rï¿½Cï¿½ï¿½ï¿½dï¿½ï¿½ï¿½ï¿½^           
     end
 %    !CCS
 %    fprintf(WAHAHA,'%s\r\n','CCS       PSI  caused by external coils');
@@ -116,8 +116,8 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
                 STARB(0,RCCN(III,L),ZCCN(III,L),RC(1:KCMX),ZC(1:KCMX),RNOR,ZNOR); % OK
 
             PSIC(L) = PSIC(L) + sum(PPSIC(1:KCMX).*ECI(1:KCMX)*RMYU0);
-            FF(L+sum(NCCN(1:III-1))+NAPB+NFLX) = - PSIC(L); %! ‰º‘Êˆ—‚ðŠÜ‚Þ@@
-            FC(L+sum(NCCN(1:III-1))+NAPB+NFLX) = PSIC(L);   %! ƒRƒCƒ‹“d—¬Šñ—^@@
+            FF(L+sum(NCCN(1:III-1))+NAPB+NFLX) = - PSIC(L); %! ï¿½ï¿½ï¿½Êï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚Þ@ï¿½@
+            FC(L+sum(NCCN(1:III-1))+NAPB+NFLX) = PSIC(L);   %! ï¿½Rï¿½Cï¿½ï¿½ï¿½dï¿½ï¿½ï¿½ï¿½^ï¿½@ï¿½@
 %            fprintf(WAHAHA,'%d %d %d\r\n',L,PSIC(L),FF(L+sum(NCCN(1:III-1))+NAPB+NFLX));
         end
     end
@@ -134,9 +134,9 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
 %! AA    AA 
 %!
 %%%
-    fid99 = fopen([PARAM.temporary_file_directory '\MINDIST.txt'],'w'); %99
+    fid99 = fopen([PARAM.temporary_file_directory '/MINDIST.txt'],'w'); %99
     frewind(fid99);
-    fid100 = fopen([PARAM.temporary_file_directory '\SEKIBUNCHECK.PRI'],'w'); %100 
+    fid100 = fopen([PARAM.temporary_file_directory '/SEKIBUNCHECK.PRI'],'w'); %100 
     frewind(fid100);
     fprintf(fid99, '%s\n','****************************************************');
     fprintf(fid99, '%s\n','***    In the Subr. FORM ***************************');
@@ -182,12 +182,12 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
             HII=0.0;
             for K = 1:NE(III)
                 if and((3*K) >= I , I >= (3*K-2))
-                    %//// “ÁˆÙ’lÏ•ª ///////////////////////////////////////////////////////
-                    if (I == (3*K-2)) % ‹«ŠE“à1”Ô–Ú‚Ìß“_
+                    %//// ï¿½ï¿½ï¿½Ù’lï¿½Ï•ï¿½ ///////////////////////////////////////////////////////
+                    if (I == (3*K-2)) % ï¿½ï¿½ï¿½Eï¿½ï¿½1ï¿½Ô–Ú‚Ìß“_
                         NODO = 1;
                     else
 %                    if(I == (3*K-1))
-                        NODO = 2.*(I == (3*K-1)) +3.*(I ~= (3*K-1));% ‹«ŠE“à2A3”Ô–Ú‚Ìß“_
+                        NODO = 2.*(I == (3*K-1)) +3.*(I ~= (3*K-1));% ï¿½ï¿½ï¿½Eï¿½ï¿½2ï¿½A3ï¿½Ô–Ú‚Ìß“_
 %                    else
 %	                    NODO = 3;
 %                    end
@@ -195,7 +195,7 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
                     [GW,HW] = INLOGSA(RCCN(III,I),ZCCN(III,I),RCCS(III,2*K-1),ZCCS(III,2*K-1),RCCS(III,2*K),...
                         ZCCS(III,2*K),RCCS(III,2*K+1),ZCCS(III,2*K+1),NODO); % OK
                 else
-                    %//// ’Êí‚ÌÏ•ª ///////////////////////////////////////////////////////
+                    %//// ï¿½Êï¿½ÌÏ•ï¿½ ///////////////////////////////////////////////////////
                     [HW,GW,GR,GZ,HR,HZ] = INTEGS(RCCN(III,I),ZCCN(III,I),RCCS(III,2*K-1),ZCCS(III,2*K-1),...
                         RCCS(III,2*K),ZCCS(III,2*K),RCCS(III,2*K+1),ZCCS(III,2*K+1)); % OK
                 end
@@ -220,8 +220,8 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
     end
     
     % ??????????????????????????????????????????????????????????????????    
-    %  ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬
-    %    @^‹ó—eŠí@@@@@^‹ó—eŠí@@@@@^‹ó—eŠí@@@@^‹ó—eŠí
+    %  ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½
+    %    ï¿½@ï¿½^ï¿½ï¿½eï¿½ï¿½@ï¿½@ï¿½@ï¿½@ï¿½@ï¿½^ï¿½ï¿½eï¿½ï¿½@ï¿½@ï¿½@ï¿½@ï¿½@ï¿½^ï¿½ï¿½eï¿½ï¿½@ï¿½@ï¿½@ï¿½@ï¿½^ï¿½ï¿½eï¿½ï¿½
     %     KNE=No. of boundary elements along the vauum vessel
     %     KNN=No. of nodes along the vauum vessel (KNN=KNE*2)
     %     (REV(),ZEV())=Eddy Current Nodes on the vacuum vessel
@@ -235,9 +235,9 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
         %  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>      
         %  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>      
         %  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>      
-        %    ”ñ“K‡(Non Conforming)‰Q“d—¬—v‘f‚ÌŽŽì  (if NONC=1)
+        %    ï¿½ï¿½Kï¿½ï¿½(Non Conforming)ï¿½Qï¿½dï¿½ï¿½ï¿½vï¿½fï¿½ÌŽï¿½ï¿½ï¿½  (if NONC=1)
         if (NONC == 0) %GOTO 990
-            fprintf('%s\n','^‹ó—eŠíã‚Ì‰Q“d—¬‚ª flux loop ƒZƒ“ƒT[‚Éì‚éƒµ');
+            fprintf('%s\n','ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ flux loop ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½éƒµ');
             for I = 1:NFLX
                 A = RS(I);
                 B=ZS(I);
@@ -255,7 +255,7 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
                 end
             end
 %
-            fprintf('%s\n','^‹ó—eŠíã‚Ì‰Q“d—¬‚ª Ž¥êƒZƒ“ƒT[‚Éì‚é‚a');
+            fprintf('%s\n','ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½ï¿½a');
             for I = 1:NAPB
                 COST = cos(TET(I+NFLX));
                 SINT = sin(TET(I+NFLX));
@@ -276,7 +276,7 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
                 end
             end
 %
-            fprintf('%s\n','^‹ó—eŠíã‚Ì‰Q“d—¬‚ª CCS‚Éì‚éƒµ');
+            fprintf('%s\n','ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ CCSï¿½Éï¿½éƒµ');
             for III = 1:CCS
                 for I = 1:NCCN(III)
                     A = RCCN(III,I);
@@ -298,7 +298,7 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
             JJJJ = sum(NCCN)+sum(NCCN)+KNN;
 %
         else
-            fprintf('%s\n','^‹ó—eŠíã‚Ì‰Q“d—¬‚ª flux loop ƒZƒ“ƒT[‚Éì‚éƒµ');
+            fprintf('%s\n','ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ flux loop ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½éƒµ');
             for I = 1:NFLX
                 A=RS(I);
                 B=ZS(I);
@@ -346,7 +346,7 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
                 end
             end
 %
-            fprintf('%s\n','^‹ó—eŠíã‚Ì‰Q“d—¬‚ª Ž¥êƒZƒ“ƒT[‚Éì‚é‚a');
+            fprintf('%s\n','ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½ï¿½a');
             for I = 1:NAPB
                 COST = cos(TET(I+NFLX));
                 SINT = sin(TET(I+NFLX));
@@ -401,7 +401,7 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
                 end
             end
 %
-            fprintf('%s\n','^‹ó—eŠíã‚Ì‰Q“d—¬‚ª CCS‚Éì‚éƒµ');
+            fprintf('%s\n','ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ CCSï¿½Éï¿½éƒµ');
             for III = 1:CCS
                 for I = 1:NCCN(III)
                     A = RCCN(III,I);
@@ -454,8 +454,8 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
         end
     end
     % ??????????????????????????????????????????????????????????????????    
-    %  ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬
-    %    @ˆÀ’è‰»”Â@@@@@ˆÀ’è‰»”Â@@@@@ˆÀ’è‰»”Â@@@@ˆÀ’è‰»”Â
+    %  ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½
+    %    ï¿½@ï¿½ï¿½ï¿½è‰»ï¿½Â@ï¿½@ï¿½@ï¿½@ï¿½@ï¿½ï¿½ï¿½è‰»ï¿½Â@ï¿½@ï¿½@ï¿½@ï¿½@ï¿½ï¿½ï¿½è‰»ï¿½Â@ï¿½@ï¿½@ï¿½@ï¿½ï¿½ï¿½è‰»ï¿½ï¿½
     %CAUTION!! The stabilizer is not closed in the poloidal direction.
     %     KSE=No. of boundary elements along the stabilizer
     %     KSN=No. of nodes along the stabilizer (KSN=KNE*2+1)
@@ -464,7 +464,7 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
     if (KSE <= 0) % 991 to 992
     else
         AMYU0 = RMYU0*1.0D06;  % ! NAMUAMUdabutsu  #2
-        fprintf('%s\n','ˆÀ’è‰»”Âã‚Ì‰Q“d—¬‚ª flux loop ƒZƒ“ƒT[‚Éì‚éƒµ');
+        fprintf('%s\n','ï¿½ï¿½ï¿½è‰»ï¿½Âï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ flux loop ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½éƒµ');
         for I = 1:NFLX
             A = RS(I);
             B = ZS(I);
@@ -478,7 +478,7 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
             end
         end
 %CC
-        fprintf('%s\n','ˆÀ’è‰»”Âã‚Ì‰Q“d—¬‚ª Ž¥êƒZƒ“ƒT[‚Éì‚é‚a');
+        fprintf('%s\n','ï¿½ï¿½ï¿½è‰»ï¿½Âï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½ï¿½a');
         for I = 1:NAPB
             COST = cos(TET(I+NFLX));
             SINT = sin(TET(I+NFLX));
@@ -494,7 +494,7 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF] =...
             end
         end
 %CC
-        fprintf('%s\n','ˆÀ’è‰»”Âã‚Ì‰Q“d—¬‚ª CCS‚Éì‚éƒµ');
+        fprintf('%s\n','ï¿½ï¿½ï¿½è‰»ï¿½Âï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ CCSï¿½Éï¿½éƒµ');
         for III = 1:CCS
            for I = 1:NCCN(III)
                A = RCCN(III,I);
@@ -537,7 +537,7 @@ end
 % TOTAL IP(USHIKI)
 %C      WRITE(IPR,16) NFLX+NAPB+NCCS
 % if (ipconst == 1)
-%     fprintf(WAHAHA,'No. of information data = %d\r\n',NFLX+NAPB+sum(NCCN)+1);% +1‚Í‘“d—¬
+%     fprintf(WAHAHA,'No. of information data = %d\r\n',NFLX+NAPB+sum(NCCN)+1);% +1ï¿½Í‘ï¿½ï¿½dï¿½ï¿½
 %     fprintf(WAHAHA,'Vector FF(I) at the initial stage of iteration\r\n');
 %     for I = 1:NFLX+NAPB+sum(NCCN)+1
 %         fprintf(WAHAHA,'%d\r\n',FF(I));
@@ -569,7 +569,7 @@ end
 % ??????????????????????????????????????????????????????????????????    
 %
 end
-% FF(1+NAPB:NFLX+NAPB) = FF(1+NAPB:NFLX+NAPB)-GETA+OLDGT;    %! —vÄŠm”F
-% FF(1+NAPB+NFLX:sum(NCCN)+NAPB+NFLX) = FF(1+NAPB+NFLX:sum(NCCN)+NAPB+NFLX)-GETA+OLDGT;%    ! —vÄŠm”F
+% FF(1+NAPB:NFLX+NAPB) = FF(1+NAPB:NFLX+NAPB)-GETA+OLDGT;    %! ï¿½vï¿½ÄŠmï¿½F
+% FF(1+NAPB+NFLX:sum(NCCN)+NAPB+NFLX) = FF(1+NAPB+NFLX:sum(NCCN)+NAPB+NFLX)-GETA+OLDGT;%    ! ï¿½vï¿½ÄŠmï¿½F
 end
 %% FORM kokomade

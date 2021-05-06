@@ -1,5 +1,5 @@
 
-sensordata_B0 = fileread('CCS_temporary\@UTST_SenPos.txt');
+sensordata_B0 = fileread('CCS_temporary/@UTST_SenPos.txt');
 sensordata_B =  strsplit(sensordata_B0,{'\n',' ','\r'});
 sensornum_B =   length(sensordata_B)/2 -1 ;
 

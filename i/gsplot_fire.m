@@ -187,7 +187,7 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
     datanum = length(r_CCS);
 
     if (saveflag)
-        fp = fopen(save_dir + '\CCS.txt', 'w');
+        fp = fopen(save_dir + '/CCS.txt', 'w');
         fprintf(fp, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
 
         for i = 1:datanum
@@ -196,8 +196,8 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
 
         fclose(fp);
 
-        fpB = fopen(save_dir + '\Sensor_B.txt', 'w');
-        fpF = fopen(save_dir + '\Sensor_Flux.txt', 'w');
+        fpB = fopen(save_dir + '/Sensor_B.txt', 'w');
+        fpF = fopen(save_dir + '/Sensor_Flux.txt', 'w');
         fprintf(fpB, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
         fprintf(fpF, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
 
@@ -209,7 +209,7 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
         fclose(fpB);
         fclose(fpF);
 
-        fp = fopen(save_dir + '\FluxProfile_2D.txt', 'w');
+        fp = fopen(save_dir + '/FluxProfile_2D.txt', 'w');
         %fprintf(fp,'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
         for i = 1:length(z)
 
@@ -284,7 +284,7 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
     jeddy = [jt1 jt2' jt3 jt4' jt5 jt5(end:-1:1) jt4(end:-1:1)' jt3(end:-1:1) jt2(end:-1:1)' jt1(end:-1:1)];
 
     if (saveflag)
-        fp = fopen(save_dir + '\jeddy.txt', 'w');
+        fp = fopen(save_dir + '/jeddy.txt', 'w');
 
         for j = 1:length(Length)
             fprintf(fp, '%f\t%f\n', Length(j), jeddy(j));
@@ -298,6 +298,6 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
     % plot(Length, cumtrapz(Length, jeddy))
 
     if (saveflag)
-        save([save_dir + '\merged.mat'], 'env', 'delr', 'delz', 'psi', 'psi_v_3c', 'jt', 'r', 'rr', 'z', 'zz');
+        save([save_dir + '/merged.mat'], 'env', 'delr', 'delz', 'psi', 'psi_v_3c', 'jt', 'r', 'rr', 'z', 'zz');
     end
 end

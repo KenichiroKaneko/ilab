@@ -43,9 +43,9 @@ EDI = zeros(1,594);
     ipconst=PARAM.IPCONST;
 %
 % ###############################################################
-%  ^‹ó—eŠí‚É‰ˆ‚Á‚½‰Q“d—¬•ª•z‚Ìo—Í   (*** #4 ***)
+%  ï¿½^ï¿½ï¿½eï¿½ï¿½É‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Qï¿½dï¿½ï¿½ï¿½ï¿½ï¿½zï¿½Ìoï¿½ï¿½   (*** #4 ***)
 % ###############################################################
-      fid40 = fopen([PARAM.output_file_directory, '\EddyCurrentProfile.txt'],'w');
+      fid40 = fopen([PARAM.output_file_directory, '/EddyCurrentProfile.txt'],'w');
       if (NONC <= 0)%   GOTO 507
           DIS = 0.0;
           fprintf(fid40,'%d %d\r\n',DIS,FFOUT(sum(NCCN)*2+1));
@@ -85,8 +85,8 @@ EDI = zeros(1,594);
           end
               fprintf('%s %d\r\n','Total reconstructed eddy current =',TOTR);
 %
-              fid42 = fopen([PARAM.input_file_directory '\jeddy.txt'],'r');
-              fid43 = fopen([PARAM.output_file_directory, '\Reference_EddyCurrentProfile.txt'],'w');
+              fid42 = fopen([PARAM.input_file_directory '/jeddy.txt'],'r');
+              fid43 = fopen([PARAM.output_file_directory, '/Reference_EddyCurrentProfile.txt'],'w');
               JMAX = 594;
               TOTI = 0.0;
               DISMAE = 0.0D0;
@@ -105,7 +105,7 @@ EDI = zeros(1,594);
               EDI(J) = EDI(J)*FACT;
               fprintf(fid43,'%d %d\r\n',horzcat(DISI(J)',EDI(J)'));
 %
-              fid41 = fopen([PARAM.output_file_directory, '\EddyCurrent_DiscontinuousProfile.txt'],'w');
+              fid41 = fopen([PARAM.output_file_directory, '/EddyCurrent_DiscontinuousProfile.txt'],'w');
               NSEG = 100;
               ASEG = NSEG;
               DEL = 2.0D0/ASEG;
@@ -116,10 +116,10 @@ EDI = zeros(1,594);
                   for I = 1:NSEG+1
                       GII = -1.0D0+DEL*(I-1);
                       %-----------------------------------------------------------------------
-                      %C “à‘}ŠÖ”ƒÄ‚ÌŒvZ
-                      % ZETA1:ƒÄ1=(3/4)ƒÌ((3/2)ƒÌ-1) 
-                      % ZETA2:ƒÄ2=(1-(3/2)ƒÌ)*(1+(3/2)ƒÌ)
-                      % ZETA3:ƒÄ3=(3/4)ƒÌ((3/2)ƒÌ+1) 
+                      %C ï¿½ï¿½ï¿½}ï¿½Öï¿½ï¿½Ä‚ÌŒvï¿½Z
+                      % ZETA1:ï¿½ï¿½1=(3/4)ï¿½ï¿½((3/2)ï¿½ï¿½-1) 
+                      % ZETA2:ï¿½ï¿½2=(1-(3/2)ï¿½ï¿½)*(1+(3/2)ï¿½ï¿½)
+                      % ZETA3:ï¿½ï¿½3=(3/4)ï¿½ï¿½((3/2)ï¿½ï¿½+1) 
                       %
 	                  ZETA1 = 0.75D0*GII*(1.5D0*GII-1.0D0); 
 	                  ZETA2 = (1.0D0-1.5D0*GII)*(1.0D0+1.5D0*GII);

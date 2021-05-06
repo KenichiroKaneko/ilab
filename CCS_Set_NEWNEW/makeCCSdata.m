@@ -8,26 +8,26 @@ function CCSDAT = makeCCSdata(PARAM, GHR, GHZ)
     %PARAM.NCCS = NE*2;
 
     ICONT = 0;
-    %  9999 CONTINUE ! ICONT‚ÌXViCCS‚ğì‚è’¼‚·j!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    %  9999 CONTINUE ! ICONTï¿½ÌXï¿½Vï¿½iCCSï¿½ï¿½ï¿½ï¿½è’¼ï¿½ï¿½ï¿½j!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     
-    if (ICONT == 0)  % ICONT>0 ‚È‚çCCS‚ğì‚è’¼‚·B
-        if (PARAM.IDECCS > 0) %! ‘È‰~Œ^CCS or DŒ^CCS
+    if (ICONT == 0)  % ICONT>0 ï¿½È‚ï¿½CCSï¿½ï¿½ï¿½ï¿½è’¼ï¿½ï¿½ï¿½B
+        if (PARAM.IDECCS > 0) %! ï¿½È‰~ï¿½^CCS or Dï¿½^CCS
             %*******************************************************
-            %  'D'Œ^CCS                                         ****     
+            %  'D'ï¿½^CCS                                         ****     
             %*******************************************************
             CCSDAT = D_CCS(PARAM);
         else
             % *******************************************************
-            %   ‘È‰~Œ^CCS                                        ****     
+            %   ï¿½È‰~ï¿½^CCS                                        ****     
             % *******************************************************
             CCSDAT.NCCS = PARAM.NE*2;
             CCSDAT.NCCN = PARAM.NE*3;
 
             for i=1:PARAM.CCS
                 DTHETA = 2.0*pi/CCSDAT.NCCS(i);
-                TRIG = 0.0;      %OŠp“x  
+                TRIG = 0.0;      %ï¿½Oï¿½pï¿½x  
                 for j=1:CCSDAT.NCCS(i)
-                    THETA = pi/2.0-DTHETA*(j-1);  % CCS‚Å‚ÌÏ•ª‚ÍAŒv‰ñ‚è
+                    THETA = pi/2.0-DTHETA*(j-1);  % CCSï¿½Å‚ÌÏ•ï¿½ï¿½ÍAï¿½ï¿½ï¿½vï¿½ï¿½ï¿½
                     CCSDAT.RCCS(i,j) = PARAM.R0(i) + PARAM.RR(i)*cos(THETA + asin(TRIG)*sin(THETA));
                     CCSDAT.ZCCS(i,j) = PARAM.Z0(i) + PARAM.CAPPER(i)*PARAM.RR(i)*sin(THETA);
                 end
@@ -35,7 +35,7 @@ function CCSDAT = makeCCSdata(PARAM, GHR, GHZ)
         end
     else
         % *******************************************************
-        %    LCMS‚É‘Š—‚ÈCCS    (ICONT>0 ‚Ì‚Æ‚«)              ****
+        %    LCMSï¿½É‘ï¿½ï¿½ï¿½ï¿½ï¿½CCS    (ICONT>0 ï¿½Ì‚Æ‚ï¿½)              ****
         % *******************************************************
         for i=1:PARAM.CCS
             for j=1:CCSDAT.NCCS(i)
@@ -50,12 +50,12 @@ function CCSDAT = makeCCSdata(PARAM, GHR, GHZ)
     end
 
     % *******************************************************
-    %  CCSã‚Ì”ñ“K‡—v‘fß“_À•W‚Ìì¬
+    %  CCSï¿½ï¿½Ì”ï¿½Kï¿½ï¿½ï¿½vï¿½fï¿½ß“_ï¿½ï¿½ï¿½Wï¿½Ìì¬
     % *******************************************************
-    fid12 = fopen([PARAM.temporary_file_directory '\MeshPoints.txt'],'w'); 
-    fid13 = fopen([PARAM.temporary_file_directory '\DiscontinuousNodePoints.txt'],'w');
-    fid14 = fopen([PARAM.temporary_file_directory '\CurvCCS.txt'],'w');
-    fid15 = fopen([PARAM.temporary_file_directory '\CurvCCS_Final.txt'],'w'); 
+    fid12 = fopen([PARAM.temporary_file_directory '/MeshPoints.txt'],'w'); 
+    fid13 = fopen([PARAM.temporary_file_directory '/DiscontinuousNodePoints.txt'],'w');
+    fid14 = fopen([PARAM.temporary_file_directory '/CurvCCS.txt'],'w');
+    fid15 = fopen([PARAM.temporary_file_directory '/CurvCCS_Final.txt'],'w'); 
     
     for i = 1:PARAM.CCS
         CCSDAT.RCCS(i,CCSDAT.NCCS+1) = CCSDAT.RCCS(i,1);
@@ -126,9 +126,9 @@ function CCSDAT = D_CCS(PARAM)
     SZ(1:PARAM.CCS,2) = PARAM.Z0;
     SZ(1:PARAM.CCS,3) = PARAM.Z0 - PARAM.RR.*PARAM.CAPPER;
 
-    fid58 = fopen([PARAM.temporary_file_directory '\@D_CCS_SRpoints.txt'],'w');
-    fid59 = fopen([PARAM.temporary_file_directory '\@D_CCS_CheckWrite.txt'],'w');
-    fid13 = fopen([PARAM.temporary_file_directory '\DiscontinuousNodePoints.txt'],'w');
+    fid58 = fopen([PARAM.temporary_file_directory '/@D_CCS_SRpoints.txt'],'w');
+    fid59 = fopen([PARAM.temporary_file_directory '/@D_CCS_CheckWrite.txt'],'w');
+    fid13 = fopen([PARAM.temporary_file_directory '/DiscontinuousNodePoints.txt'],'w');
 
     for i=1:PARAM.CCS
         fprintf(fid58,'%d %d\n',PARAM.R0(i),PARAM.Z0(i));
@@ -136,14 +136,14 @@ function CCSDAT = D_CCS(PARAM)
             fprintf(fid58,'%d %d\n', SR(i,j),SZ(i,j));
         end
         
-        %% ‹Èü•”‚ÌƒƒbƒVƒ…“_‚ğ’è‹`
+        %% ï¿½Èï¿½ï¿½ï¿½ï¿½Ìƒï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½`
         II=0;
         for j=1:2
-            M2 = PARAM.MSEC(i,j)*2; % ƒƒbƒVƒ…“_‚Ì”
+            M2 = PARAM.MSEC(i,j)*2; % ï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½_ï¿½Ìï¿½
             DEL = 1.0/M2;
-            GISTAT = -1.0+(j-1); % ƒOƒUƒC -1 0 1
+            GISTAT = -1.0+(j-1); % ï¿½Oï¿½Uï¿½C -1 0 1
             for k=1:M2
-                GI = GISTAT+DEL*(k-1); %ƒOƒUƒC ‚ğ‹«ŠE—v‘f•ª‚É•ªŠ„‚µ‚Ä‚¢‚é
+                GI = GISTAT+DEL*(k-1); %ï¿½Oï¿½Uï¿½C ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½vï¿½fï¿½ï¿½ï¿½É•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
                 % Compute the values of the shape functions at the integration points
                 F1 = GI*(GI-1.0)/2;
                 F2 = 1.0-GI^2;
@@ -153,7 +153,7 @@ function CCSDAT = D_CCS(PARAM)
                 CCSDAT.ZCCS(i,II) = SZ(i,1)*F1+SZ(i,2)*F2+SZ(i,3)*F3; 
             end
         end
-        %% ’¼ü•”‚ÌƒƒbƒVƒ…“_‚ğ’è‹`
+        %% ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½`
         II=II+1;
         CCSDAT.RCCS(i,II) = SR(i,3);
         CCSDAT.ZCCS(i,II) = SZ(i,3);
@@ -170,7 +170,7 @@ function CCSDAT = D_CCS(PARAM)
         CCSDAT.NCCS(i) = II-1;
         CCSDAT.NCCN(i) = PARAM.NE(i)*3;
 
-        fprintf('%d%s%d  %d  %d\n',i,'”Ô–ÚCCS: NE/NCCS/NCCN = ', PARAM.NE(i), CCSDAT.NCCS(i),CCSDAT.NCCN(i));
+        fprintf('%d%s%d  %d  %d\n',i,'ï¿½Ô–ï¿½CCS: NE/NCCS/NCCN = ', PARAM.NE(i), CCSDAT.NCCS(i),CCSDAT.NCCN(i));
 
         for j=1:CCSDAT.NCCS(i)+1
             fprintf('%d %d %d\n',j, CCSDAT.RCCS(i,j), CCSDAT.ZCCS(i,j));
@@ -179,10 +179,10 @@ function CCSDAT = D_CCS(PARAM)
                 fprintf(fid59,'%d %d\n',CCSDAT.RCCS(i,j), CCSDAT.ZCCS(i,j));
             end
         end
-        %% CCSã‚Ì”ñ“K‡—v‘fß“_À•W‚Ìì¬
+        %% CCSï¿½ï¿½Ì”ï¿½Kï¿½ï¿½ï¿½vï¿½fï¿½ß“_ï¿½ï¿½ï¿½Wï¿½Ìì¬
         CCSDAT.RCCS(i,CCSDAT.NCCS+1) = CCSDAT.RCCS(i,1);
         CCSDAT.ZCCS(i,CCSDAT.NCCS+1) = CCSDAT.ZCCS(i,1);
-        CCSDAT.NCCN(i) = PARAM.NE(i)*3; % ”ñ“K‡—v‘f
+        CCSDAT.NCCN(i) = PARAM.NE(i)*3; % ï¿½ï¿½Kï¿½ï¿½ï¿½vï¿½f
         
         j=1:PARAM.NE(i);
         CCSDAT.RCCN(i,3*j-2) = (5*CCSDAT.RCCS(i,2*j-1) + 5.*CCSDAT.RCCS(i,2*j) - CCSDAT.RCCS(i,2*j+1))/9;

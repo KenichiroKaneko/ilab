@@ -12,7 +12,7 @@ function WALL =  loadwalldata(PARAM)
 
 
 %% CONDSHL_UTST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-% “±‘Ìã‚Ì‰Q“d—¬ß“_ˆÊ’uƒf[ƒ^‚ÌÝ’è‚Æ“Ç‚ÝŽæ‚è      
+% ï¿½ï¿½ï¿½Ìï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ß“_ï¿½Ê’uï¿½fï¿½[ï¿½^ï¿½ÌÝ’ï¿½Æ“Ç‚ÝŽï¿½ï¿½      
 %function [KNE,KNN,REV,ZEV,RES,ZES,KSE,KSN,REVN,ZEVN] = CONDSHL_UTST(WAHAHA,Nedp,NONC)
 
     MAXM = 13;
@@ -36,14 +36,14 @@ function WALL =  loadwalldata(PARAM)
     RSEC(13)= 0.694;       ZSEC(13)= -0.285;
     RSEC(14)= 0.694;       ZSEC(14)= 0.0;
 
-    fp = fopen([PARAM.temporary_file_directory '\VacuumVesselSegments.txt'],'w');
+    fp = fopen([PARAM.temporary_file_directory '/VacuumVesselSegments.txt'],'w');
     for i=1:MAXM+1
         fprintf(fp,'%d %d\n',RSEC(i),ZSEC(i));
     end
     fclose(fp);
 
-    % ^‹ó—eŠíã‚Ì‰Q“d—¬ß“_‚ÌÝ’è
-    % KNE=^‹ó—eŠí‚Ì•ªŠ„‹«ŠE—v‘f”,  KNM=^‹ó—eŠíã‚ÌƒƒbƒVƒ…“_”,  KNN=^‹ó—eŠíã‚Ìß“_”
+    % ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ß“_ï¿½ÌÝ’ï¿½
+    % KNE=ï¿½^ï¿½ï¿½eï¿½ï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½vï¿½fï¿½ï¿½,  KNM=ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ìƒï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½_ï¿½ï¿½,  KNN=ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ìß“_ï¿½ï¿½
 
     II=1;
     WALL.REV(II)=RSEC(1);
@@ -64,14 +64,14 @@ function WALL =  loadwalldata(PARAM)
 
     KNM = II-1;
 
-    fp = fopen([PARAM.temporary_file_directory '\VacuumVesselMeshPoints.txt'],'w');
+    fp = fopen([PARAM.temporary_file_directory '/VacuumVesselMeshPoints.txt'],'w');
     for II = 1:KNM+1
         fprintf(fp,'%d %d\n',WALL.REV(II),WALL.ZEV(II));
     end
     fclose(fp);
 
-    %% IIIIIII@ ”ñ“K‡—v‘fß“_ŒvŽZ‚Ì—\’è’n@@@IIIIIII
-    % ^‹ó—eŠíã‚Ì”ñ“K‡—v‘fß“_À•W‚Ìì¬
+    %% ï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½@ ï¿½ï¿½Kï¿½ï¿½ï¿½vï¿½fï¿½ß“_ï¿½vï¿½Zï¿½Ì—\ï¿½ï¿½nï¿½@ï¿½@ï¿½@ï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½I
+    % ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì”ï¿½Kï¿½ï¿½ï¿½vï¿½fï¿½ß“_ï¿½ï¿½ï¿½Wï¿½Ìì¬
     if (PARAM.NONC > 0)
         WALL.KNN = WALL.KNE*3;
         I = 1:WALL.KNE;
@@ -85,7 +85,7 @@ function WALL =  loadwalldata(PARAM)
         WALL.KNN = KNM;
     end
 
-    fp = fopen([PARAM.temporary_file_directory '\VacuumVesselNodePoints.txt'],'w'); %113
+    fp = fopen([PARAM.temporary_file_directory '/VacuumVesselNodePoints.txt'],'w'); %113
     if (PARAM.NONC == 0)
         for II = 1:KNM+1
             fprintf(fp,'%d %d\n',WALL.REV(II),WALL.ZEV(II));
@@ -100,11 +100,11 @@ function WALL =  loadwalldata(PARAM)
     end
     fclose(fp);
 
-    % ˆÀ’è‰»”Âã‚Ì‰Q“d—¬ß“_‚ÌÝ’è
-    % KSE=ˆÀ’è‰»”Â‚Ì•ªŠ„‹«ŠE—v‘f”,  KSN=ˆÀ’è‰»”Âã‚Ìß“_”
+    % ï¿½ï¿½ï¿½è‰»ï¿½Âï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ß“_ï¿½ÌÝ’ï¿½
+    % KSE=ï¿½ï¿½ï¿½è‰»ï¿½Â‚Ì•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½vï¿½fï¿½ï¿½,  KSN=ï¿½ï¿½ï¿½è‰»ï¿½Âï¿½Ìß“_ï¿½ï¿½
     %***
     %cd      KSE=1 
-    %prompt = '“d—¬ƒV[ƒgã‚É‹«ŠE—v‘f‚ð”z’u‚·‚éH (Yes/No)=(1/0)\n';
+    %prompt = 'ï¿½dï¿½ï¿½ï¿½Vï¿½[ï¿½gï¿½ï¿½É‹ï¿½ï¿½Eï¿½vï¿½fï¿½ï¿½zï¿½uï¿½ï¿½ï¿½ï¿½H (Yes/No)=(1/0)\n';
     %KSE = input(prompt);
     
     WALL.KSE = 0;
@@ -114,7 +114,7 @@ function WALL =  loadwalldata(PARAM)
         WALL.KSN=0;
     end
     if (WALL.KSE > 0)
-        fp = fopen([PARAM.temporary_file_directory \StabilizerPoints.txt'],'w'); % 114
+        fp = fopen([PARAM.temporary_file_directory /StabilizerPoints.txt'],'w'); % 114
         WALL.RES(1) = 0.25;
         WALL.RES(2) = 0.28;
         WALL.RES(3) = 0.31;

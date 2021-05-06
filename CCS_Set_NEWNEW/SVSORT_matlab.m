@@ -2,8 +2,8 @@
 function [SVS] = SVSORT_matlab(PARAM,SVO)
 N=length(SVO);
 SVS = zeros(N);
-fid13 = fopen([PARAM.temporary_file_directory '\@SV_SORT.txt'],'w');%13
-fid14 = fopen([PARAM.temporary_file_directory '\@SV_STEEP.txt'],'w');%14
+fid13 = fopen([PARAM.temporary_file_directory '/@SV_SORT.txt'],'w');%13
+fid14 = fopen([PARAM.temporary_file_directory '/@SV_STEEP.txt'],'w');%14
 SVMX = -1.0D10;	
 for K = 1:N
 	SVS(K) = SVO(K);

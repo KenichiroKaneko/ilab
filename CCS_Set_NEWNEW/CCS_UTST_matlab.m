@@ -11,10 +11,12 @@ function CCS_UTST_matlab(inputfile)
     PARAM = loadinputfile(inputfile);
     
     REF =   loadreference(PARAM);
-    
-    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM);
 
-    % CCSñ Çé©ìÆÇ≈ê›íË
+    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM);
+    
+    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARAM);
+
+    % CCSÔøΩ ÇÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ≈ê›íÔøΩ
     for i=1:PARAM.CCS
         PARAM.Z0(i)=    CCS(i);
     end
@@ -43,17 +45,17 @@ function CCS_UTST_matlab(inputfile)
     
     DELGE = 0.0;
     OLDEL = 1.0;
-    GETA = 0.0;     %! â∫ë ÇÃèâä˙ílÇÉ[ÉçÇ…Ç∑ÇÈ
+    GETA = 0.0;     %! ÔøΩÔøΩÔøΩ ÇÃèÔøΩÔøΩÔøΩÔøΩlÔøΩÔøΩÔøΩ[ÔøΩÔøΩÔøΩ…ÇÔøΩÔøΩÔøΩ
     OLDGT = GETA;
     OMGA = 1.9;
     
-    %fid90 = fopen([PARAM.temporary_file_directory '\GETA.txt'],'w'); %90
+    %fid90 = fopen([PARAM.temporary_file_directory '/GETA.txt'],'w'); %90
     
     if (PARAM.ITSKP > 0)
         ITMX=1;
-        fprintf('â∫ë ÉTÅ[É`Ç (1) SVD_MTì‡ïîÇÃÇ›Ç≈Ç‚ÇËÇ‹Ç∑\n');
+        fprintf('ÔøΩÔøΩÔøΩ ÉTÔøΩ[ÔøΩ`ÔøΩÔøΩ (1) SVD_MTÔøΩÔøΩÔøΩÔøΩÔøΩÃÇ›Ç≈ÇÔøΩÔøΩ‹ÇÔøΩ\n');
     else
-        fprintf('â∫ë ÉTÅ[É`Ç (0) INTERÇÃîΩïúÇ≈Ç‡Ç‚ÇËÇ‹Ç∑\n');
+        fprintf('ÔøΩÔøΩÔøΩ ÉTÔøΩ[ÔøΩ`ÔøΩÔøΩ (0) INTERÔøΩÃîÔøΩÔøΩÔøΩÔøΩ≈ÇÔøΩÔøΩÔøΩÔøΩ‹ÇÔøΩ\n');
     end
     
     % ITEND = 0;
@@ -115,7 +117,7 @@ function CCS_UTST_matlab(inputfile)
         [C,W,U,V,FFOUT,XBFR,XMT] = ...
         SVD_MT_matlab(PARAM,AA,FF,FC,0,0.0D0,SENSOR_TPRB,SENSOR_NPRB,SENSOR_FLXLP,CCSDAT,WALL,FLXLP);
         
-        %îºÉmÉãÉÄ
+        %ÔøΩÔøΩÔøΩmÔøΩÔøΩÔøΩÔøΩ
         half_norm = sqrt((sum((FFOUT).^2)));
         fprintf('%s%d\r\n','norm of the solution vector = ',half_norm);
     
@@ -168,7 +170,7 @@ function CCS_UTST_matlab(inputfile)
     EDDYP(FFOUT,PARAM,SENSOR_TPRB,SENSOR_NPRB,SENSOR_FLXLP,CCSDAT,WALL);
     
     % plot eddy current
-    DISF = dlmread([PARAM.output_file_directory '\EddyCurrentProfile.txt']);
+    DISF = dlmread([PARAM.output_file_directory '/EddyCurrentProfile.txt']);
     figure('Name','Eddy Current Plofile','NumberTitle','off')
     plot(DISF(:,1),DISF(:,2),'-ko','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',2)
     xlabel({'Distance (m)'});
@@ -179,14 +181,14 @@ function CCS_UTST_matlab(inputfile)
     axis([0 DISF(end,1) -0.4 0.4])
     set(gca, 'FontSize',14);
     hold on
-    JEDDY = dlmread(strcat([PARAM.input_file_directory '\jeddy.txt']));    
+    JEDDY = dlmread(strcat([PARAM.input_file_directory '/jeddy.txt']));    
     plot(JEDDY(:,1),JEDDY(:,2),'-b')
     
     
     if 0
         % plot sensor position
-        VV = dlmread([PARAM.temporary_file_directory '\VacuumVesselMeshPoints.txt']);
-        SEN0 = dlmread([PARAM.temporary_file_directory '\SENPOS0.txt']);
+        VV = dlmread([PARAM.temporary_file_directory '/VacuumVesselMeshPoints.txt']);
+        SEN0 = dlmread([PARAM.temporary_file_directory '/SENPOS0.txt']);
         SEN1 = dlmread([PARAM.temporary_file_directory '\SENPOS1.txt']);
         
         figure('Name','Sensor Position','NumberTitle','off')
@@ -264,7 +266,7 @@ function CCS_UTST_matlab(inputfile)
             figure
             contour(CCR,CCZ,psi,'-k','LevelStep',0.0003); 
             hold on
-            contour(REF.R,REF.Z,REF.Flux,'--m','LevelStep',0.0003);  % ê≥â
+            contour(REF.R,REF.Z,REF.Flux,'--m','LevelStep',0.0003);  % ÔøΩÔøΩÔøΩÔøΩ 
             xlabel({'r (m)'});
             ylabel({'z (m)'});
             axis equal
@@ -276,5 +278,3 @@ function CCS_UTST_matlab(inputfile)
     fclose('all');
     end
     %% Main kokomade
-    
-    

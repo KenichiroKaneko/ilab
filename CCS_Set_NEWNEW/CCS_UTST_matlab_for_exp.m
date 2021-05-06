@@ -44,7 +44,7 @@ CCSDAT = makeCCSdata(PARAM, GHR, GHZ);
 % 
 % DELGE = 0.0;
 % OLDEL = 1.0;
-% GETA = 0.0;     %! ‰º‘Ê‚Ì‰Šú’l‚ðƒ[ƒ‚É‚·‚é
+% GETA = 0.0;     %! ï¿½ï¿½ï¿½Ê‚Ìï¿½ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½
 % OLDGT = GETA;
 % 
 % fid90 = fopen([PARAM.temporary_file_directory '\GETA.txt'],'w'); %90
@@ -52,9 +52,9 @@ CCSDAT = makeCCSdata(PARAM, GHR, GHZ);
 % 
 % if (PARAM.ITSKP > 0)
 %     ITMX=1;
-%     fprintf('‰º‘ÊƒT[ƒ`‚ð (1) SVD_MT“à•”‚Ì‚Ý‚Å‚â‚è‚Ü‚·\n');
+%     fprintf('ï¿½ï¿½ï¿½ÊƒTï¿½[ï¿½`ï¿½ï¿½ (1) SVD_MTï¿½ï¿½ï¿½ï¿½ï¿½Ì‚Ý‚Å‚ï¿½ï¿½Ü‚ï¿½\n');
 % else
-%     fprintf('‰º‘ÊƒT[ƒ`‚ð (0) INTER‚Ì”½•œ‚Å‚à‚â‚è‚Ü‚·\n');
+%     fprintf('ï¿½ï¿½ï¿½ÊƒTï¿½[ï¿½`ï¿½ï¿½ (0) INTERï¿½Ì”ï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½\n');
 % end
 % 
 % ITEND = 0;
@@ -113,7 +113,7 @@ CCSDAT = makeCCSdata(PARAM, GHR, GHZ);
 %     [C,W,U,V,FFOUT,XBFR,XMT,XGETA,GET] = SVD_MT_matlab(PARAM,PARAM.ITSKP,IT,AA,FF,FC,NMAX,JMAX,250,150,...
 %         0,0.0D0,SENSOR_TPRB,SENSOR_NPRB,SENSOR_FLXLP,CCSDAT,WALL,FLXLP);
 %     
-%     %”¼ƒmƒ‹ƒ€
+%     %ï¿½ï¿½ï¿½mï¿½ï¿½ï¿½ï¿½
 %     half_norm = sqrt((sum((FFOUT).^2)));
 %     fprintf('%s%d\r\n','norm of the solution vector = ',half_norm);
 % 
@@ -165,9 +165,9 @@ CCSDAT = makeCCSdata(PARAM, GHR, GHZ);
 
 if 1
     % plot sensor position
-    VV = dlmread([PARAM.temporary_file_directory '\VacuumVesselMeshPoints.txt']);
-    SEN0 = dlmread([PARAM.temporary_file_directory '\SENPOS0.txt']);
-    SEN1 = dlmread([PARAM.temporary_file_directory '\SENPOS1.txt']);
+    VV = dlmread([PARAM.temporary_file_directory '/VacuumVesselMeshPoints.txt']);
+    SEN0 = dlmread([PARAM.temporary_file_directory '/SENPOS0.txt']);
+    SEN1 = dlmread([PARAM.temporary_file_directory '/SENPOS1.txt']);
     
     figure('Name','Sensor Position','NumberTitle','off')
     subplot(1,2,1);
@@ -183,10 +183,10 @@ if 1
     set(gca, 'FontSize',14);
 
     % plot CV segment
-    %COIL = dlmread('output\@UTST_CoilGeom.txt');
-    VVMESH = dlmread([PARAM.temporary_file_directory '\VacuumVesselMeshPoints.txt']);
-    VVNODE = dlmread([PARAM.temporary_file_directory '\VacuumVesselNodePoints.txt']);
-    VVSEG = dlmread([PARAM.temporary_file_directory '\VacuumVesselSegments.txt']);
+    %COIL = dlmread('output/@UTST_CoilGeom.txt');
+    VVMESH = dlmread([PARAM.temporary_file_directory '/VacuumVesselMeshPoints.txt']);
+    VVNODE = dlmread([PARAM.temporary_file_directory '/VacuumVesselNodePoints.txt']);
+    VVSEG = dlmread([PARAM.temporary_file_directory '/VacuumVesselSegments.txt']);
     subplot(1,2,2);
     %figure('Name','CVsegment','NumberTitle','off')
     plot(VV(:,1),VV(:,2),'-k')
@@ -228,7 +228,7 @@ end
 %% *************************************************************
 function PARAM = loadinputfile()
 
-    inputdata0=fileread('CCS_input\input.txt');
+    inputdata0=fileread('CCS_input/input.txt');
     inputdata=strsplit(inputdata0,{'\n','\t','\r'});
 
     % file direcory
@@ -284,7 +284,7 @@ end
 %% *************************************************************
 function REF = loadreference(PARAM)
 
-    REF.Flux = dlmread([PARAM.input_file_directory '\FluxProfile_2D.txt']);
+    REF.Flux = dlmread([PARAM.input_file_directory '/FluxProfile_2D.txt']);
     REF.Flux = REF.Flux / 2./pi;
     [znum, rnum] = size(REF.Flux);
 
@@ -308,7 +308,7 @@ end
 %% *************************************************************
 function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP] = loadsensordata(PARAM)
 
-    sensordata_B0 = fileread([PARAM.input_file_directory '\Sensor_B.txt']);
+    sensordata_B0 = fileread([PARAM.input_file_directory '/Sensor_B.txt']);
     sensordata_B =  strsplit(sensordata_B0,{'\n','\t','\r'});
     sensornum_B =   (length(sensordata_B)-1)/5 - 1;
 
@@ -347,7 +347,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP] = loadsensordata(PARAM)
     SENSOR_NPRB.NPRB = [];
     SENSOR_NPRB.ITYPE = [];
     
-    sensordata_Flux0 =  fileread([PARAM.input_file_directory '\Sensor_Flux.txt']);
+    sensordata_Flux0 =  fileread([PARAM.input_file_directory '/Sensor_Flux.txt']);
     sensordata_Flux =   strsplit(sensordata_Flux0,{'\n','\t','\r'});
     sensornum_Flux =    (length(sensordata_Flux)-1)/5 - 1;
     
@@ -378,19 +378,19 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP] = loadsensordata(PARAM)
     disp(['Number of FLXLP = ' num2str(SENSOR_FLXLP.NUM)]);
 
     %% Write files for CCS
-    fp = fopen([PARAM.temporary_file_directory '\SENPOS0.txt'],'w'); % 110
+    fp = fopen([PARAM.temporary_file_directory '/SENPOS0.txt'],'w'); % 110
     for i=1:SENSOR_FLXLP.NUM
         fprintf(fp,'%d %d\n',SENSOR_FLXLP.R(i),SENSOR_FLXLP.Z(i));
     end
     fclose(fp);
     
-    fp = fopen([PARAM.temporary_file_directory '\SENPOS1.txt'],'w'); % 111
+    fp = fopen([PARAM.temporary_file_directory '/SENPOS1.txt'],'w'); % 111
     for i=1:SENSOR_TPRB.NUM
         fprintf(fp,'%d %d\n',SENSOR_TPRB.R(i),SENSOR_TPRB.Z(i));
     end
     fclose(fp);
     
-    fp = fopen([PARAM.temporary_file_directory '\SENPOS2.txt'],'w'); % 112
+    fp = fopen([PARAM.temporary_file_directory '/SENPOS2.txt'],'w'); % 112
     for i=1:SENSOR_NPRB.NUM
         fprintf(fp,'%d %d\n',SENSOR_NPRB.R(i),SENSOR_NPRB.Z(i));
     end
@@ -401,7 +401,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP] = loadsensordata(PARAM)
     %%  *************************************************************************
 
     fprintf('Generation of CCS input data ** START ***\n');
-    fp = fopen([PARAM.temporary_file_directory '\CCSinput_UTST(temp).txt'],'w');
+    fp = fopen([PARAM.temporary_file_directory '/CCSinput_UTST(temp).txt'],'w');
     
     fprintf(fp,'%s\n','*');
     fprintf(fp,'%s\n','*** CCS Test input for UTST generated in PreUTST ***'); 
@@ -421,7 +421,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP] = loadsensordata(PARAM)
     fprintf(fp,'%s\n','****** MINR * MAXR * MINZ * MAXZ ****');
     fprintf(fp,'%s\n','10   90  -100  100');
     fprintf(fp,'%s\n','*********');
-    fprintf(fp,'%s\n','* ---ƒRƒCƒ‹“d—¬ƒf[ƒ^‚Ì•À‚Ñ---’PˆÊ[kA]');
+    fprintf(fp,'%s\n','* ---ï¿½Rï¿½Cï¿½ï¿½ï¿½dï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½Ì•ï¿½ï¿½ï¿½---ï¿½Pï¿½ï¿½[kA]');
     fprintf(fp,'%s\n','* EF');
     fprintf(fp,'%s\n','* PF#1');
     fprintf(fp,'%s\n','* PF#2');
@@ -449,7 +449,7 @@ function WALL =  loadwalldata(PARAM)
 
 
 %% CONDSHL_UTST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-% “±‘Ìã‚Ì‰Q“d—¬ß“_ˆÊ’uƒf[ƒ^‚ÌÝ’è‚Æ“Ç‚ÝŽæ‚è      
+% ï¿½ï¿½ï¿½Ìï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ß“_ï¿½Ê’uï¿½fï¿½[ï¿½^ï¿½ÌÝ’ï¿½Æ“Ç‚ÝŽï¿½ï¿½      
 %function [KNE,KNN,REV,ZEV,RES,ZES,KSE,KSN,REVN,ZEVN] = CONDSHL_UTST(WAHAHA,Nedp,NONC)
 
     MAXM = 13;
@@ -473,14 +473,14 @@ function WALL =  loadwalldata(PARAM)
     RSEC(13)= 0.694;       ZSEC(13)= -0.285;
     RSEC(14)= 0.694;       ZSEC(14)= 0.0;
 
-    fp = fopen([PARAM.temporary_file_directory '\VacuumVesselSegments.txt'],'w');
+    fp = fopen([PARAM.temporary_file_directory '/VacuumVesselSegments.txt'],'w');
     for i=1:MAXM+1
         fprintf(fp,'%d %d\n',RSEC(i),ZSEC(i));
     end
     fclose(fp);
 
-    % ^‹ó—eŠíã‚Ì‰Q“d—¬ß“_‚ÌÝ’è
-    % KNE=^‹ó—eŠí‚Ì•ªŠ„‹«ŠE—v‘f”,  KNM=^‹ó—eŠíã‚ÌƒƒbƒVƒ…“_”,  KNN=^‹ó—eŠíã‚Ìß“_”
+    % ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ß“_ï¿½ÌÝ’ï¿½
+    % KNE=ï¿½^ï¿½ï¿½eï¿½ï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½vï¿½fï¿½ï¿½,  KNM=ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ìƒï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½_ï¿½ï¿½,  KNN=ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ìß“_ï¿½ï¿½
 
     II=1;
     WALL.REV(II)=RSEC(1);
@@ -501,14 +501,14 @@ function WALL =  loadwalldata(PARAM)
 
     KNM = II-1;
 
-    fp = fopen([PARAM.temporary_file_directory '\VacuumVesselMeshPoints.txt'],'w');
+    fp = fopen([PARAM.temporary_file_directory '/VacuumVesselMeshPoints.txt'],'w');
     for II = 1:KNM+1
         fprintf(fp,'%d %d\n',WALL.REV(II),WALL.ZEV(II));
     end
     fclose(fp);
 
-    %% IIIIIII@ ”ñ“K‡—v‘fß“_ŒvŽZ‚Ì—\’è’n@@@IIIIIII
-    % ^‹ó—eŠíã‚Ì”ñ“K‡—v‘fß“_À•W‚Ìì¬
+    %% ï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½@ ï¿½ï¿½Kï¿½ï¿½ï¿½vï¿½fï¿½ß“_ï¿½vï¿½Zï¿½Ì—\ï¿½ï¿½nï¿½@ï¿½@ï¿½@ï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½I
+    % ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì”ï¿½Kï¿½ï¿½ï¿½vï¿½fï¿½ß“_ï¿½ï¿½ï¿½Wï¿½Ìì¬
     if (PARAM.NONC > 0)
         WALL.KNN = WALL.KNE*3;
         I = 1:WALL.KNE;
@@ -522,7 +522,7 @@ function WALL =  loadwalldata(PARAM)
         WALL.KNN = KNM;
     end
 
-    fp = fopen([PARAM.temporary_file_directory '\VacuumVesselNodePoints.txt'],'w'); %113
+    fp = fopen([PARAM.temporary_file_directory '/VacuumVesselNodePoints.txt'],'w'); %113
     if (PARAM.NONC == 0)
         for II = 1:KNM+1
             fprintf(fp,'%d %d\n',WALL.REV(II),WALL.ZEV(II));
@@ -537,11 +537,11 @@ function WALL =  loadwalldata(PARAM)
     end
     fclose(fp);
 
-    % ˆÀ’è‰»”Âã‚Ì‰Q“d—¬ß“_‚ÌÝ’è
-    % KSE=ˆÀ’è‰»”Â‚Ì•ªŠ„‹«ŠE—v‘f”,  KSN=ˆÀ’è‰»”Âã‚Ìß“_”
+    % ï¿½ï¿½ï¿½è‰»ï¿½Âï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ß“_ï¿½ÌÝ’ï¿½
+    % KSE=ï¿½ï¿½ï¿½è‰»ï¿½Â‚Ì•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½vï¿½fï¿½ï¿½,  KSN=ï¿½ï¿½ï¿½è‰»ï¿½Âï¿½Ìß“_ï¿½ï¿½
     %***
     %cd      KSE=1 
-    %prompt = '“d—¬ƒV[ƒgã‚É‹«ŠE—v‘f‚ð”z’u‚·‚éH (Yes/No)=(1/0)\n';
+    %prompt = 'ï¿½dï¿½ï¿½ï¿½Vï¿½[ï¿½gï¿½ï¿½É‹ï¿½ï¿½Eï¿½vï¿½fï¿½ï¿½zï¿½uï¿½ï¿½ï¿½ï¿½H (Yes/No)=(1/0)\n';
     %KSE = input(prompt);
     
     WALL.KSE = 0;
@@ -551,7 +551,7 @@ function WALL =  loadwalldata(PARAM)
         WALL.KSN=0;
     end
     if (WALL.KSE > 0)
-        fp = fopen([PARAM.temporary_file_directory \StabilizerPoints.txt'],'w'); % 114
+        fp = fopen([PARAM.temporary_file_directory /StabilizerPoints.txt'],'w'); % 114
         WALL.RES(1) = 0.25;
         WALL.RES(2) = 0.28;
         WALL.RES(3) = 0.31;
@@ -611,26 +611,26 @@ function CCSDAT = makeCCSdata(PARAM, GHR, GHZ)
     %PARAM.NCCS = NE*2;
 
     ICONT = 0;
-    %  9999 CONTINUE ! ICONT‚ÌXViCCS‚ðì‚è’¼‚·j!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    %  9999 CONTINUE ! ICONTï¿½ÌXï¿½Vï¿½iCCSï¿½ï¿½ï¿½ï¿½è’¼ï¿½ï¿½ï¿½j!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     
-    if (ICONT == 0)  % ICONT>0 ‚È‚çCCS‚ðì‚è’¼‚·B
-        if (PARAM.IDECCS > 0) %! ‘È‰~Œ^CCS or DŒ^CCS
+    if (ICONT == 0)  % ICONT>0 ï¿½È‚ï¿½CCSï¿½ï¿½ï¿½ï¿½è’¼ï¿½ï¿½ï¿½B
+        if (PARAM.IDECCS > 0) %! ï¿½È‰~ï¿½^CCS or Dï¿½^CCS
             %*******************************************************
-            %  'D'Œ^CCS                                         ****     
+            %  'D'ï¿½^CCS                                         ****     
             %*******************************************************
             CCSDAT = D_CCS(PARAM);
         else
             % *******************************************************
-            %   ‘È‰~Œ^CCS                                        ****     
+            %   ï¿½È‰~ï¿½^CCS                                        ****     
             % *******************************************************
             CCSDAT.NCCS = PARAM.NE*2;
             CCSDAT.NCCN = PARAM.NE*3;
 
             for i=1:PARAM.CCS
                 DTHETA = 2.0*pi/CCSDAT.NCCS(i);
-                TRIG = 0.0;      %ŽOŠp“x  
+                TRIG = 0.0;      %ï¿½Oï¿½pï¿½x  
                 for j=1:CCSDAT.NCCS(i)
-                    THETA = pi/2.0-DTHETA*(j-1);  % CCS‚Å‚ÌÏ•ª‚ÍAŽžŒv‰ñ‚è
+                    THETA = pi/2.0-DTHETA*(j-1);  % CCSï¿½Å‚ÌÏ•ï¿½ï¿½ÍAï¿½ï¿½ï¿½vï¿½ï¿½ï¿½
                     CCSDAT.RCCS(i,j) = PARAM.R0(i) + PARAM.RR(i)*cos(THETA + asin(TRIG)*sin(THETA));
                     CCSDAT.ZCCS(i,j) = PARAM.Z0(i) + PARAM.CAPPER(i)*PARAM.RR(i)*sin(THETA);
                 end
@@ -638,7 +638,7 @@ function CCSDAT = makeCCSdata(PARAM, GHR, GHZ)
         end
     else
         % *******************************************************
-        %    LCMS‚É‘ŠŽ—‚ÈCCS    (ICONT>0 ‚Ì‚Æ‚«)              ****
+        %    LCMSï¿½É‘ï¿½ï¿½ï¿½ï¿½ï¿½CCS    (ICONT>0 ï¿½Ì‚Æ‚ï¿½)              ****
         % *******************************************************
         for i=1:PARAM.CCS
             for j=1:CCSDAT.NCCS(i)
@@ -653,12 +653,12 @@ function CCSDAT = makeCCSdata(PARAM, GHR, GHZ)
     end
 
     % *******************************************************
-    %  CCSã‚Ì”ñ“K‡—v‘fß“_À•W‚Ìì¬
+    %  CCSï¿½ï¿½Ì”ï¿½Kï¿½ï¿½ï¿½vï¿½fï¿½ß“_ï¿½ï¿½ï¿½Wï¿½Ìì¬
     % *******************************************************
-    fid12 = fopen([PARAM.temporary_file_directory '\MeshPoints.txt'],'w'); 
-    fid13 = fopen([PARAM.temporary_file_directory '\DiscontinuousNodePoints.txt'],'w');
-    fid14 = fopen([PARAM.temporary_file_directory '\CurvCCS.txt'],'w');
-    fid15 = fopen([PARAM.temporary_file_directory '\CurvCCS_Final.txt'],'w'); 
+    fid12 = fopen([PARAM.temporary_file_directory '/MeshPoints.txt'],'w'); 
+    fid13 = fopen([PARAM.temporary_file_directory '/DiscontinuousNodePoints.txt'],'w');
+    fid14 = fopen([PARAM.temporary_file_directory '/CurvCCS.txt'],'w');
+    fid15 = fopen([PARAM.temporary_file_directory '/CurvCCS_Final.txt'],'w'); 
     
     for i = 1:PARAM.CCS
         CCSDAT.RCCS(i,CCSDAT.NCCS+1) = CCSDAT.RCCS(i,1);
@@ -720,9 +720,9 @@ function CCSDAT = D_CCS(PARAM)
     SZ(1:PARAM.CCS,2) = PARAM.Z0;
     SZ(1:PARAM.CCS,3) = PARAM.Z0 - PARAM.RR.*PARAM.CAPPER;
 
-    fid58 = fopen([PARAM.temporary_file_directory '\@D_CCS_SRpoints.txt'],'w');
-    fid59 = fopen([PARAM.temporary_file_directory '\@D_CCS_CheckWrite.txt'],'w');
-    fid13 = fopen([PARAM.temporary_file_directory '\DiscontinuousNodePoints.txt'],'w');
+    fid58 = fopen([PARAM.temporary_file_directory '/@D_CCS_SRpoints.txt'],'w');
+    fid59 = fopen([PARAM.temporary_file_directory '/@D_CCS_CheckWrite.txt'],'w');
+    fid13 = fopen([PARAM.temporary_file_directory '/DiscontinuousNodePoints.txt'],'w');
 
     for i=1:PARAM.CCS
         fprintf(fid58,'%d %d\n',PARAM.R0(i),PARAM.Z0(i));
@@ -730,14 +730,14 @@ function CCSDAT = D_CCS(PARAM)
             fprintf(fid58,'%d %d\n', SR(i,j),SZ(i,j));
         end
         
-        %% ‹Èü•”‚ÌƒƒbƒVƒ…“_‚ð’è‹`
+        %% ï¿½Èï¿½ï¿½ï¿½ï¿½Ìƒï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½`
         II=0;
         for j=1:2
-            M2 = PARAM.MSEC(i,j)*2; % ƒƒbƒVƒ…“_‚Ì”
+            M2 = PARAM.MSEC(i,j)*2; % ï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½_ï¿½Ìï¿½
             DEL = 1.0/M2;
-            GISTAT = -1.0+(j-1); % ƒOƒUƒC -1 0 1
+            GISTAT = -1.0+(j-1); % ï¿½Oï¿½Uï¿½C -1 0 1
             for k=1:M2
-                GI = GISTAT+DEL*(k-1); %ƒOƒUƒC ‚ð‹«ŠE—v‘f•ª‚É•ªŠ„‚µ‚Ä‚¢‚é
+                GI = GISTAT+DEL*(k-1); %ï¿½Oï¿½Uï¿½C ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½vï¿½fï¿½ï¿½ï¿½É•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
                 % Compute the values of the shape functions at the integration points
                 F1 = GI*(GI-1.0)/2;
                 F2 = 1.0-GI^2;
@@ -747,7 +747,7 @@ function CCSDAT = D_CCS(PARAM)
                 CCSDAT.ZCCS(i,II) = SZ(i,1)*F1+SZ(i,2)*F2+SZ(i,3)*F3; 
             end
         end
-        %% ’¼ü•”‚ÌƒƒbƒVƒ…“_‚ð’è‹`
+        %% ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½`
         II=II+1;
         CCSDAT.RCCS(i,II) = SR(i,3);
         CCSDAT.ZCCS(i,II) = SZ(i,3);
@@ -764,7 +764,7 @@ function CCSDAT = D_CCS(PARAM)
         CCSDAT.NCCS(i) = II-1;
         CCSDAT.NCCN(i) = PARAM.NE(i)*3;
 
-        fprintf('%d%s%d  %d  %d\n',i,'”Ô–ÚCCS: NE/NCCS/NCCN = ', PARAM.NE(i), CCSDAT.NCCS(i),CCSDAT.NCCN(i));
+        fprintf('%d%s%d  %d  %d\n',i,'ï¿½Ô–ï¿½CCS: NE/NCCS/NCCN = ', PARAM.NE(i), CCSDAT.NCCS(i),CCSDAT.NCCN(i));
 
         for j=1:CCSDAT.NCCS(i)+1
             fprintf('%d %d %d\n',j, CCSDAT.RCCS(i,j), CCSDAT.ZCCS(i,j));
@@ -773,10 +773,10 @@ function CCSDAT = D_CCS(PARAM)
                 fprintf(fid59,'%d %d\n',CCSDAT.RCCS(i,j), CCSDAT.ZCCS(i,j));
             end
         end
-        %% CCSã‚Ì”ñ“K‡—v‘fß“_À•W‚Ìì¬
+        %% CCSï¿½ï¿½Ì”ï¿½Kï¿½ï¿½ï¿½vï¿½fï¿½ß“_ï¿½ï¿½ï¿½Wï¿½Ìì¬
         CCSDAT.RCCS(i,CCSDAT.NCCS+1) = CCSDAT.RCCS(i,1);
         CCSDAT.ZCCS(i,CCSDAT.NCCS+1) = CCSDAT.ZCCS(i,1);
-        CCSDAT.NCCN(i) = PARAM.NE(i)*3; % ”ñ“K‡—v‘f
+        CCSDAT.NCCN(i) = PARAM.NE(i)*3; % ï¿½ï¿½Kï¿½ï¿½ï¿½vï¿½f
         
         j=1:PARAM.NE(i);
         CCSDAT.RCCN(i,3*j-2) = (5*CCSDAT.RCCS(i,2*j-1) + 5.*CCSDAT.RCCS(i,2*j) - CCSDAT.RCCS(i,2*j+1))/9;
@@ -857,7 +857,7 @@ function [FC,BR,BZ,PSIFLX,PSIC,AA,FF,GETA] =...
 if (IT > 1)
 else
 % **********************************************************************
-%ˆêŽü‚ÅŒ³‚ÌˆÊ’u‚É–ß‚é
+%ï¿½ï¿½ï¿½ï¿½ÅŒï¿½ï¿½ÌˆÊ’uï¿½É–ß‚ï¿½
 % for I = 1:CCS
 %     RCCS(I,NCCS(I)+1) = RCCS(I,1);
 %     ZCCS(I,NCCS(I)+1) = ZCCS(I,1);
@@ -871,8 +871,8 @@ else
 %    !    FF                             |   CCS   |
 %    !
 %
-%     fprintf(WAHAHA,'%s\r\n','*****ƒZƒ“ƒT[M†‚©‚çƒRƒCƒ‹“d—¬Šñ—^‚Ì·ˆø‚«*****');
-%  ‡–â‘è‚Ì‰ðFF‚ðì¬IIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+%     fprintf(WAHAHA,'%s\r\n','*****ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Mï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Rï¿½Cï¿½ï¿½ï¿½dï¿½ï¿½ï¿½ï¿½^ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½*****');
+%  ï¿½ï¿½ï¿½ï¿½ï¿½Ì‰ï¿½FFï¿½ï¿½ï¿½ì¬ï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½Iï¿½I
 %    !FLUX-LOOP 
 %     fprintf(WAHAHA,'%s\r\n','FLUX-LOOP     PSI  caused by external coils');
     
@@ -885,8 +885,8 @@ else
 	    
         PSIFLX(L) = PSIFLX(L) + sum(PPSIFLX(1:KCMX).*ECI(1:KCMX)*RMYU0);
 %        fprintf(WAHAHA,'%d %d\r\n',L,PSIFLX(L));
-        FF(L+NAPB) = FF(L+NAPB) - PSIFLX(L);                %! ‰º‘Êˆ—‚ðŠÜ‚Þ
-        FC(L+NAPB) = PSIFLX(L);                             %! ƒRƒCƒ‹“d—¬Šñ—^
+        FF(L+NAPB) = FF(L+NAPB) - PSIFLX(L);                %! ï¿½ï¿½ï¿½Êï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½
+        FC(L+NAPB) = PSIFLX(L);                             %! ï¿½Rï¿½Cï¿½ï¿½ï¿½dï¿½ï¿½ï¿½ï¿½^
     end
 %    !T-PROBE & N-PROBE
 %    fprintf(WAHAHA,'%s\r\n','T-PROBE & N-PROBE   B  caused by external coils');
@@ -903,7 +903,7 @@ else
         BBB = BR(L)*cos(TET(L+NFLX))+BZ(L)*sin(TET(L+NFLX));
 %        fprintf(WAHAHA,'%d %d\r\n',L,BBB);
         FF(L) = FF(L) - BBB;
-        FC(L) = BBB;                                        %! ƒRƒCƒ‹“d—¬Šñ—^           
+        FC(L) = BBB;                                        %! ï¿½Rï¿½Cï¿½ï¿½ï¿½dï¿½ï¿½ï¿½ï¿½^           
     end
 %    !CCS
 %    fprintf(WAHAHA,'%s\r\n','CCS       PSI  caused by external coils');
@@ -915,8 +915,8 @@ else
                 STARB(0,RCCN(III,L),ZCCN(III,L),RC(1:KCMX),ZC(1:KCMX),RNOR,ZNOR); % OK
 
             PSIC(L) = PSIC(L) + sum(PPSIC(1:KCMX).*ECI(1:KCMX)*RMYU0);
-            FF(L+sum(NCCN(1:III-1))+NAPB+NFLX) = - PSIC(L); %! ‰º‘Êˆ—‚ðŠÜ‚Þ@@
-            FC(L+sum(NCCN(1:III-1))+NAPB+NFLX) = PSIC(L);   %! ƒRƒCƒ‹“d—¬Šñ—^@@
+            FF(L+sum(NCCN(1:III-1))+NAPB+NFLX) = - PSIC(L); %! ï¿½ï¿½ï¿½Êï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚Þ@ï¿½@
+            FC(L+sum(NCCN(1:III-1))+NAPB+NFLX) = PSIC(L);   %! ï¿½Rï¿½Cï¿½ï¿½ï¿½dï¿½ï¿½ï¿½ï¿½^ï¿½@ï¿½@
 %            fprintf(WAHAHA,'%d %d %d\r\n',L,PSIC(L),FF(L+sum(NCCN(1:III-1))+NAPB+NFLX));
         end
     end
@@ -933,9 +933,9 @@ else
 %! AA    AA 
 %!
 %%%
-    fid99 = fopen([PARAM.temporary_file_directory '\MINDIST.txt'],'w'); %99
+    fid99 = fopen([PARAM.temporary_file_directory '/MINDIST.txt'],'w'); %99
     frewind(fid99);
-    fid100 = fopen([PARAM.temporary_file_directory '\SEKIBUNCHECK.PRI'],'w'); %100 
+    fid100 = fopen([PARAM.temporary_file_directory '/SEKIBUNCHECK.PRI'],'w'); %100 
     frewind(fid100);
     fprintf(fid99, '%s\n','****************************************************');
     fprintf(fid99, '%s\n','***    In the Subr. FORM ***************************');
@@ -981,12 +981,12 @@ else
             HII=0.0;
             for K = 1:NE(III)
                 if and((3*K) >= I , I >= (3*K-2))
-                    %//// “ÁˆÙ’lÏ•ª ///////////////////////////////////////////////////////
-                    if (I == (3*K-2)) % ‹«ŠE“à1”Ô–Ú‚Ìß“_
+                    %//// ï¿½ï¿½ï¿½Ù’lï¿½Ï•ï¿½ ///////////////////////////////////////////////////////
+                    if (I == (3*K-2)) % ï¿½ï¿½ï¿½Eï¿½ï¿½1ï¿½Ô–Ú‚Ìß“_
                         NODO = 1;
                     else
 %                    if(I == (3*K-1))
-                        NODO = 2.*(I == (3*K-1)) +3.*(I ~= (3*K-1));% ‹«ŠE“à2A3”Ô–Ú‚Ìß“_
+                        NODO = 2.*(I == (3*K-1)) +3.*(I ~= (3*K-1));% ï¿½ï¿½ï¿½Eï¿½ï¿½2ï¿½A3ï¿½Ô–Ú‚Ìß“_
 %                    else
 %	                    NODO = 3;
 %                    end
@@ -994,7 +994,7 @@ else
                     [GW,HW] = INLOGSA(RCCN(III,I),ZCCN(III,I),RCCS(III,2*K-1),ZCCS(III,2*K-1),RCCS(III,2*K),...
                         ZCCS(III,2*K),RCCS(III,2*K+1),ZCCS(III,2*K+1),NODO); % OK
                 else
-                    %//// ’Êí‚ÌÏ•ª ///////////////////////////////////////////////////////
+                    %//// ï¿½Êï¿½ÌÏ•ï¿½ ///////////////////////////////////////////////////////
                     [HW,GW,GR,GZ,HR,HZ] = INTEGS(RCCN(III,I),ZCCN(III,I),RCCS(III,2*K-1),ZCCS(III,2*K-1),...
                         RCCS(III,2*K),ZCCS(III,2*K),RCCS(III,2*K+1),ZCCS(III,2*K+1)); % OK
                 end
@@ -1019,8 +1019,8 @@ else
     end
     
     % ??????????????????????????????????????????????????????????????????    
-    %  ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬
-    %    @^‹ó—eŠí@@@@@^‹ó—eŠí@@@@@^‹ó—eŠí@@@@^‹ó—eŠí
+    %  ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½
+    %    ï¿½@ï¿½^ï¿½ï¿½eï¿½ï¿½@ï¿½@ï¿½@ï¿½@ï¿½@ï¿½^ï¿½ï¿½eï¿½ï¿½@ï¿½@ï¿½@ï¿½@ï¿½@ï¿½^ï¿½ï¿½eï¿½ï¿½@ï¿½@ï¿½@ï¿½@ï¿½^ï¿½ï¿½eï¿½ï¿½
     %     KNE=No. of boundary elements along the vauum vessel
     %     KNN=No. of nodes along the vauum vessel (KNN=KNE*2)
     %     (REV(),ZEV())=Eddy Current Nodes on the vacuum vessel
@@ -1034,9 +1034,9 @@ else
         %  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>      
         %  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>      
         %  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>      
-        %    ”ñ“K‡(Non Conforming)‰Q“d—¬—v‘f‚ÌŽŽì  (if NONC=1)
+        %    ï¿½ï¿½Kï¿½ï¿½(Non Conforming)ï¿½Qï¿½dï¿½ï¿½ï¿½vï¿½fï¿½ÌŽï¿½ï¿½ï¿½  (if NONC=1)
         if (NONC == 0) %GOTO 990
-            fprintf('%s\n','^‹ó—eŠíã‚Ì‰Q“d—¬‚ª flux loop ƒZƒ“ƒT[‚Éì‚éƒµ');
+            fprintf('%s\n','ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ flux loop ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½éƒµ');
             for I = 1:NFLX
                 A = RS(I);
                 B=ZS(I);
@@ -1054,7 +1054,7 @@ else
                 end
             end
 %
-            fprintf('%s\n','^‹ó—eŠíã‚Ì‰Q“d—¬‚ª Ž¥êƒZƒ“ƒT[‚Éì‚é‚a');
+            fprintf('%s\n','ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½ï¿½a');
             for I = 1:NAPB
                 COST = cos(TET(I+NFLX));
                 SINT = sin(TET(I+NFLX));
@@ -1075,7 +1075,7 @@ else
                 end
             end
 %
-            fprintf('%s\n','^‹ó—eŠíã‚Ì‰Q“d—¬‚ª CCS‚Éì‚éƒµ');
+            fprintf('%s\n','ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ CCSï¿½Éï¿½éƒµ');
             for III = 1:CCS
                 for I = 1:NCCN(III)
                     A = RCCN(III,I);
@@ -1097,7 +1097,7 @@ else
             JJJJ = sum(NCCN)+sum(NCCN)+KNN;
 %
         else
-            fprintf('%s\n','^‹ó—eŠíã‚Ì‰Q“d—¬‚ª flux loop ƒZƒ“ƒT[‚Éì‚éƒµ');
+            fprintf('%s\n','ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ flux loop ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½éƒµ');
             for I = 1:NFLX
                 A=RS(I);
                 B=ZS(I);
@@ -1145,7 +1145,7 @@ else
                 end
             end
 %
-            fprintf('%s\n','^‹ó—eŠíã‚Ì‰Q“d—¬‚ª Ž¥êƒZƒ“ƒT[‚Éì‚é‚a');
+            fprintf('%s\n','ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½ï¿½a');
             for I = 1:NAPB
                 COST = cos(TET(I+NFLX));
                 SINT = sin(TET(I+NFLX));
@@ -1200,7 +1200,7 @@ else
                 end
             end
 %
-            fprintf('%s\n','^‹ó—eŠíã‚Ì‰Q“d—¬‚ª CCS‚Éì‚éƒµ');
+            fprintf('%s\n','ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ CCSï¿½Éï¿½éƒµ');
             for III = 1:CCS
                 for I = 1:NCCN(III)
                     A = RCCN(III,I);
@@ -1253,8 +1253,8 @@ else
         end
     end
     % ??????????????????????????????????????????????????????????????????    
-    %  ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬   ‰Q“d—¬
-    %    @ˆÀ’è‰»”Â@@@@@ˆÀ’è‰»”Â@@@@@ˆÀ’è‰»”Â@@@@ˆÀ’è‰»”Â
+    %  ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½   ï¿½Qï¿½dï¿½ï¿½
+    %    ï¿½@ï¿½ï¿½ï¿½è‰»ï¿½Â@ï¿½@ï¿½@ï¿½@ï¿½@ï¿½ï¿½ï¿½è‰»ï¿½Â@ï¿½@ï¿½@ï¿½@ï¿½@ï¿½ï¿½ï¿½è‰»ï¿½Â@ï¿½@ï¿½@ï¿½@ï¿½ï¿½ï¿½è‰»ï¿½ï¿½
     %CAUTION!! The stabilizer is not closed in the poloidal direction.
     %     KSE=No. of boundary elements along the stabilizer
     %     KSN=No. of nodes along the stabilizer (KSN=KNE*2+1)
@@ -1263,7 +1263,7 @@ else
     if (KSE <= 0) % 991 to 992
     else
         AMYU0 = RMYU0*1.0D06;  % ! NAMUAMUdabutsu  #2
-        fprintf('%s\n','ˆÀ’è‰»”Âã‚Ì‰Q“d—¬‚ª flux loop ƒZƒ“ƒT[‚Éì‚éƒµ');
+        fprintf('%s\n','ï¿½ï¿½ï¿½è‰»ï¿½Âï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ flux loop ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½éƒµ');
         for I = 1:NFLX
             A = RS(I);
             B = ZS(I);
@@ -1277,7 +1277,7 @@ else
             end
         end
 %CC
-        fprintf('%s\n','ˆÀ’è‰»”Âã‚Ì‰Q“d—¬‚ª Ž¥êƒZƒ“ƒT[‚Éì‚é‚a');
+        fprintf('%s\n','ï¿½ï¿½ï¿½è‰»ï¿½Âï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½ï¿½a');
         for I = 1:NAPB
             COST = cos(TET(I+NFLX));
             SINT = sin(TET(I+NFLX));
@@ -1293,7 +1293,7 @@ else
             end
         end
 %CC
-        fprintf('%s\n','ˆÀ’è‰»”Âã‚Ì‰Q“d—¬‚ª CCS‚Éì‚éƒµ');
+        fprintf('%s\n','ï¿½ï¿½ï¿½è‰»ï¿½Âï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ CCSï¿½Éï¿½éƒµ');
         for III = 1:CCS
            for I = 1:NCCN(III)
                A = RCCN(III,I);
@@ -1336,7 +1336,7 @@ fclose(fid100);
 % TOTAL IP(USHIKI)
 %C      WRITE(IPR,16) NFLX+NAPB+NCCS
 % if (ipconst == 1)
-%     fprintf(WAHAHA,'No. of information data = %d\r\n',NFLX+NAPB+sum(NCCN)+1);% +1‚Í‘“d—¬
+%     fprintf(WAHAHA,'No. of information data = %d\r\n',NFLX+NAPB+sum(NCCN)+1);% +1ï¿½Í‘ï¿½ï¿½dï¿½ï¿½
 %     fprintf(WAHAHA,'Vector FF(I) at the initial stage of iteration\r\n');
 %     for I = 1:NFLX+NAPB+sum(NCCN)+1
 %         fprintf(WAHAHA,'%d\r\n',FF(I));
@@ -1368,8 +1368,8 @@ fclose(fid100);
 % ??????????????????????????????????????????????????????????????????    
 %
 end
-FF(1+NAPB:NFLX+NAPB) = FF(1+NAPB:NFLX+NAPB)-GETA+OLDGT;    %! —vÄŠm”F
-FF(1+NAPB+NFLX:sum(NCCN)+NAPB+NFLX) = FF(1+NAPB+NFLX:sum(NCCN)+NAPB+NFLX)-GETA+OLDGT;%    ! —vÄŠm”F
+FF(1+NAPB:NFLX+NAPB) = FF(1+NAPB:NFLX+NAPB)-GETA+OLDGT;    %! ï¿½vï¿½ÄŠmï¿½F
+FF(1+NAPB+NFLX:sum(NCCN)+NAPB+NFLX) = FF(1+NAPB+NFLX:sum(NCCN)+NAPB+NFLX)-GETA+OLDGT;%    ! ï¿½vï¿½ÄŠmï¿½F
 end
 
 %% FORM kokomade
@@ -1394,7 +1394,7 @@ PSIB = zeros(1,MXINT);
 RCCSR = zeros(1,MXCCS+1);
 ZCCSR = zeros(1,MXCCS+1);
 FI = zeros(1,MXCCS);
-DFI = zeros(1,MXCCS);%  ! BOUNDARY CONDITION FI:ƒµ, DFI:dƒµ/dn
+DFI = zeros(1,MXCCS);%  ! BOUNDARY CONDITION FI:ï¿½ï¿½, DFI:dï¿½ï¿½/dn
 XPSI = zeros(1,n100);
 XBBR = zeros(1,2000);
 XBBZ = zeros(1,2000);
@@ -1421,7 +1421,7 @@ DELGE = 0; % ushiki
     fprintf('%s %d\n', 'GETA in INTER =',GETA);
         if (IGOAL > 0) %GOTO 999
         else
-           %%  Ž¥êƒZƒ“ƒT[‚Éì‚é‚a'')')
+           %%  ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½ï¿½a'')')
              for L = 1:NAPB
                  A = RS(NFLX+L);
                  B = ZS(NFLX+L);
@@ -1448,8 +1448,8 @@ DELGE = 0; % ushiki
 %     
 %	         fprintf(WAHAHA,'%s\r\n','Reproducibility of field sensor signals');
 % 
-	         fid104 = fopen('output\Comparison_TotalFieldSignal.txt','w');%104
-	         fid106 = fopen('output\Discrepant_Field_Points.txt','w');%106
+	         fid104 = fopen('output/Comparison_TotalFieldSignal.txt','w');%104
+	         fid106 = fopen('output/Discrepant_Field_Points.txt','w');%106
              II = 0;
              for I = 1:NAPB
  	             XBBB = XBBR(I)*cos(TET(I+NFLX))+XBBZ(I)*sin(TET(I+NFLX));
@@ -1467,7 +1467,7 @@ DELGE = 0; % ushiki
                  fprintf(fid106,'%d %d\r\n', SSS,SSS);
              end
 % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
-                %  Flux loop ƒZƒ“ƒT[‚Éì‚éƒµ'')')
+                %  Flux loop ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½éƒµ'')')
              DELGE = 0.0D0;
              KNT = 0;
              for L = 1:NFLX
@@ -1495,9 +1495,9 @@ DELGE = 0; % ushiki
 %
              CNT0 = KNT;
              DELGE = DELGE/CNT0;
-             fid107 = fopen('output\Discrepant_Flux_Points.txt','w');%107
+             fid107 = fopen('output/Discrepant_Flux_Points.txt','w');%107
 %           	 fprintf(WAHAHA,'%s\r\n','Reproducibility of flux loop signals');
-	         fid105 = fopen('output\Comparison_TotalFluxSignal.txt','w');%105
+	         fid105 = fopen('output/Comparison_TotalFluxSignal.txt','w');%105
 	         II = 0;
              for I = 1:NFLX
                  fprintf(WAHAHA, '%d Measured = %d Calculated = %d\n', I,FLXLP(I),XPSI(I));
@@ -1519,12 +1519,12 @@ DELGE = 0; % ushiki
          end
          % *****************************************************************
          % *****************************************************************
-         %   Ž¥‘©•ª•zƒ}ƒbƒv‚Ìì¬
+         %   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½zï¿½}ï¿½bï¿½vï¿½Ìì¬
          % *****************************************************************
          % *****************************************************************
          %  Sum of contributions by CCS & external coils
          %!INTER INTER INTER
-         %  ƒRƒCƒ‹“d—¬‚ª“à“_‚Éì‚éƒµ
+         %  ï¿½Rï¿½Cï¿½ï¿½ï¿½dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Éï¿½éƒµ
          for L = 1:NINT
              A = CR(L);
              B = CZ(L);
@@ -1544,7 +1544,7 @@ DELGE = 0; % ushiki
 %              % ******************************************************************* 
 % 
 %          fid111 = fopen('CCSR_Check.txt','w');
-% %          for I = 1:NCCS %   !RCCSR,ZCCSRi”½ŽžŒv‰ñ‚èj©RCCS,ZCCS(ŽžŒv‰ñ‚è)
+% %          for I = 1:NCCS %   !RCCSR,ZCCSRï¿½iï¿½ï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½jï¿½ï¿½RCCS,ZCCS(ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½)
 % %              IR = NCCS+1-I;
 % %              RCCSR(I) = RCCS(IR);
 % %              ZCCSR(I) = ZCCS(IR);
@@ -1552,7 +1552,7 @@ DELGE = 0; % ushiki
 % %          end
 % %image(unique(CR),unique(CZ),PSI);
 %      for III = 1:numel(NCCS)
-%          I = 1:NCCS(III); %   !RCCSR,ZCCSRi”½ŽžŒv‰ñ‚èj©RCCS,ZCCS(ŽžŒv‰ñ‚è)
+%          I = 1:NCCS(III); %   !RCCSR,ZCCSRï¿½iï¿½ï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½jï¿½ï¿½RCCS,ZCCS(ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½)
 %          IR = NCCS(III)+1-I;
 %          RCCSR(III,I) = RCCS(III,IR);
 %          ZCCSR(III,I) = ZCCS(III,IR);
@@ -1583,19 +1583,19 @@ function [PSIS,PSISA,PSISB] = QINTER(AS,BS,GETA,RCCS,ZCCS,FFOUT,FI,DFI,n100,...
    RNOR = 0; % ushiki
    ZNOR = 0; % ushiki
 %    
-   %% ƒRƒCƒ‹“d—¬‚ªì‚éŽ¥ê‚Ì‰ÁŽZ
+   %% ï¿½Rï¿½Cï¿½ï¿½ï¿½dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½éŽ¥ï¿½ï¿½Ì‰ï¿½ï¿½Z
    [PPSI(1:KCMX),PHIR,PHIZ,PPSIA(1:KCMX),PPSIB(1:KCMX),PIRA,PIRB,PIZA,PIZB,GSTAR,HSTAR,DAG,DBG,DAH,DBH]...
    = STARB(1,AS,BS,RC(1:KCMX),ZC(1:KCMX),RNOR,ZNOR); % OK
    PSIS  = GETA + sum(PPSI(1:KCMX).*ECI(1:KCMX).*RMYU0);
    PSISA = sum(PPSIA(1:KCMX).*ECI(1:KCMX).*RMYU0);
    PSISB =  sum(PPSIB(1:KCMX).*ECI(1:KCMX).*RMYU0);
    % ??????????????????????????????????????????????????????????????????    
-   %% ‰Q“d—¬Šñ—^‚Ì‰ÁŽZ (1) «
+   %% ï¿½Qï¿½dï¿½ï¿½ï¿½ï¿½^ï¿½Ì‰ï¿½ï¿½Z (1) ï¿½ï¿½
    % ??????????????????????????????????????????????????????????????????    
-   %    ^‹ó—eŠíã‚Ì‰Q“d—¬‚ªì‚é
+   %    ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
    if (KNE > 0)  
    %  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>      
-   %    ”ñ“K‡(Non Conforming)‰Q“d—¬—v‘f‚ÌŽŽì  (if NONC=1)  #1
+   %    ï¿½ï¿½Kï¿½ï¿½(Non Conforming)ï¿½Qï¿½dï¿½ï¿½ï¿½vï¿½fï¿½ÌŽï¿½ï¿½ï¿½  (if NONC=1)  #1
        if (NONC == 0)% GOTO 990
            for K = 1:KNE      
                [GW,GR,GZ] = EXTINDC(AS,BS,REV(2*K-1),ZEV(2*K-1),REV(2*K),ZEV(2*K),...
@@ -1695,7 +1695,7 @@ function [PSIS,PSISA,PSISB] = QINTER(AS,BS,GETA,RCCS,ZCCS,FFOUT,FI,DFI,n100,...
    else
    end
   %  
-  %    ˆÀ’è‰»”Âã‚Ì‰Q“d—¬‚ªì‚é
+  %    ï¿½ï¿½ï¿½è‰»ï¿½Âï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
    if (KSE > 0)  
        for K = 1:KSE
            [GW,GR,GZ] =  EXTINDC(AS,BS,RES(2*K-1),ZES(2*K-1),RES(2*K),ZES(2*K),...

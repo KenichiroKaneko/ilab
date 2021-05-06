@@ -56,15 +56,15 @@ PSIB = zeros(1,MXINT);
 RCCSR = zeros(1,MXCCS+1);
 ZCCSR = zeros(1,MXCCS+1);
 FI = zeros(1,MXCCS);
-DFI = zeros(1,MXCCS);%  ! BOUNDARY CONDITION FI:ƒµ, DFI:dƒµ/dn
+DFI = zeros(1,MXCCS);%  ! BOUNDARY CONDITION FI:ï¿½ï¿½, DFI:dï¿½ï¿½/dn
 XPSI = zeros(1,n100);
 XBBR = zeros(1,2000);
 XBBZ = zeros(1,2000);
 DELGE = 0; % ushiki
 %
-    fid99 = fopen([PARAM.temporary_file_directory '\MINDIST.txt'],'w'); %99
+    fid99 = fopen([PARAM.temporary_file_directory '/MINDIST.txt'],'w'); %99
     frewind(fid99);
-    fid100 = fopen([PARAM.temporary_file_directory '\SEKIBUNCHECK.PRI'],'w'); %100 
+    fid100 = fopen([PARAM.temporary_file_directory '/SEKIBUNCHECK.PRI'],'w'); %100 
     frewind(fid100);
     fprintf(fid99,'%s\n','/'); 
     fprintf(fid100,'%s\n','/'); 
@@ -87,7 +87,7 @@ DELGE = 0; % ushiki
     fprintf('%s %d\n', 'GETA in INTER =',GETA);
         if (IGOAL > 0) %GOTO 999
         else
-           %%  Ž¥êƒZƒ“ƒT[‚Éì‚é‚a'')')
+           %%  ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½ï¿½a'')')
              for L = 1:NAPB
                  A = RS(NFLX+L);
                  B = ZS(NFLX+L);
@@ -133,7 +133,7 @@ DELGE = 0; % ushiki
                  fprintf(fid106,'%d %d\r\n', SSS,SSS);
              end
 % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
-                %  Flux loop ƒZƒ“ƒT[‚Éì‚éƒµ'')')
+                %  Flux loop ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½Éï¿½éƒµ'')')
              DELGE = 0.0D0;
              KNT = 0;
              for L = 1:NFLX
@@ -161,9 +161,9 @@ DELGE = 0; % ushiki
 %
              CNT0 = KNT;
              DELGE = DELGE/CNT0;
-             fid107 = fopen('output\Discrepant_Flux_Points.txt','w');%107
+             fid107 = fopen('output/Discrepant_Flux_Points.txt','w');%107
 %           	 fprintf(WAHAHA,'%s\r\n','Reproducibility of flux loop signals');
-	         fid105 = fopen('output\Comparison_TotalFluxSignal.txt','w');%105
+	         fid105 = fopen('output/Comparison_TotalFluxSignal.txt','w');%105
 	         II = 0;
              for I = 1:NFLX
                  fprintf(WAHAHA, '%d Measured = %d Calculated = %d\n', I,FLXLP(I),XPSI(I));
@@ -185,12 +185,12 @@ DELGE = 0; % ushiki
          end
          % *****************************************************************
          % *****************************************************************
-         %   Ž¥‘©•ª•zƒ}ƒbƒv‚Ìì¬
+         %   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½zï¿½}ï¿½bï¿½vï¿½Ìì¬
          % *****************************************************************
          % *****************************************************************
          %  Sum of contributions by CCS & external coils
          %!INTER INTER INTER
-         %  ƒRƒCƒ‹“d—¬‚ª“à“_‚Éì‚éƒµ
+         %  ï¿½Rï¿½Cï¿½ï¿½ï¿½dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½Éï¿½éƒµ
          for L = 1:NINT
              A = CR(L);
              B = CZ(L);
@@ -210,7 +210,7 @@ DELGE = 0; % ushiki
 %              % ******************************************************************* 
 % 
 %          fid111 = fopen('CCSR_Check.txt','w');
-% %          for I = 1:NCCS %   !RCCSR,ZCCSRi”½ŽžŒv‰ñ‚èj©RCCS,ZCCS(ŽžŒv‰ñ‚è)
+% %          for I = 1:NCCS %   !RCCSR,ZCCSRï¿½iï¿½ï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½jï¿½ï¿½RCCS,ZCCS(ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½)
 % %              IR = NCCS+1-I;
 % %              RCCSR(I) = RCCS(IR);
 % %              ZCCSR(I) = ZCCS(IR);
@@ -218,7 +218,7 @@ DELGE = 0; % ushiki
 % %          end
 % %image(unique(CR),unique(CZ),PSI);
 %      for III = 1:numel(NCCS)
-%          I = 1:NCCS(III); %   !RCCSR,ZCCSRi”½ŽžŒv‰ñ‚èj©RCCS,ZCCS(ŽžŒv‰ñ‚è)
+%          I = 1:NCCS(III); %   !RCCSR,ZCCSRï¿½iï¿½ï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½jï¿½ï¿½RCCS,ZCCS(ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½)
 %          IR = NCCS(III)+1-I;
 %          RCCSR(III,I) = RCCS(III,IR);
 %          ZCCSR(III,I) = ZCCS(III,IR);
@@ -258,19 +258,19 @@ function [PSIS,PSISA,PSISB] = QINTER(AS,BS,GETA,RCCS,ZCCS,FFOUT,FI,DFI,n100,...
    RNOR = 0; % ushiki
    ZNOR = 0; % ushiki
 %    
-   %% ƒRƒCƒ‹“d—¬‚ªì‚éŽ¥ê‚Ì‰ÁŽZ
+   %% ï¿½Rï¿½Cï¿½ï¿½ï¿½dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½éŽ¥ï¿½ï¿½Ì‰ï¿½ï¿½Z
    [PPSI(1:KCMX),PHIR,PHIZ,PPSIA(1:KCMX),PPSIB(1:KCMX),PIRA,PIRB,PIZA,PIZB,GSTAR,HSTAR,DAG,DBG,DAH,DBH]...
    = STARB(1,AS,BS,RC(1:KCMX),ZC(1:KCMX),RNOR,ZNOR); % OK
    PSIS  = GETA + sum(PPSI(1:KCMX).*ECI(1:KCMX).*RMYU0);
    PSISA = sum(PPSIA(1:KCMX).*ECI(1:KCMX).*RMYU0);
    PSISB =  sum(PPSIB(1:KCMX).*ECI(1:KCMX).*RMYU0);
    % ??????????????????????????????????????????????????????????????????    
-   %% ‰Q“d—¬Šñ—^‚Ì‰ÁŽZ (1) «
+   %% ï¿½Qï¿½dï¿½ï¿½ï¿½ï¿½^ï¿½Ì‰ï¿½ï¿½Z (1) ï¿½ï¿½
    % ??????????????????????????????????????????????????????????????????    
-   %    ^‹ó—eŠíã‚Ì‰Q“d—¬‚ªì‚é
+   %    ï¿½^ï¿½ï¿½eï¿½ï¿½ï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
    if (KNE > 0)  
    %  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>      
-   %    ”ñ“K‡(Non Conforming)‰Q“d—¬—v‘f‚ÌŽŽì  (if NONC=1)  #1
+   %    ï¿½ï¿½Kï¿½ï¿½(Non Conforming)ï¿½Qï¿½dï¿½ï¿½ï¿½vï¿½fï¿½ÌŽï¿½ï¿½ï¿½  (if NONC=1)  #1
        if (NONC == 0)% GOTO 990
            for K = 1:KNE      
                [GW,GR,GZ] = EXTINDC(AS,BS,REV(2*K-1),ZEV(2*K-1),REV(2*K),ZEV(2*K),...
@@ -370,7 +370,7 @@ function [PSIS,PSISA,PSISB] = QINTER(AS,BS,GETA,RCCS,ZCCS,FFOUT,FI,DFI,n100,...
    else
    end
   %  
-  %    ˆÀ’è‰»”Âã‚Ì‰Q“d—¬‚ªì‚é
+  %    ï¿½ï¿½ï¿½è‰»ï¿½Âï¿½Ì‰Qï¿½dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
    if (KSE > 0)  
        for K = 1:KSE
            [GW,GR,GZ] =  EXTINDC(AS,BS,RES(2*K-1),ZES(2*K-1),RES(2*K),ZES(2*K),...

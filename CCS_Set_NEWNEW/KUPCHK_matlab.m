@@ -16,15 +16,15 @@ GET = zeros(1,N);%NP
 % *****************************************************************
 %
 %   
-      fid200 = fopen([PARAM.temporary_file_directory '\@KUPCHK00.txt'],'w');%200
-      fid201 = fopen([PARAM.temporary_file_directory '\@AIC0.txt'],'w');%201
-      fid202 = fopen([PARAM.temporary_file_directory '\@AIC1.txt'],'w');%202
-      fid203 = fopen([PARAM.temporary_file_directory '\@GETAvar.txt'],'w');%203
+      fid200 = fopen([PARAM.temporary_file_directory '/@KUPCHK00.txt'],'w');%200
+      fid201 = fopen([PARAM.temporary_file_directory '/@AIC0.txt'],'w');%201
+      fid202 = fopen([PARAM.temporary_file_directory '/@AIC1.txt'],'w');%202
+      fid203 = fopen([PARAM.temporary_file_directory '/@GETAvar.txt'],'w');%203
 %
-      fid204 = fopen([PARAM.temporary_file_directory '\@NB_BNSN.txt'],'w');%204
-      fid205 = fopen([PARAM.temporary_file_directory '\@NP_BNSN.txt'],'w');%205
-      fid206 = fopen([PARAM.temporary_file_directory '\@NC_BNSN.txt'],'w');%206
-      fid207 = fopen([PARAM.temporary_file_directory '\@NPARADD.txt'],'w');%207
+      fid204 = fopen([PARAM.temporary_file_directory '/@NB_BNSN.txt'],'w');%204
+      fid205 = fopen([PARAM.temporary_file_directory '/@NP_BNSN.txt'],'w');%205
+      fid206 = fopen([PARAM.temporary_file_directory '/@NC_BNSN.txt'],'w');%206
+      fid207 = fopen([PARAM.temporary_file_directory '/@NPARADD.txt'],'w');%207
 %  
       AI0MIN = 1.0D10;
       AI1MIN = 1.0D10;
@@ -60,8 +60,8 @@ GET = zeros(1,N);%NP
               K = 1:M;
               J = 1:N;
 	          C(K) = A(K,J)*X(J)';
-              E(K) = (C(K)-B(K)+GETA).*and(K > NAPB , K <= (NFLX+NAPB)) + (C(K)-B(K)).* or(K <= NAPB,K > (NFLX+NAPB)); % ! GETA‚ðˆø‚­‚Ì‚ÍFlux loop‚Ì‚Ý !!
-              DELGE = sum((B(K)-C(K)-GETA).*and(K > NAPB, K <= (NFLX+NAPB))); %  ! DELGE•]‰¿‚ÍFlux loop‚Ì‚Ý
+              E(K) = (C(K)-B(K)+GETA).*and(K > NAPB , K <= (NFLX+NAPB)) + (C(K)-B(K)).* or(K <= NAPB,K > (NFLX+NAPB)); % ! GETAï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½Flux loopï¿½Ì‚ï¿½ !!
+              DELGE = sum((B(K)-C(K)-GETA).*and(K > NAPB, K <= (NFLX+NAPB))); %  ! DELGEï¿½]ï¿½ï¿½ï¿½ï¿½Flux loopï¿½Ì‚ï¿½
               BNSNALL = sum(E(K).*E(K));
                   BNSN_B = sum(E(K).*E(K).*(K <= NAPB));
                   BNSN_P = sum(E(K).*E(K).*and(K > NAPB, K <= (NFLX+NAPB)));
@@ -123,8 +123,8 @@ GET = zeros(1,N);%NP
       end
       fprintf('%s %d\r\n','Min.AIC1 occurs at KUP=', K0UP);
       fprintf('%s %d\r\n','Min.AIC1 occurs at KUP=',K1UP);
-      fprintf('%s\r\n','AIC‚ð‰ßM‚¹‚¸A“ÁˆÙ’l‚Ì•À‚Ñ‚É');
-      fprintf('%s\r\n','’–Ú‚µ‚Ä‘Å‚¿Ø‚è‰ÓŠ‚ðŒˆ’è‚¹‚æ');
+      fprintf('%s\r\n','AICï¿½ï¿½ï¿½ßMï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Ù’lï¿½Ì•ï¿½ï¿½Ñ‚ï¿½');
+      fprintf('%s\r\n','ï¿½ï¿½ï¿½Ú‚ï¿½ï¿½Ä‘Å‚ï¿½ï¿½Ø‚ï¿½Óï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è‚¹ï¿½ï¿½');
       AIC0(1:N) = AIC0(1:N)-AI0MIN;
       AIC1(1:N) = AIC1(1:N)-AI1MIN;
       for KUP = 1:N
