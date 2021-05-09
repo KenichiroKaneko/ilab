@@ -67,6 +67,8 @@ function CCSDAT = makeCCSdata(PARAM, GHR, GHZ)
     fid14 = fopen([PARAM.temporary_file_directory '/CurvCCS.txt'], 'w');
     fid15 = fopen([PARAM.temporary_file_directory '/CurvCCS_Final.txt'], 'w');
 
+    count = 1;
+
     for i = 1:PARAM.CCS
         CCSDAT.RCCS(i, CCSDAT.NCCS + 1) = CCSDAT.RCCS(i, 1);
         CCSDAT.ZCCS(i, CCSDAT.NCCS + 1) = CCSDAT.ZCCS(i, 1);
@@ -105,6 +107,9 @@ function CCSDAT = makeCCSdata(PARAM, GHR, GHZ)
                 F3 = GII * (GII + 1.0D0) * 0.5;
                 RGI = CCSDAT.RCCS(i, 2 * I - 1) * F1 + CCSDAT.RCCS(i, 2 * I) * F2 + CCSDAT.RCCS(i, 2 * I + 1) * F3;
                 ZGI = CCSDAT.ZCCS(i, 2 * I - 1) * F1 + CCSDAT.ZCCS(i, 2 * I) * F2 + CCSDAT.ZCCS(i, 2 * I + 1) * F3;
+                RGI2(count) = RGI;
+                ZGI2(count) = ZGI;
+                count = count + 1;
 
                 fprintf(fid14, '%d %d\n', RGI, ZGI);
                 fprintf(fid15, '%d %d\n', RGI, ZGI);
@@ -113,6 +118,9 @@ function CCSDAT = makeCCSdata(PARAM, GHR, GHZ)
         end
 
     end
+
+    CCSDAT.RGI = RGI2;
+    CCSDAT.ZGI = ZGI2;
 
     fclose(fid12);
     fclose(fid13);

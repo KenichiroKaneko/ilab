@@ -142,8 +142,7 @@ function [FC, BR, BZ, PSIFLX, PSIC, AA, FF] = FORM(PARAM, AA, FF, ExtCOIL, SENSO
         for I = 1:NFLX
 
             for K = 1:NE(III)
-                [HW, GW, GR, GZ, HR, HZ] = INTEGS(RS(I), ZS(I), RCCS(III, 2 * K - 1), ZCCS(III, 2 * K - 1), ...
-                    RCCS(III, 2 * K), ZCCS(III, 2 * K), RCCS(III, 2 * K + 1), ZCCS(III, 2 * K + 1)); % OK
+                [HW, GW, GR, GZ, HR, HZ] = INTEGS(RS(I), ZS(I), RCCS(III, 2 * K - 1), ZCCS(III, 2 * K - 1), RCCS(III, 2 * K), ZCCS(III, 2 * K), RCCS(III, 2 * K + 1), ZCCS(III, 2 * K + 1)); % OK
 
                 for JJ = 1:3
                     KK = 3 * (K - 1) + JJ;

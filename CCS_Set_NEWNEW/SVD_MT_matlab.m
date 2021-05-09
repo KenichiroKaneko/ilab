@@ -38,7 +38,7 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
     %   MP=Max. capacity of M,                  NP=Max. capacity of N
     % *****************************************************************
     %
-    IPRN = fopen([PARAM.temporary_file_directory '\@SVDCHK.txt'], 'w');
+    IPRN = fopen([PARAM.temporary_file_directory '/@SVDCHK.txt'], 'w');
     % fprintf('%s%d\r\n','IT=',IT);
     % if (IT > 1) %1001
     % else
@@ -170,7 +170,7 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
             fprintf('%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');
         end
 
-        fid209 = fopen([PARAM.temporary_file_directory '\@Determined_Gap.txt'], 'w'); % 209
+        fid209 = fopen([PARAM.temporary_file_directory '/@Determined_Gap.txt'], 'w'); % 209
         CKUP = KUP0 + KUP0 + 1;
         CKUP = CKUP / 2.0D0;
         %            fprintf(fid209,'%d %d\r\n' ,CKUP,W(KUP0));ushiki
@@ -342,11 +342,11 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
     end
 
     fprintf(IPRN, '%s\r\n', ' ');
-    fid101 = fopen([PARAM.temporary_file_directory '\Comparison_FieldSignal.txt'], 'w'); %101
-    fid102 = fopen([PARAM.temporary_file_directory '\Comparison_FluxSignal.txt'], 'w'); %102
-    fid201 = fopen([PARAM.temporary_file_directory '\Comparison_TotField.txt'], 'w'); %201
-    fid202 = fopen([PARAM.temporary_file_directory '\Comparison_TotFlux.txt'], 'w'); %202
-    fid103 = fopen([PARAM.temporary_file_directory '\Line45deg.txt'], 'w'); %103
+    fid101 = fopen([PARAM.temporary_file_directory '/Comparison_FieldSignal.txt'], 'w'); %101
+    fid102 = fopen([PARAM.temporary_file_directory '/Comparison_FluxSignal.txt'], 'w'); %102
+    fid201 = fopen([PARAM.temporary_file_directory '/Comparison_TotField.txt'], 'w'); %201
+    fid202 = fopen([PARAM.temporary_file_directory '/Comparison_TotFlux.txt'], 'w'); %202
+    fid103 = fopen([PARAM.temporary_file_directory '/Line45deg.txt'], 'w'); %103
     VAL = 1.0D03;
     fprintf(fid103, '%d %d\r\n', -VAL, -VAL);
     fprintf(fid103, '%d %d\r\n', +VAL, +VAL);
@@ -409,7 +409,7 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
     else
     end
 
-    fid84 = fopen([PARAM.temporary_file_directory '\SmallSVs.txt'], 'w');
+    fid84 = fopen([PARAM.temporary_file_directory '/SmallSVs.txt'], 'w');
 
     if (KUP < N)
 
@@ -420,7 +420,7 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
     else
 
         for I = 1:N
-            fprintf(fid84, '%d %d\r\n', I, 1.0D - 20);
+            fprintf(fid84, '%d %d\r\n', I, 1.0D0 - 20);
         end
 
     end

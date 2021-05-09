@@ -45,7 +45,7 @@ function EDDYP(FFOUT, PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WAL
     % ###############################################################
     %  真空容器に沿った渦電流分布の出力   (*** #4 ***)
     % ###############################################################
-    fid40 = fopen([PARAM.output_file_directory, '\EddyCurrentProfile.txt'], 'w');
+    fid40 = fopen([PARAM.output_file_directory, '/EddyCurrentProfile.txt'], 'w');
 
     if (NONC <= 0) %   GOTO 507
         DIS = 0.0;
@@ -90,8 +90,8 @@ function EDDYP(FFOUT, PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WAL
 
         fprintf('%s %d\r\n', 'Total reconstructed eddy current =', TOTR);
         %
-        fid42 = fopen([PARAM.input_file_directory '\jeddy.txt'], 'r');
-        fid43 = fopen([PARAM.output_file_directory, '\Reference_EddyCurrentProfile.txt'], 'w');
+        fid42 = fopen([PARAM.input_file_directory '/jeddy.txt'], 'r');
+        fid43 = fopen([PARAM.output_file_directory, '/Reference_EddyCurrentProfile.txt'], 'w');
         JMAX = 594;
         TOTI = 0.0;
         DISMAE = 0.0D0;
@@ -112,7 +112,7 @@ function EDDYP(FFOUT, PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WAL
         EDI(J) = EDI(J) * FACT;
         fprintf(fid43, '%d %d\r\n', horzcat(DISI(J)', EDI(J)'));
         %
-        fid41 = fopen([PARAM.output_file_directory, '\EddyCurrent_DiscontinuousProfile.txt'], 'w');
+        fid41 = fopen([PARAM.output_file_directory, '/EddyCurrent_DiscontinuousProfile.txt'], 'w');
         NSEG = 100;
         ASEG = NSEG;
         DEL = 2.0D0 / ASEG;

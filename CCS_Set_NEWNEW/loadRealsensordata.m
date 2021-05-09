@@ -1,10 +1,12 @@
 %% loadsensordata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
+function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARAM)
 
     sensordata_B0 = fileread([PARAM.input_file_directory '/Sensor_B.txt']);
     sensordata_B = strsplit(sensordata_B0, {'\n', '\t', '\r'});
     sensornum_B = (length(sensordata_B) - 1) / 5 - 1;
 
+    % 容器の外のセンサーを含めるなら1(=true)
+    flag = 1;
 
     chnum = 0;
 
@@ -15,16 +17,18 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
         BZ = str2double(sensordata_B{9 + (i - 1) * 5});
         BR = str2double(sensordata_B{10 + (i - 1) * 5});
 
-        chnum = chnum + 1;
-        SENSOR_TPRB.R(chnum) = R;
-        SENSOR_TPRB.Z(chnum) = Z;
-        SENSOR_TPRB.TET(chnum) = atan2(BZ, BR);
-        SENSOR_TPRB.TPRB(chnum) = sqrt(BR^2 + BZ^2);
-        SENSOR_TPRB.ITYPE(chnum) = 1;
-        RR(chnum) = R;
-        ZZ(chnum) = Z;
-        B(chnum) = sqrt(BR^2 + BZ^2);
-
+        if (flag || R<0.67)
+            chnum = chnum + 1;
+            SENSOR_TPRB.R(chnum) = R;
+            SENSOR_TPRB.Z(chnum) = Z;
+            SENSOR_TPRB.TET(chnum) = atan2(BZ, BR);
+            SENSOR_TPRB.TPRB(chnum) = sqrt(BR^2 + BZ^2);
+            SENSOR_TPRB.ITYPE(chnum) = 1;
+            RR(chnum) = R;
+            ZZ(chnum) = Z;
+            B(chnum) = sqrt(BR^2 + BZ^2);
+        
+        end
         % if ((R < 0.57 + 0.0015 && R > 0.27 - 0.0015) || (Z < 0.239 && R > 0.67) || (R < 0.689 && R > 0.629 - 0.0015))
         % else
         %     chnum = chnum + 1;
@@ -51,7 +55,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
     B = B(RR0index); ZZ = ZZ(RR0index);
     plot(ZZ, B);
     ZZ = ZZ'; B = B';
-    f = fit(ZZ, B, 'smoothingspline');
+    f = fit(ZZ, B, 'smoothingspline','SmoothingParam', 0.99999);
     hold on
     fnplt(f.p)
     x = fnzeros(fnder(f.p));
@@ -102,25 +106,6 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
     sensordata_Flux = strsplit(sensordata_Flux0, {'\n', '\t', '\r'});
     sensornum_Flux = (length(sensordata_Flux) - 1) / 5 - 1;
 
-    for i = 1:sensornum_B
-        RB(i) = str2double(sensordata_B{6 + (i - 1) * 5});
-        ZB(i) = str2double(sensordata_B{7 + (i - 1) * 5});
-    end
-
-    for i = 1:sensornum_Flux
-        RF(i) = str2double(sensordata_Flux{6 + (i - 1) * 5});
-        ZF(i) = str2double(sensordata_Flux{7 + (i - 1) * 5});
-    end
-
-    figure()    
-    scatter(RB, ZB, "filled");
-    hold on
-    scatter(RF, ZF, "filled");
-    hold off
-    legend("B", "Flux");
-    title("sensor pos");
-
-
     chnum = 0;
 
     for i = 1:sensornum_Flux
@@ -130,18 +115,29 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
         BZ = str2double(sensordata_Flux{9 + (i - 1) * 5});
         BR = str2double(sensordata_Flux{10 + (i - 1) * 5});
 
-        chnum = chnum + 1;
+        if (flag || R<0.67)
 
-        SENSOR_FLXLP.R(chnum) = R;
-        SENSOR_FLXLP.Z(chnum) = Z;
-        SENSOR_FLXLP.FLXLP(chnum) = PSI;
-        SENSOR_FLXLP.TET(chnum) = 0.0D0;
-        SENSOR_FLXLP.ITYPE(chnum) = 0;
+            chnum = chnum + 1;
+
+            SENSOR_FLXLP.R(chnum) = R;
+            SENSOR_FLXLP.Z(chnum) = Z;
+            SENSOR_FLXLP.FLXLP(chnum) = PSI;
+            SENSOR_FLXLP.TET(chnum) = 0.0D0;
+            SENSOR_FLXLP.ITYPE(chnum) = 0;
+        end
     end
 
     SENSOR_FLXLP.NUM = chnum;
     disp(['Number of FLXLP = ' num2str(SENSOR_FLXLP.NUM)]);
 
+    figure()
+    scatter(SENSOR_TPRB.R, SENSOR_TPRB.Z, "filled");
+    hold on
+    scatter(SENSOR_FLXLP.R, SENSOR_FLXLP.Z, "filled");
+    hold off
+    legend("B", "Flux");
+    title("sensor pos");
+% error('error description', A1)
 
 end
 

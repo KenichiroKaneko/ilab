@@ -4,6 +4,7 @@ function CCS_UTST_matlab(inputfile)
     %% *****************************************************************
 
     format long e;
+    close all;
 
     %MXCCS = 20;          % MAX! / NUMBER OF ELEMENTS ON THE CCS
     %MXINT = 10000;       % MAX! / NUMBER OF INTERNAL POINTS
@@ -79,7 +80,7 @@ function CCS_UTST_matlab(inputfile)
 
     % 2021/05/08
     save('vars_afterFF', 'AA', 'FF', 'PSIFLX', 'FC', 'BZ', 'BR');
-    error('saved vars')
+    % error('saved vars')
     % 2021/05/08
 
     %% INOMOTO start
@@ -155,7 +156,7 @@ function CCS_UTST_matlab(inputfile)
         plot(VVNODE(:, 1), VVNODE(:, 2), 'ko', 'MarkerFaceColor', 'k', 'MarkerSize', 4)
         % plot(COIL(:,1),COIL(:,2),'s','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',10)
         % plot(RES(1:3),ZES(1:3),'ko',RES(1:3),ZES(1:3),'-k')
-        title('CVsegment')
+        title('CVsegment');
         xlabel('r [m]');
         ylabel('z [m]');
         axis equal
@@ -202,8 +203,11 @@ function CCS_UTST_matlab(inputfile)
     contour(CCR, CCZ, psi, '-k', 'LevelStep', 0.0003);
     hold on
     contour(REF.R, REF.Z, REF.Flux, '--m', 'LevelStep', 0.0003); % ????
+    % plot(CCSDAT.RGI, CCSDAT.ZGI);
+    hold off
     xlabel({'r (m)'});
     ylabel({'z (m)'});
+    title("M-CCS")
     axis equal
 
     %% Data positions for 2D plot

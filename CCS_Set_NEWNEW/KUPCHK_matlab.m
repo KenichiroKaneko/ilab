@@ -16,15 +16,15 @@ function [C, X, GET] = KUPCHK_matlab(PARAM, A, B, U, V, W, NAPB, NFLX, NCCN)
     % *****************************************************************
     %
     %
-    fid200 = fopen([PARAM.temporary_file_directory '\@KUPCHK00.txt'], 'w'); %200
-    fid201 = fopen([PARAM.temporary_file_directory '\@AIC0.txt'], 'w'); %201
-    fid202 = fopen([PARAM.temporary_file_directory '\@AIC1.txt'], 'w'); %202
-    fid203 = fopen([PARAM.temporary_file_directory '\@GETAvar.txt'], 'w'); %203
+    fid200 = fopen([PARAM.temporary_file_directory '/@KUPCHK00.txt'], 'w'); %200
+    fid201 = fopen([PARAM.temporary_file_directory '/@AIC0.txt'], 'w'); %201
+    fid202 = fopen([PARAM.temporary_file_directory '/@AIC1.txt'], 'w'); %202
+    fid203 = fopen([PARAM.temporary_file_directory '/@GETAvar.txt'], 'w'); %203
     %
-    fid204 = fopen([PARAM.temporary_file_directory '\@NB_BNSN.txt'], 'w'); %204
-    fid205 = fopen([PARAM.temporary_file_directory '\@NP_BNSN.txt'], 'w'); %205
-    fid206 = fopen([PARAM.temporary_file_directory '\@NC_BNSN.txt'], 'w'); %206
-    fid207 = fopen([PARAM.temporary_file_directory '\@NPARADD.txt'], 'w'); %207
+    fid204 = fopen([PARAM.temporary_file_directory '/@NB_BNSN.txt'], 'w'); %204
+    fid205 = fopen([PARAM.temporary_file_directory '/@NP_BNSN.txt'], 'w'); %205
+    fid206 = fopen([PARAM.temporary_file_directory '/@NC_BNSN.txt'], 'w'); %206
+    fid207 = fopen([PARAM.temporary_file_directory '/@NPARADD.txt'], 'w'); %207
     %
     AI0MIN = 1.0D10;
     AI1MIN = 1.0D10;
@@ -84,7 +84,7 @@ function [C, X, GET] = KUPCHK_matlab(PARAM, A, B, U, V, W, NAPB, NFLX, NCCN)
             fprintf(fid200, '%d %d %d %d\r\n', KUP, IT, GETA, DELGE);
             ITEND = IT;
 
-            if (EPS < 1.0D - 5)
+            if (EPS < 1.0D-5)
                 break
             end
 
@@ -132,7 +132,7 @@ function [C, X, GET] = KUPCHK_matlab(PARAM, A, B, U, V, W, NAPB, NFLX, NCCN)
         %
     end
 
-    fprintf('%s %d\r\n', 'Min.AIC1 occurs at KUP=', K0UP); あｃ
+    fprintf('%s %d\r\n', 'Min.AIC1 occurs at KUP=', K0UP);
     fprintf('%s %d\r\n', 'Min.AIC1 occurs at KUP=', K1UP);
     fprintf('%s\r\n', 'AICを過信せず、特異値の並びに');
     fprintf('%s\r\n', '注目して打ち切り箇所を決定せよ');

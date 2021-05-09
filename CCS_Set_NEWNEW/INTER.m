@@ -59,9 +59,9 @@ function [PSI, DELGE, RCCS, ZCCS, XPSI] = INTER(PARAM, IGOAL, GETA, CR, CZ, FFOU
     XBBZ = zeros(1, 2000);
     DELGE = 0; % ushiki
     %
-    fid99 = fopen([PARAM.temporary_file_directory '\MINDIST.txt'], 'w'); %99
+    fid99 = fopen([PARAM.temporary_file_directory '/MINDIST.txt'], 'w'); %99
     frewind(fid99);
-    fid100 = fopen([PARAM.temporary_file_directory '\SEKIBUNCHECK.PRI'], 'w'); %100
+    fid100 = fopen([PARAM.temporary_file_directory '/SEKIBUNCHECK.PRI'], 'w'); %100
     frewind(fid100);
     fprintf(fid99, '%s\n', '/');
     fprintf(fid100, '%s\n', '/');
@@ -114,8 +114,8 @@ function [PSI, DELGE, RCCS, ZCCS, XPSI] = INTER(PARAM, IGOAL, GETA, CR, CZ, FFOU
         %
         %	         fprintf(WAHAHA,'%s\r\n','Reproducibility of field sensor signals');
         %
-        fid104 = fopen('output\Comparison_TotalFieldSignal.txt', 'w'); %104
-        fid106 = fopen('output\Discrepant_Field_Points.txt', 'w'); %106
+        fid104 = fopen('output/Comparison_TotalFieldSignal.txt', 'w'); %104
+        fid106 = fopen('output/Discrepant_Field_Points.txt', 'w'); %106
         II = 0;
 
         for I = 1:NAPB
@@ -168,9 +168,9 @@ function [PSI, DELGE, RCCS, ZCCS, XPSI] = INTER(PARAM, IGOAL, GETA, CR, CZ, FFOU
         %
         CNT0 = KNT;
         DELGE = DELGE / CNT0;
-        fid107 = fopen('output\Discrepant_Flux_Points.txt', 'w'); %107
+        fid107 = fopen('output/Discrepant_Flux_Points.txt', 'w'); %107
         %           	 fprintf(WAHAHA,'%s\r\n','Reproducibility of flux loop signals');
-        fid105 = fopen('output\Comparison_TotalFluxSignal.txt', 'w'); %105
+        fid105 = fopen('output/Comparison_TotalFluxSignal.txt', 'w'); %105
         II = 0;
 
         for I = 1:NFLX

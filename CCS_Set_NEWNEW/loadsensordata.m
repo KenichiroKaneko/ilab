@@ -76,25 +76,6 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP] = loadsensordata(PARAM)
     SENSOR_FLXLP.NUM = chnum * 2;
     disp(['Number of FLXLP = ' num2str(SENSOR_FLXLP.NUM)]);
 
-    %     %% Write files for CCS
-    %     fp = fopen([PARAM.temporary_file_directory '\SENPOS0.txt'],'w'); % 110
-    %     for i=1:SENSOR_FLXLP.NUM
-    %         fprintf(fp,'%d %d\n',SENSOR_FLXLP.R(i),SENSOR_FLXLP.Z(i));
-    %     end
-    %     fclose(fp);
-    %
-    %     fp = fopen([PARAM.temporary_file_directory '\SENPOS1.txt'],'w'); % 111
-    %     for i=1:SENSOR_TPRB.NUM
-    %         fprintf(fp,'%d %d\n',SENSOR_TPRB.R(i),SENSOR_TPRB.Z(i));
-    %     end
-    %     fclose(fp);
-    %
-    %     fp = fopen([PARAM.temporary_file_directory '\SENPOS2.txt'],'w'); % 112
-    %     for i=1:SENSOR_NPRB.NUM
-    %         fprintf(fp,'%d %d\n',SENSOR_NPRB.R(i),SENSOR_NPRB.Z(i));
-    %     end
-    %     fclose(fp);
-    %
     if PARAM.IUTST == 5
         SENSOR_FLXLP.FLXLP = SENSOR_FLXLP.FLXLP - 0.0042459;
     end
@@ -103,43 +84,6 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP] = loadsensordata(PARAM)
     %     %%  *************************************************************************
     %     %%     Generation of CCS input data
     %     %%  *************************************************************************
-    %
-    %     fprintf('Generation of CCS input data ** START ***\n');
-    %     fp = fopen([PARAM.temporary_file_directory '\CCSinput_UTST(temp).txt'],'w');
-    %
-    %     fprintf(fp,'%s\n','*');
-    %     fprintf(fp,'%s\n','*** CCS Test input for UTST generated in PreUTST ***');
-    %     fprintf(fp,'%s\n','** NTPB/NNPB/NFLX=(No. of T-/N-probes/Flux-Loops) **');
-    %     fprintf(fp,'   %d     %d     %d\n',SENSOR_TPRB.NUM,SENSOR_NPRB.NUM,SENSOR_FLXLP.NUM);
-    %     fprintf(fp,'%s\n','**  GETA (SSURF)');
-    %     fprintf(fp,'  %s\n','0.0000E+00');
-    %     fprintf(fp,'%s\n','* T-Probe');
-    %     for i = 1:SENSOR_TPRB.NUM
-    %         fprintf(fp,' %d\n',SENSOR_TPRB.TPRB(i));
-    %     end
-    %     fprintf(fp,'%s\n','* N-Probe');
-    %     fprintf(fp,'%s\n','* Flux-Loop');
-    %     for i = 1:SENSOR_FLXLP.NUM
-    %         fprintf(fp,' %d\n',SENSOR_FLXLP.FLXLP(i));
-    %     end
-    %     fprintf(fp,'%s\n','****** MINR * MAXR * MINZ * MAXZ ****');
-    %     fprintf(fp,'%s\n','10   90  -100  100');
-    %     fprintf(fp,'%s\n','*********');
-    %     fprintf(fp,'%s\n','* ---コイル電流データの並び---単位[kA]');
-    %     fprintf(fp,'%s\n','* EF');
-    %     fprintf(fp,'%s\n','* PF#1');
-    %     fprintf(fp,'%s\n','* PF#2');
-    %     fprintf(fp,'%s\n','* PF#3');
-    %     fprintf(fp,'%s\n','* PF#4');
-    %
-    %     fprintf(fp,'   %s\n','-0.28');
-    %     fprintf(fp,'   %s\n','0.0');
-    %     fprintf(fp,'   %s\n','0.0');
-    %     fprintf(fp,'   %s\n','0.0');
-    %     fprintf(fp,'   %s\n','0.0');
-    %
-    %     fclose(fp);
-    %     fprintf('Generation of CCS input data ** END ***\n');
 end
 
 %% loadsensordata kokomade!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
