@@ -44,6 +44,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
     disp(['Number of TPRB =  ' num2str(SENSOR_TPRB.NUM)]);
 
     % インボード側の磁束のプロットと、CCS面の決定2021年4月18日
+    % スプライン補完でCCS面決定2021/05/06
     figure()
     
     RR0index = RR < 0.15;
