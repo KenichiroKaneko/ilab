@@ -6,7 +6,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARA
     sensornum_B = (length(sensordata_B) - 1) / 5 - 1;
 
     % 容器の外のセンサーを含めるなら1(=true)
-    flag = 1;
+    flag = 0;
 
     chnum = 0;
 

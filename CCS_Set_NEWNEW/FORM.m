@@ -17,21 +17,36 @@ function [FC, BR, BZ, PSIFLX, PSIC, AA, FF] = FORM(PARAM, AA, FF, ExtCOIL, SENSO
     %NNPB=SENSOR_NPRB.NUM;
     NAPB = SENSOR_TPRB.NUM + SENSOR_NPRB.NUM;
     NFLX = SENSOR_FLXLP.NUM;
+
+    % RCCN,ZCCN : CCSノード点の位置
+    % NCCN : CCSノード点の数
+    % RCCS,ZCCS : CCSメッシュ点の位置
+    % NCCS : CCSメッシュ点の数
     RCCN = CCSDAT.RCCN;
     ZCCN = CCSDAT.ZCCN;
     NCCN = CCSDAT.NCCN;
     NCCS = CCSDAT.NCCS;
     RCCS = CCSDAT.RCCS;
     ZCCS = CCSDAT.ZCCS;
+
+    % REV,ZEV : 容器の壁の形
     REV = WALL.REV;
     ZEV = WALL.ZEV;
+
+    % 真空容器上の渦電流節点の設定
+    % KNE=真空容器の分割境界要素数,  KNM=真空容器上のメッシュ点数,  KNN=真空容器上の節点数
     KNE = WALL.KNE;
     KNN = WALL.KNN;
+
+    % 渦電流接点の位置？　中身空っぽです
     RES = WALL.RES;
     ZES = WALL.ZES;
+    
+    % 安定化板上の渦電流節点の設定
+    % KSE=安定化板の分割境界要素数,  KSN=安定化板上の節点数
     KSE = WALL.KSE;
     KSN = WALL.KSN;
-    %Nedp=150;
+    
     NONC = PARAM.NONC;
     %MXCCS=20;
     RMYU0 = 4 * pi * 1e-7;
@@ -71,7 +86,6 @@ function [FC, BR, BZ, PSIFLX, PSIC, AA, FF] = FORM(PARAM, AA, FF, ExtCOIL, SENSO
             STARB(0, RS(L), ZS(L), RC(1:KCMX), ZC(1:KCMX), RNOR, ZNOR); % OK
 
         PSIFLX(L) = PSIFLX(L) + sum(PPSIFLX(1:KCMX) .* ECI(1:KCMX) * RMYU0);
-        %        fprintf(WAHAHA,'%d %d\r\n',L,PSIFLX(L));
         FF(L + NAPB) = FF(L + NAPB) - PSIFLX(L); %! 下駄処理を含む
         FC(L + NAPB) = PSIFLX(L); %! コイル電流寄与
     end

@@ -5,6 +5,7 @@
 function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
         LTikh, GAM0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP)
 
+
     [M, N] = size(A);
     NAPB = SENSOR_TPRB.NUM + SENSOR_NPRB.NUM;
     NFLX = SENSOR_FLXLP.NUM;
@@ -67,7 +68,12 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
     %    !  Decompose matrix A
     %    [W,V,U] = SVDCMP(U,M,N,MP,NP); % OK
     [W, V, U] = SVDCMP(U); % OK
-    %
+
+    % [uu, ss, vv] = svd(U);
+    % save("tsuv", "W","V","U","uu","ss","vv");
+    % error('error description')
+    
+
     LRSVCHK = 0;
 
     if (LRSVCHK > 0)

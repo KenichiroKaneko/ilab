@@ -100,7 +100,7 @@ function CCS_UTST_matlab(inputfile)
     fprintf('NCCN/KNN/KSN = %d %d %d\n', sum(CCSDAT.NCCN), sum(WALL.KNN), sum(WALL.KSN));
 
     [C, W, U, V, FFOUT, XBFR, XMT] = ...
-        SVD_MT_matlab(PARAM, AA, FF, FC, 0, 0.0D0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP);
+        SVD_MT_matlab2(PARAM, AA, FF, FC, 0, 0.0D0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP);
 
     half_norm = sqrt((sum((FFOUT).^2)));
     fprintf('%s%d\r\n', 'norm of the solution vector = ', half_norm);
