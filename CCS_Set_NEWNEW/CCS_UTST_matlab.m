@@ -24,10 +24,6 @@ function CCS_UTST_matlab(inputfile)
     end
 
     WALL = loadwalldata(PARAM);
-    % 2021/05/08
-    % save('WALL',  'WALL');
-    % error('Wall saved');
-    % 2021/05/08
 
     ExtCOIL = loadcoildata(PARAM);
 
@@ -38,17 +34,14 @@ function CCS_UTST_matlab(inputfile)
     CCSDAT = makeCCSdata(PARAM, GHR, GHZ);
 
     FF = FFDAT;
-    % 2021/05/07
-    % save("FF", "FF");
-    % error('FFsaved');
-    % 2021/05/07
     FF(end + 1:end + sum(CCSDAT.NCCN)) = 0.0;
+
     if PARAM.IPCONST
         FF(end + 1) = -66410 * 4.0 * pi * 1.0e-7;
     end
 
     % 2021/05/08
-    save('vars', 'WALL', 'FF', 'CCSDAT', 'PARAM', 'CCS', 'SENSOR_NPRB', 'SENSOR_TPRB', 'SENSOR_FLXLP');
+    save("vars_afterLoadData");
     % error('vars saved');
     % 2021/05/08
     %% *************************************************************
@@ -79,7 +72,7 @@ function CCS_UTST_matlab(inputfile)
         FORM(PARAM, AA, FF, ExtCOIL, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL);
 
     % 2021/05/08
-    save('vars_afterFF', 'AA', 'FF', 'PSIFLX', 'FC', 'BZ', 'BR');
+    save('vars_afterForm');
     % error('saved vars')
     % 2021/05/08
 
@@ -102,9 +95,11 @@ function CCS_UTST_matlab(inputfile)
     [C, W, U, V, FFOUT, XBFR, XMT] = ...
         SVD_MT_matlab2(PARAM, AA, FF, FC, 0, 0.0D0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP);
 
+    % save("vars_afterSVD");
+    % error('error description')
+
     half_norm = sqrt((sum((FFOUT).^2)));
     fprintf('%s%d\r\n', 'norm of the solution vector = ', half_norm);
-
 
     EDDYP(FFOUT, PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL);
 
@@ -185,6 +180,7 @@ function CCS_UTST_matlab(inputfile)
     for I = MINR:ICRE:MAXR
         NCOUNT = 0;
         CCR = I / 100.0;
+
         for J = MINZ:JCRE:MAXZ
             NINT = NINT + 1;
             NCOUNT = NCOUNT + 1;
@@ -193,6 +189,7 @@ function CCS_UTST_matlab(inputfile)
         end
 
     end
+
     [PSI, DELGE, RCCS, ZCCS, XPSI] = INTER(PARAM, 1, GETA, CR, CZ, FFOUT, ExtCOIL, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, NINT);
 
     CCR = unique(CR);

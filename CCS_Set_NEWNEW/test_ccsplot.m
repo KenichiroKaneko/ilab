@@ -12,8 +12,8 @@ for j = 1:6
     ZCCS(j) = Z + capper * RR * sin(THETA);
 end
 
-scatter(RCCS, ZCCS, 'o')
-hold on
+% scatter(RCCS, ZCCS, 'o')
+% hold on
 
 I = 1:3;
 NCCS = 6;
@@ -28,12 +28,13 @@ ZCCN(3 * I - 1) = ZCCS(2 * I);
 RCCN(3 * I) = (5 .* RCCS(2 * I + 1) + 5 .* RCCS(2 * I) - RCCS(2 * I - 1)) / 9;
 ZCCN(3 * I) = (5 .* ZCCS(2 * I + 1) + 5 .* ZCCS(2 * I) - ZCCS(2 * I - 1)) / 9;
 
-
-% polarscatter(cos(THETA + 0 * sin(THETA)), j)
-scatter(RCCN, ZCCN, '*')
-% xlim([0, 0.9]);
-% ylim([-1, 1]);
-hold on
+RCCN = [RCCN RCCN];
+ZCCN = [-ZCCN ZCCN]
+scatter(RCCN, ZCCN, 'o')
+xlim([0, 0.9]);
+ylim([-1, 1]);
+% hold on
+% scatter(RCCN, -ZCCN, 'o')
 
 %  Draw a fine curve to express the shape of CCS
 MAXG = 200;
@@ -58,4 +59,4 @@ for I = 1:3
 
 end
 
-scatter(RGI, ZGI);
+% scatter(RGI, ZGI);

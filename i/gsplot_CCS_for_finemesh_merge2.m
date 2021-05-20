@@ -8,9 +8,11 @@ function gsplot_CCS_for_finemesh_merge2(dirname)
     saveflag = 1;
     % 保存するdir
     save_dir = "GSPLOT_OUTPUT/" + dirname + "2021";
+
     if not(exist(save_dir, 'dir'))
         mkdir(save_dir);
     end
+
     FONT = 'Times';
     fs = 8;
 
@@ -20,9 +22,9 @@ function gsplot_CCS_for_finemesh_merge2(dirname)
     env3c = vars3c.param;
     flux3c = vars3c.psi0;
     psi_v_3c = flux3c';
-    
-    % 部分的な解のデータ
-    data_dir = "OUTPUT/"+ dirname + "/";
+
+    % 容器の大きさに拡張したい部分的な解のデータ
+    data_dir = "OUTPUT/" + dirname + "/";
     vars = load(data_dir + "vars");
     env = vars.param;
     flux = vars.psi;
@@ -34,67 +36,79 @@ function gsplot_CCS_for_finemesh_merge2(dirname)
     z = linspace(env3c.zmin, env3c.zmax, env3c.Nz);
     r = linspace(env3c.rmin, env3c.rmax, env3c.Nr);
 
-    % 片方に数値解をつくった磁場のグラフ2020/12/21
-    A = size(psi0);
-    psi000 = zeros(env3c.Nr, env3c.Nz - A(1, 2));
-    psi00 = [psi0, psi000];
-    figure
-    ah = subplot(1, 5, 1);
-    v = linspace(-20, 20, 21);
-    psiorig0 = [psiorig0, psi000];
-    contour(r, z, flipud(psiorig0' * 1000), v, 'r')
-    ah = subplot(1, 5, 2);
-    contour(r, z, flipud(psi00' * 1000), v, 'r')
-    % 片方に数値解をつくった磁場のグラフここまで2020/12/21
+    if env.Nz == 2033
+        % 拡張しなくて良い
 
-    psi = psi_v_3c * 0;
-    psi(1:env.Nr, 1:env.Nz) = psi0;
-    psi(1:env.Nr, end - env.Nz + 1:end)=psi(1:env.Nr, end - env.Nz + 1:end) + psi0(:, end:-1:1);
-    % 反対側にコピーした磁場のグラフ2020/12/21
-    ah = subplot(1, 5, 3);
-    contour(r, z, psi' * 1000, v, 'r')
-    % 反対側にコピーした磁場のグラフここまで2020/12/21
-    psi = psi + psi_v_3c;
+        psi = flux';
+        figure()
+        v = linspace(-20, 20, 21);
+        contour(r, z, flipud(psiorig0' * 1000), v, 'r')
 
-    flux = vars.mu_jt;
-    jt = psi_v_3c * 0;
-    jt(1:env.Nr, 1:env.Nz) = jt(1:env.Nr, 1:env.Nz) + flux(1:env.Nz, 1:env.Nr)' / (4 * pi * 1e-7);
-    jt(1:env.Nr, end:-1:end - env.Nz + 1) = jt(1:env.Nr, end:-1:end - env.Nz + 1) + ...
-                             flux(1:env.Nz, 1:env.Nr)' / (4 * pi * 1e-7);
+    else
+        % 拡張する
 
-    %% Calc virtual eddy current on center
-    delz = z(2) - z(1);
-    delr = r(2) - r(1);
+        % 片方に数値解をつくった磁場のグラフ2020/12/21
+        A = size(psi0);
+        psi000 = zeros(env3c.Nr, env3c.Nz - A(1, 2));
+        psi00 = [psi0, psi000];
+        figure
+        ah = subplot(1, 5, 1);
+        v = linspace(-20, 20, 21);
+        psiorig0 = [psiorig0, psi000];
+        contour(r, z, flipud(psiorig0' * 1000), v, 'r')
+        ah = subplot(1, 5, 2);
+        contour(r, z, flipud(psi00' * 1000), v, 'r')
+        % 片方に数値解をつくった磁場のグラフここまで2020/12/21
 
+        psi = psi_v_3c * 0;
+        psi(1:env.Nr, 1:env.Nz) = psi0;
+        psi(1:env.Nr, end - env.Nz + 1:end) = psi(1:env.Nr, end - env.Nz + 1:end) + psi0(:, end:-1:1);
+        % 反対側にコピーした磁場のグラフ2020/12/21
+        ah = subplot(1, 5, 3);
+        contour(r, z, psi' * 1000, v, 'r')
+        % 反対側にコピーした磁場のグラフここまで2020/12/21
+        psi = psi + psi_v_3c;
 
-    jt_center = -squeeze(psi0(2:env.Nr - 1, env.Nz - 1)) / delz ./ r(2:env.Nr - 1)' / 2 / pi / 4 / pi / 1e-7 * delr;
+        flux = vars.mu_jt;
+        jt = psi_v_3c * 0;
+        jt(1:env.Nr, 1:env.Nz) = jt(1:env.Nr, 1:env.Nz) + flux(1:env.Nz, 1:env.Nr)' / (4 * pi * 1e-7);
+        jt(1:env.Nr, end:-1:end - env.Nz + 1) = jt(1:env.Nr, end:-1:end - env.Nz + 1) + ...
+            flux(1:env.Nz, 1:env.Nr)' / (4 * pi * 1e-7);
 
-    [rr zz] = meshgrid(r, z(1:ceil(length(z) / 2)));
+        %% Calc virtual eddy current on center
+        delz = z(2) - z(1);
+        delr = r(2) - r(1);
 
-    psi_virtualj = rr * 0;
+        jt_center = -squeeze(psi0(2:env.Nr - 1, env.Nz - 1)) / delz ./ r(2:env.Nr - 1)' / 2 / pi / 4 / pi / 1e-7 * delr;
 
-    for k = 1:length(jt_center)
-        kk = 4 * rr * r(k + 1) ./ ((rr + r(k + 1) + 1e-6).^2 + (zz - z(env.Nz - 1)).^2);
-        [K, E] = ellipke(kk);
-        %    K(~isfinite(K))=0;
-        %    E(~isfinite(E))=0;
-        psi_virtualj = psi_virtualj + 2 * pi * 4 * pi * 1e-7 * jt_center(k) ./ (pi * sqrt(kk)) .* sqrt(rr * r(k + 1)) .* ((1 - kk / 2) .* K - E);
-        kk = 4 * rr * r(k + 1) ./ ((rr + r(k + 1) + 1e-6).^2 + (zz + z(env.Nz - 1)).^2);
-        [K, E] = ellipke(kk);
-        %    K(~isfinite(K))=0;
-        %    E(~isfinite(E))=0;
-        psi_virtualj = psi_virtualj + 2 * pi * 4 * pi * 1e-7 * jt_center(k) ./ (pi * sqrt(kk)) .* sqrt(rr * r(k + 1)) .* ((1 - kk / 2) .* K - E);
+        [rr zz] = meshgrid(r, z(1:ceil(length(z) / 2)));
+
+        psi_virtualj = rr * 0;
+
+        for k = 1:length(jt_center)
+            kk = 4 * rr * r(k + 1) ./ ((rr + r(k + 1) + 1e-6).^2 + (zz - z(env.Nz - 1)).^2);
+            [K, E] = ellipke(kk);
+            %    K(~isfinite(K))=0;
+            %    E(~isfinite(E))=0;
+            psi_virtualj = psi_virtualj + 2 * pi * 4 * pi * 1e-7 * jt_center(k) ./ (pi * sqrt(kk)) .* sqrt(rr * r(k + 1)) .* ((1 - kk / 2) .* K - E);
+            kk = 4 * rr * r(k + 1) ./ ((rr + r(k + 1) + 1e-6).^2 + (zz + z(env.Nz - 1)).^2);
+            [K, E] = ellipke(kk);
+            %    K(~isfinite(K))=0;
+            %    E(~isfinite(E))=0;
+            psi_virtualj = psi_virtualj + 2 * pi * 4 * pi * 1e-7 * jt_center(k) ./ (pi * sqrt(kk)) .* sqrt(rr * r(k + 1)) .* ((1 - kk / 2) .* K - E);
+        end
+
+        psi222 = psi_v_3c * 0;
+        psi222(1:env3c.Nr, 1:(env3c.Nz + 1) / 2) = psi_virtualj(1:(env3c.Nz + 1) / 2, 1:env3c.Nr)';
+        psi222(1:env3c.Nr, end:-1:end - (env3c.Nz + 1) / 2 + 1 + 1) = psi_virtualj(1:(env3c.Nz + 1) / 2 - 1, 1:env3c.Nr)';
+        % 平衡解2020/12/21
+        ah = subplot(1, 5, 4);
+        contour(r, z, psi' * 1000, v, 'r')
+        psi = psi - psi222;
+        ah = subplot(1, 5, 5);
+        contour(r, z, psi' * 1000, v, 'r')
+
     end
-
-    psi222 = psi_v_3c * 0;
-    psi222(1:env3c.Nr, 1:(env3c.Nz + 1) / 2) = psi_virtualj(1:(env3c.Nz + 1) / 2, 1:env3c.Nr)';
-    psi222(1:env3c.Nr, end:-1:end - (env3c.Nz + 1) / 2 + 1 + 1) = psi_virtualj(1:(env3c.Nz + 1) / 2 - 1, 1:env3c.Nr)';
-    % 平衡解2020/12/21
-    ah = subplot(1, 5, 4);
-    contour(r, z, psi' * 1000, v, 'r')
-    psi = psi - psi222;
-    ah = subplot(1, 5, 5);
-    contour(r, z, psi' * 1000, v, 'r')
 
     %% Calc Bz and Br from psi
     zdiff = z(2:end - 1);
@@ -113,19 +127,18 @@ function gsplot_CCS_for_finemesh_merge2(dirname)
     %% CCSdata
     datanum = 0;
 
-    % 602*2033 
+    % 602*2033
     % 1017 ... Nzの中央
     % 1016 ...  Nzの中央-1
     % 2028 ... Nzから5点内側
     % 6    ... Nzから５点内側
 
     % 2021/04/28 UTST装置のセンサー配置
-    save("psiGSplotTest","psi");
+    save("psiGSplotTest", "psi");
 
     makeRealSenposCCSdata(psi, Bz, Br);
     error('test');
     % ここまで
-
 
     for i = 1:length(z(1017:2028))
         r_CCS(i) = r(6);
@@ -177,7 +190,6 @@ function gsplot_CCS_for_finemesh_merge2(dirname)
 
     datanum = length(r_CCS);
 
-
     if (saveflag)
         fp = fopen(save_dir + '/CCS.txt', 'w');
         fprintf(fp, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
@@ -211,7 +223,6 @@ function gsplot_CCS_for_finemesh_merge2(dirname)
         fclose(fp);
     end
 
-    
     fh = figure;
     set(fh, 'position', [50 50 600 600], 'Name', ['psi contour'], 'NumberTitle', 'off');
 
@@ -353,4 +364,5 @@ function gsplot_CCS_for_finemesh_merge2(dirname)
     if (saveflag)
         save([save_dir + '/merged.mat'], 'env', 'delr', 'delz', 'psi', 'psi_v_3c', 'jt', 'r', 'rr', 'z', 'zz');
     end
+
 end

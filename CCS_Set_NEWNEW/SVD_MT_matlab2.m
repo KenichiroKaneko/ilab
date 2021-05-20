@@ -1,4 +1,4 @@
-function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
+function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, A, B, FC, ...
         LTikh, GAM0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP)
 
     [M, N] = size(A);
@@ -39,11 +39,12 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
     fprintf(IPRN, 'M/N=%d %d\r\n', M, N);
 
     U = A;
+    % U = [A zeros(M, M - N)];これ違う
 
+    % 特異値分解 UWV [U S V] = svd(A) に対応するのは W:S特異値1xM, V:V, U:U
     [W, V, U] = SVDCMP(U); % OK
-
-    % [uu, ss, vv] = svd(U);
-    % save("tsuv", "W","V","U","uu","ss","vv");
+    [uu, ss, vv] = svd(A);
+    save("vars_afterSVDCMP");
     % error('error description')
 
     LRSVCHK = 0;
@@ -51,7 +52,6 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
     fprintf(IPRN, '%s\r\n', 'Left SV Vector の check をしません');
     fprintf('%s\r\n', 'Left SV Vector の check をしません');
 
-    %
     LRSVCHK = 1;
 
     fprintf(IPRN, '%s\r\n', 'Right SV Vector の check をします');
@@ -63,6 +63,7 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
     end
 
     % ###############################################################################
+    % ↓特異値をソート、最大値で割って規格化したものがSVS
     [SVS] = SVSORT_matlab(PARAM, W); % OK
     figure('Name', 'Singular Value', 'NumberTitle', 'off')
     semilogy(1:numel(SVS), SVS(1:numel(SVS)), 'ko', 'MarkerEdgeColor', 'k', ...
@@ -71,20 +72,23 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
     ylabel({'Normalized Singular Value'});
     set(gca, 'FontSize', 14);
 
-    % save('test_SVs', 'SVS');
-    % error('error description svs');
-
+    % Xが求める未知数のベクトル1xN (Ap = q の p)
     [C, X, GET] = KUPCHK_matlab(PARAM, A, B, U, V, W, NAPB, NFLX, sum(NCCN)); % OK ushiki
 
-    ITRNC = PARAM.ITRNC;
+    % save('vars_KUPCHK');
+    % error('error description kupchk');
 
-    IDCN = PARAM.IDCN;
+    ITRNC = PARAM.ITRNC;
+    IDCN = PARAM.IDCN; % 1
 
     % KUP0 = PARAM.KUP0;
     % 2021/05/10
-    KUP0 = curvature(SVS);
+    % KUP0 = curvature(SVS);
     % scatter(KUP0, log(SVS(KUP0)), 'ro')
     % hold off;
+
+    % L-curve法 2021/05/17
+    KUP0 = LCURVE(A, ss, vv, uu, X, FC);
 
     fprintf(IPRN, '%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');
     fprintf('%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');
@@ -94,7 +98,6 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
     CKUP = CKUP / 2.0D0;
     fprintf(fid209, '%d %d\r\n', CKUP, W(N));
     fprintf('%s\r\n', 'OK?');
-
 
     SMAX = -1.0E20;
     SMIN = +1.0E20;
@@ -120,22 +123,19 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
     SMAX00 = SMAX;
     fprintf(IPRN, 'Condition Number = %d\r\n', CONDNO);
     fprintf('Condition Number = %d\r\n', CONDNO);
-    
 
+    if (LTikh == 0) % true
 
-    if (LTikh == 0)
-
-        if (IDCN == 0)
+        if (IDCN == 0) % false
             COND = COND0;
         else
-            COND = WMAX / W(KUP0);
+            COND = WMAX / W(KUP0); % これが実行される
         end
 
     else
         COND = 1.0d30;
     end
 
-    
     WMIN = WMAX / COND;
     %        !  Zero the "small" singular values
     % 打切りしている↓
@@ -197,6 +197,9 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
     %***************************
     %
     [X] = SVBKSB(U, W, V, C); % OK
+
+    % save('vars_afterSVBKSB')
+    % error('error description svbksb')
 
     fprintf(IPRN, '%s\r\n', '    Solution vector is:');
 
@@ -284,7 +287,9 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab(PARAM, A, B, FC, ...
                 % MTSVD : Modified Trancated SVD
                 [XMT, X] = MTSVD(V, X, NP, N, KUP, sum(NCCN), KNN, KSN);
             end
+
         end
+
     end
 
     fid84 = fopen([PARAM.temporary_file_directory '/SmallSVs.txt'], 'w');

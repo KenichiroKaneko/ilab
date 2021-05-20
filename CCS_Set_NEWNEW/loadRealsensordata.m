@@ -17,18 +17,19 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARA
         BZ = str2double(sensordata_B{9 + (i - 1) * 5});
         BR = str2double(sensordata_B{10 + (i - 1) * 5});
 
-        if (flag || R<0.67)
+        if (flag || R < 0.67)
             chnum = chnum + 1;
             SENSOR_TPRB.R(chnum) = R;
             SENSOR_TPRB.Z(chnum) = Z;
             SENSOR_TPRB.TET(chnum) = atan2(BZ, BR);
             SENSOR_TPRB.TPRB(chnum) = sqrt(BR^2 + BZ^2);
-            SENSOR_TPRB.ITYPE(chnum) = 1;
+            SENSOR_TPRB.ITYPE(chnum) = 1; % 使っていない
             RR(chnum) = R;
             ZZ(chnum) = Z;
             B(chnum) = sqrt(BR^2 + BZ^2);
-        
+
         end
+
         % if ((R < 0.57 + 0.0015 && R > 0.27 - 0.0015) || (Z < 0.239 && R > 0.67) || (R < 0.689 && R > 0.629 - 0.0015))
         % else
         %     chnum = chnum + 1;
@@ -50,12 +51,12 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARA
     % インボード側の磁束のプロットと、CCS面の決定2021年4月18日
     % スプライン補完でCCS面決定2021/05/06
     figure()
-    
+
     RR0index = RR < 0.15;
     B = B(RR0index); ZZ = ZZ(RR0index);
     plot(ZZ, B);
     ZZ = ZZ'; B = B';
-    f = fit(ZZ, B, 'smoothingspline','SmoothingParam', 0.99999);
+    f = fit(ZZ, B, 'smoothingspline', 'SmoothingParam', 1);
     hold on
     fnplt(f.p)
     x = fnzeros(fnder(f.p));
@@ -69,7 +70,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARA
     plot(matrix(2, 1), matrix(2, 2), "*");
     hold off
     lmax = islocalmax(B);
-    
+
     % hold on
     % plot(ZZ(lmin), B(lmin), 'r*');
     % hold on
@@ -115,7 +116,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARA
         BZ = str2double(sensordata_Flux{9 + (i - 1) * 5});
         BR = str2double(sensordata_Flux{10 + (i - 1) * 5});
 
-        if (flag || R<0.67)
+        if (flag || R < 0.67)
 
             chnum = chnum + 1;
 
@@ -125,19 +126,49 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARA
             SENSOR_FLXLP.TET(chnum) = 0.0D0;
             SENSOR_FLXLP.ITYPE(chnum) = 0;
         end
+
     end
 
     SENSOR_FLXLP.NUM = chnum;
     disp(['Number of FLXLP = ' num2str(SENSOR_FLXLP.NUM)]);
 
+    DTHETA = pi / 3;
+    RR = 0.03;
+    capper = 1.4;
+    R = 0.22;
+    Z = CCS(1);
+
+    for j = 1:6
+        THETA = pi / 2.0 - DTHETA * (j - 1); % CCSでの積分は、時計回り
+        RCCS(j) = R + RR * cos(THETA + asin(0) * sin(THETA));
+        ZCCS(j) = Z + capper * RR * sin(THETA);
+    end
+
+    I = 1:3;
+    NCCS = 6;
+
+    RCCS(NCCS + 1) = RCCS(1);
+    ZCCS(NCCS + 1) = ZCCS(1);
+
+    RCCN(3 * I - 2) = (5 .* RCCS(2 * I - 1) + 5 .* RCCS(2 * I) - RCCS(2 * I + 1)) / 9;
+    ZCCN(3 * I - 2) = (5 .* ZCCS(2 * I - 1) + 5 .* ZCCS(2 * I) - ZCCS(2 * I + 1)) / 9;
+    RCCN(3 * I - 1) = RCCS(2 * I);
+    ZCCN(3 * I - 1) = ZCCS(2 * I);
+    RCCN(3 * I) = (5 .* RCCS(2 * I + 1) + 5 .* RCCS(2 * I) - RCCS(2 * I - 1)) / 9;
+    ZCCN(3 * I) = (5 .* ZCCS(2 * I + 1) + 5 .* ZCCS(2 * I) - ZCCS(2 * I - 1)) / 9;
+
+    RCCN = [RCCN RCCN];
+    ZCCN = [-ZCCN ZCCN];
+
     figure()
     scatter(SENSOR_TPRB.R, SENSOR_TPRB.Z, "filled");
     hold on
     scatter(SENSOR_FLXLP.R, SENSOR_FLXLP.Z, "filled");
+    scatter(RCCN, ZCCN, 'o')
     hold off
-    legend("B", "Flux");
+    legend("B", "Flux", "CCSNode");
     title("sensor pos");
-% error('error description', A1)
+    % error('error description', A1)
 
 end
 
