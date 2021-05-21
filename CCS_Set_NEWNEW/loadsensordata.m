@@ -2,9 +2,9 @@
 %% loadsensordata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 %% loadsensordata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 %% loadsensordata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP] = loadsensordata(PARAM)
+function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
 
-    sensordata_B0 = fileread([PARAM.input_file_directory '\Sensor_B.txt']);
+    sensordata_B0 = fileread([PARAM.input_file_directory '/Sensor_B.txt']);
     sensordata_B = strsplit(sensordata_B0, {'\n', '\t', '\r'});
     sensornum_B = (length(sensordata_B) - 1) / 5 - 1;
 
@@ -31,12 +31,63 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP] = loadsensordata(PARAM)
             SENSOR_TPRB.TPRB(chnum * 2) = sqrt(BR^2 + BZ^2);
             SENSOR_TPRB.ITYPE(chnum * 2 - 1) = 1;
             SENSOR_TPRB.ITYPE(chnum * 2) = 1;
+            RR(chnum) = R;
+            ZZ(chnum) = Z;
+            B(chnum) = sqrt(BR^2 + BZ^2);
         end
 
     end
 
     SENSOR_TPRB.NUM = chnum * 2;
     disp(['Number of TPRB =  ' num2str(SENSOR_TPRB.NUM)]);
+
+    % 2021/05/21
+    figure()
+    % RR = [RR RR];
+    % ZZ = [ZZ -ZZ];
+    scatter(RR, ZZ)
+    figure()
+    hold on
+    % B = [B B];
+    RR0index = RR < 0.15;
+    B = B(RR0index); ZZ = ZZ(RR0index);
+    B = [B(1) * 2 - B(2) B B(end - 1) * 2 - B(end)]
+    ZZ = [ZZ(1) * 2 - ZZ(2) ZZ ZZ(end) * 2 - ZZ(end - 1)]
+    ZZ = ZZ'; B = B';
+    plot(fliplr(ZZ), B);
+    f = fit(ZZ, B, 'smoothingspline', 'SmoothingParam', 1);
+    fnplt(f.p)
+    x = fnzeros(fnder(f.p));
+    x = unique(x(:));
+    y = fnval(f.p, x);
+    plot(x, y, 'o')
+    xlim([-1 1]);
+    matrix = [x y];
+    matrix = sortrows(matrix, 2, 'descend');
+    plot(matrix(1, 1), matrix(1, 2), "*");
+    plot(matrix(2, 1), matrix(2, 2), "*");
+    hold off
+    lmax = islocalmax(B)
+    lmax(1) = [];
+    lmax(end) = [];
+    lmax
+
+    view(90, 90);
+
+    CCS1 = matrix(1, 1);
+    CCS2 = matrix(2, 1);
+
+    if length(ZZ(lmax)) > 1
+
+        CCS(1) = max(CCS1, CCS2);
+        CCS(2) = min(CCS1, CCS2);
+
+    else
+        size(matrix)
+        CCS(1) = matrix(1, 1);
+    end
+
+    % 2021/05/21
 
     %% No NPRB
     SENSOR_NPRB.NUM = 0;
@@ -46,7 +97,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP] = loadsensordata(PARAM)
     SENSOR_NPRB.NPRB = [];
     SENSOR_NPRB.ITYPE = [];
 
-    sensordata_Flux0 = fileread([PARAM.input_file_directory '\Sensor_Flux.txt']);
+    sensordata_Flux0 = fileread([PARAM.input_file_directory '/Sensor_Flux.txt']);
     sensordata_Flux = strsplit(sensordata_Flux0, {'\n', '\t', '\r'});
     sensornum_Flux = (length(sensordata_Flux) - 1) / 5 - 1;
 
@@ -80,6 +131,8 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP] = loadsensordata(PARAM)
         SENSOR_FLXLP.FLXLP = SENSOR_FLXLP.FLXLP - 0.0042459;
     end
 
+    save('vars_RZ')
+    % error('error description', A1)
     %
     %     %%  *************************************************************************
     %     %%     Generation of CCS input data

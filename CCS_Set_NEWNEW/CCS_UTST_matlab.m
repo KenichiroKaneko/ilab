@@ -14,8 +14,8 @@ function CCS_UTST_matlab(inputfile)
     REF = loadreference(PARAM);
 
     % 2021/05/06実際のセンサー配置にするかどうか
-    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM);
-    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARAM);
+    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM);
+    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARAM);
     % 2021/05/06
 
     % CCS面の自動決定
