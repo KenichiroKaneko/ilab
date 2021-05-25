@@ -8,7 +8,9 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, A, B, FC, ...
     KNN = WALL.KNN;
     KSN = WALL.KSN;
 
-    BSNSR = SENSOR_TPRB.TPRB;
+    % 2021/05/24
+    % BSNSR = SENSOR_TPRB.TPRB;
+    BSNSR = SENSOR_TPRB.TNPRB;
     GETA_YN = PARAM.GETA_YN;
 
     AUTO = 1;
@@ -44,6 +46,8 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, A, B, FC, ...
     % 特異値分解 UWV [U S V] = svd(A) に対応するのは W:S特異値1xM, V:V, U:U
     [W, V, U] = SVDCMP(U); % OK
     [uu, ss, vv] = svd(A);
+    % [U, S, V] = svd(A);
+    % W = diag(S);
     save("vars_afterSVDCMP");
     % error('error description')
 
@@ -89,6 +93,7 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, A, B, FC, ...
 
     % L-curve法 2021/05/17
     KUP0 = LCURVE(A, ss, vv, uu, X, FC);
+    KUP0 = 30;
 
     fprintf(IPRN, '%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');
     fprintf('%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');

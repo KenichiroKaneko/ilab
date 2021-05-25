@@ -27,13 +27,13 @@ param.Sw_init = 1;
 
 % 大量の数値解を作成するためのファイル名一覧
 % filenames = ["z2033_r602" "z1000_r602" "z0960_r602" "z0920_r602" ...
-%             "z0880_r602""z0840_r602""z0800_r602""z0760_r602" ...
+    %             "z0880_r602""z0840_r602""z0800_r602""z0760_r602" ...
 %             "z0720_r602""z0680_r602""z0640_r602""z0600_r602" ...
 %             "z0560_r602""z0520_r602""z0480_r602""z0440_r602" ...
 %             "z0400_r602""z0360_r602""z0320_r602""z0280_r602" ...
 %             "z0240_r602""z0200_r602""z0160_r602""z0120_r602" ...
 %             "z0080_r602"];
-            
+
 % filenames = ["z0240_r602" "z0200_r602" "z0160_r602" "z0120_r602" "z0080_r602"];
 filenames = ["z2033_r602"];
 
@@ -47,12 +47,11 @@ for fileNum = 1:length(filenames)
     param.file1 = datafile_dir + "def_slow.dat";
     param.file2 = datafile_dir + "def_gs.dat";
     param.file3 = datafile_dir + "def_fast.dat";
-    
 
     % ファイルから値の読み込み
     A = load(param.file0);
-    param.Nz = A(1,1);
-    param.Nr = A(2,1);
+    param.Nz = A(1, 1);
+    param.Nr = A(2, 1);
     % param.Nz = 2033;
     % param.Nr = 602;
     param.Nz_orig = param.Nz;
@@ -116,14 +115,17 @@ for fileNum = 1:length(filenames)
         % mu_jt = addPFcurrent(param,psi,mu_jt);
         format long
         [error, psi] = cal_flux_C(param, psi, mu_jt);
+
         if (rem(i, 100) == 0)
             disp([num2str(i) ':' num2str(error)])
         end
+
         if error < param.errormax
             param.routine_num = param.routine_num + i;
             disp(['Convergence! Iteration number is ' num2str(param.routine_num)]);
             break
         end
+
     end
 
     toc
@@ -139,8 +141,9 @@ for fileNum = 1:length(filenames)
 
     % 変数の保存
     save(output_dir + "vars", "param", "psi", "mu_jt", "Ip", "p", "psi0");
-
+    gs_graph(param, psi, p, Ip, mu_jt)
 end
+
 toc
 
 %% psiを更新するルーチン。
@@ -236,7 +239,7 @@ function [psi_bar, mu_jt, p, Ip] = cal_jt(param, psi, mu_jt, p, Ip)
     psi_resion(psi > psi_edge | psi < psi_axis) = 0;
     psi_deff = psi_axis - psi_edge;
     ip = CALGP_t(param, (psi - psi_edge) .* psi_resion / psi_deff) / psi_deff;
-    
+
     aaa = sum(((psi - psi_edge) .* psi_resion ./ psi_deff).^(2 * param.beta - 1) ./ radius ./ psi_deff, "all");
     bbb = sum(((psi - psi_edge) .* psi_resion ./ psi_deff).^(param.beta - 1) ./ radius ./ psi_deff, "all");
     ccc = sum(radius .* ip .* psi_resion, "all");

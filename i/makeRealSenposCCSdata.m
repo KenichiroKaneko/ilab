@@ -29,13 +29,16 @@ function makeRealSenposCCSdata(psi, Bz, Br)
 
     figure()
     plot(r, z, 'o');
+    hold on
     title("pos");
 
-    fp = fopen( "Sensor_Flux.txt", "w");
+    fp = fopen("Sensor_Flux.txt", "w");
     fprintf(fp, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
+
     for i = 1:length(r)
         fprintf(fp, '%f\t%f\t%f\t0\t0\n', rr(r(i)), zz(z(i)), psi(r(i), z(i)));
     end
+
     fclose(fp);
     % sensor_B = [r, z, psi_CCS];
     % writematrix(sensor_B, "test_sensor_B.txt");
@@ -43,11 +46,15 @@ function makeRealSenposCCSdata(psi, Bz, Br)
     % 磁場
     r = f1(:, 1);
     z = f1(:, 2);
-    fp = fopen( "Sensor_B.txt", "w");
+    plot(r, z, 'o');
+    legend('flux', 'B')
+    fp = fopen("Sensor_B.txt", "w");
     fprintf(fp, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
+
     for i = 1:length(r)
         fprintf(fp, '%f\t%f\t0\t%f\t%f\n', rr(r(i)), zz(z(i)), Bz(r(i), z(i)), Br(r(i), z(i)));
     end
+
     fclose(fp)
     % sensor_flux = [r, z, Bz_CCS, Br_CCS];
     % writematrix(sensor_flux, "test_sensor_flux.txt");

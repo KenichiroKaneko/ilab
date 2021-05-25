@@ -6,7 +6,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARA
     sensornum_B = (length(sensordata_B) - 1) / 5 - 1;
 
     % 容器の外のセンサーを含めるなら1(=true)
-    flag = 0;
+    flag = 1;
 
     chnum = 0;
 
@@ -27,7 +27,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARA
             RR(chnum) = R;
             ZZ(chnum) = Z;
             B(chnum) = sqrt(BR^2 + BZ^2);
-
+            SENSOR_TPRB.TNPRB(chnum) = sqrt(BR^2 + BZ^2);
         end
 
         % if ((R < 0.57 + 0.0015 && R > 0.27 - 0.0015) || (Z < 0.239 && R > 0.67) || (R < 0.689 && R > 0.629 - 0.0015))
@@ -131,44 +131,6 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARA
 
     SENSOR_FLXLP.NUM = chnum;
     disp(['Number of FLXLP = ' num2str(SENSOR_FLXLP.NUM)]);
-
-    DTHETA = pi / 3;
-    RR = 0.03;
-    capper = 1.4;
-    R = 0.22;
-    Z = CCS(1);
-
-    for j = 1:6
-        THETA = pi / 2.0 - DTHETA * (j - 1); % CCSでの積分は、時計回り
-        RCCS(j) = R + RR * cos(THETA + asin(0) * sin(THETA));
-        ZCCS(j) = Z + capper * RR * sin(THETA);
-    end
-
-    I = 1:3;
-    NCCS = 6;
-
-    RCCS(NCCS + 1) = RCCS(1);
-    ZCCS(NCCS + 1) = ZCCS(1);
-
-    RCCN(3 * I - 2) = (5 .* RCCS(2 * I - 1) + 5 .* RCCS(2 * I) - RCCS(2 * I + 1)) / 9;
-    ZCCN(3 * I - 2) = (5 .* ZCCS(2 * I - 1) + 5 .* ZCCS(2 * I) - ZCCS(2 * I + 1)) / 9;
-    RCCN(3 * I - 1) = RCCS(2 * I);
-    ZCCN(3 * I - 1) = ZCCS(2 * I);
-    RCCN(3 * I) = (5 .* RCCS(2 * I + 1) + 5 .* RCCS(2 * I) - RCCS(2 * I - 1)) / 9;
-    ZCCN(3 * I) = (5 .* ZCCS(2 * I + 1) + 5 .* ZCCS(2 * I) - ZCCS(2 * I - 1)) / 9;
-
-    RCCN = [RCCN RCCN];
-    ZCCN = [-ZCCN ZCCN];
-
-    figure()
-    scatter(SENSOR_TPRB.R, SENSOR_TPRB.Z, "filled");
-    hold on
-    scatter(SENSOR_FLXLP.R, SENSOR_FLXLP.Z, "filled");
-    scatter(RCCN, ZCCN, 'o')
-    hold off
-    legend("B", "Flux", "CCSNode");
-    title("sensor pos");
-    % error('error description', A1)
 
 end
 

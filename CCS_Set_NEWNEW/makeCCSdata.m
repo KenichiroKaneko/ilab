@@ -32,6 +32,8 @@ function CCSDAT = makeCCSdata(PARAM, GHR, GHZ)
                     THETA = pi / 2.0 - DTHETA * (j - 1); % CCSでの積分は、時計回り
                     CCSDAT.RCCS(i, j) = PARAM.R0(i) + PARAM.RR(i) * cos(THETA + asin(TRIG) * sin(THETA));
                     CCSDAT.ZCCS(i, j) = PARAM.Z0(i) + PARAM.CAPPER(i) * PARAM.RR(i) * sin(THETA);
+                    % CCSDAT.RCCS(i, j) = PARAM.R0(i) + PARAM.CAPPER(i) * PARAM.RR(i) * cos(THETA + asin(TRIG) * sin(THETA));
+                    % CCSDAT.ZCCS(i, j) = PARAM.Z0(i) + PARAM.RR(i) * sin(THETA);
                 end
 
             end
@@ -40,7 +42,7 @@ function CCSDAT = makeCCSdata(PARAM, GHR, GHZ)
 
     else
         % *******************************************************
-        %    LCMSに相似なCCS    (ICONT>0 のとき)              ****
+        %    LCMSに相似なCCS    (ICONT>0 のとき)             ****
         % *******************************************************
         for i = 1:PARAM.CCS
 

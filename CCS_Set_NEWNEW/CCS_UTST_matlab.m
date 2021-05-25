@@ -14,13 +14,17 @@ function CCS_UTST_matlab(inputfile)
     REF = loadreference(PARAM);
 
     % 2021/05/06実際のセンサー配置にするかどうか
-    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM);
-    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARAM);
+    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z] = loadsensordata(PARAM);
+    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z] = loadRealsensordata(PARAM);
+    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z] = loadRealsensordataTN(PARAM);
     % 2021/05/06
 
     % CCS面の自動決定
+    CCS_R = CalcPlasmaCenter(PARAM, CCS_Z);
+
     for i = 1:PARAM.CCS
-        PARAM.Z0(i) = CCS(i);
+        PARAM.Z0(i) = CCS_Z(i);
+        PARAM.R0(i) = CCS_R(i);
     end
 
     WALL = loadwalldata(PARAM);
@@ -28,10 +32,14 @@ function CCS_UTST_matlab(inputfile)
     ExtCOIL = loadcoildata(PARAM);
 
     FFDAT = makeFFdata(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP);
+    save("vars_aftermakeFFdata");
 
     GHR = zeros(1, 300);
     GHZ = zeros(1, 300);
     CCSDAT = makeCCSdata(PARAM, GHR, GHZ);
+
+    % 各センサーポジションを表示する
+    dispSensorPosition(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT);
 
     FF = FFDAT;
     FF(end + 1:end + sum(CCSDAT.NCCN)) = 0.0;
@@ -200,7 +208,8 @@ function CCS_UTST_matlab(inputfile)
     contour(CCR, CCZ, psi, '-k', 'LevelStep', 0.0003);
     hold on
     contour(REF.R, REF.Z, REF.Flux, '--m', 'LevelStep', 0.0003); % ????
-    % plot(CCSDAT.RGI, CCSDAT.ZGI);
+    % scatter(CCSDAT.RCCN, CCSDAT.ZCCN, 'o')
+    plot(CCSDAT.RGI, CCSDAT.ZGI);
     hold off
     xlabel({'r (m)'});
     ylabel({'z (m)'});
