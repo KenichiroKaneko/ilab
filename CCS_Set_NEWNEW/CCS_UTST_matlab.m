@@ -185,6 +185,25 @@ function CCS_UTST_matlab(inputfile)
     JCRE = 2;
     NINT = 0;
 
+    % 再構成する磁束のサイズ
+    % cm単位の範囲の指定
+    % MINR = 10.815;
+    % MAXR = 88.80;
+    % MINZ = -99.85;
+    % MAXZ = 99.85;
+    % % メッシュの間隔delr,delz
+    % ICRE = 9.747920133111480e-02;
+    % JCRE = 9.827755905511811e-02;
+    % NINT = 0;
+    % Nz = 2033;
+    % Nr = 800;
+    % zmin = -9.985000000000001e-01;
+    % zmax = 9.985000000000001e-01;
+    % rmin = 1.081500000000000e-01;
+    % rmax = 0.8880;
+    % delr = 9.747920133111480e-04;
+    % delz = 9.827755905511811e-04;
+
     for I = MINR:ICRE:MAXR
         NCOUNT = 0;
         CCR = I / 100.0;
@@ -198,6 +217,7 @@ function CCS_UTST_matlab(inputfile)
 
     end
 
+    % 逆問題を解いて求めたプラズマ電流およびコイルに流れる電流から、磁気面を計算
     [PSI, DELGE, RCCS, ZCCS, XPSI] = INTER(PARAM, 1, GETA, CR, CZ, FFOUT, ExtCOIL, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, NINT);
 
     CCR = unique(CR);
@@ -219,6 +239,10 @@ function CCS_UTST_matlab(inputfile)
     %% Data positions for 2D plot
     PLOT.R = 0.1:0.01:0.9;
     PLOT.Z = -1:0.02:1;
+
+    % 評価関数
+    MSE = EVALUATE(psi, REF, PARAM, CCR, CCZ)
+    save("vars_result_" + inputfile, "psi", "REF", "PARAM", "CCR", "CCZ", "CCSDAT", "MSE");
 
     fclose('all');
 end

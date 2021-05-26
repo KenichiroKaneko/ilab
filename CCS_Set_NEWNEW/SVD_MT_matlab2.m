@@ -93,7 +93,7 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, A, B, FC, ...
 
     % L-curve法 2021/05/17
     KUP0 = LCURVE(A, ss, vv, uu, X, FC);
-    KUP0 = 30;
+    % KUP0 = 50;
 
     fprintf(IPRN, '%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');
     fprintf('%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');
