@@ -14,9 +14,9 @@ function CCS_UTST_matlab(inputfile)
     REF = loadreference(PARAM);
 
     % 2021/05/06実際のセンサー配置にするかどうか
-    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z] = loadsensordata(PARAM);
+    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z] = loadsensordata(PARAM);
     % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z] = loadRealsensordata(PARAM);
-    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z] = loadRealsensordataTN(PARAM);
+    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z] = loadRealsensordataTN(PARAM);
     % 2021/05/06
 
     % CCS面の自動決定
@@ -39,7 +39,7 @@ function CCS_UTST_matlab(inputfile)
     CCSDAT = makeCCSdata(PARAM, GHR, GHZ);
 
     % 各センサーポジションを表示する
-    dispSensorPosition(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT);
+    dispSensorPosition(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, REF);
 
     FF = FFDAT;
     FF(end + 1:end + sum(CCSDAT.NCCN)) = 0.0;
@@ -242,7 +242,7 @@ function CCS_UTST_matlab(inputfile)
 
     % 評価関数
     MSE = EVALUATE(psi, REF, PARAM, CCR, CCZ)
-    save("vars_result_" + inputfile, "psi", "REF", "PARAM", "CCR", "CCZ", "CCSDAT", "MSE");
+    save("vars_result_" + PARAM.input_file_directory, "psi", "REF", "PARAM", "CCR", "CCZ", "CCSDAT", "MSE");
 
     fclose('all');
 end

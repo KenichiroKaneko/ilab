@@ -72,6 +72,8 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARA
     y = fnval(f.p, x);
     plot(x, y, 'o')
     xlim([-1 1]);
+    ylabel("ψ[Wb]");
+    xlabel("Z[m]");
     matrix = [x y];
     matrix = sortrows(matrix, 2, 'descend');
     plot(matrix(1, 1), matrix(1, 2), "*");

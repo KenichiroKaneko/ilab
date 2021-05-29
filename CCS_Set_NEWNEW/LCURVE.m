@@ -44,8 +44,8 @@ function KUP = LCURVE(A, W, V, U, X, FC)
     % ax = gca;
     % ax.XDir = 'reverse';
     title("L-curve");
-    xlabel("残差 ||Ap - q||")
-    ylabel("||x||")
+    xlabel("残差 ||Ap^* - q||")
+    ylabel("||p^*||")
 
     save("vars_inLcurve");
 

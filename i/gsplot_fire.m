@@ -1,19 +1,20 @@
 filenames = ["z0840_r602"];
 
-
 % filenames = ["z2033_r602" "z1000_r602" "z0960_r602" "z0920_r602" ...
-%              "z0880_r602" "z0840_r602" "z0800_r602" "z0760_r602" ...
-%              "z0720_r602" "z0680_r602" "z0640_r602" "z0600_r602" ...
-%              "z0560_r602" "z0520_r602" "z0480_r602" "z0440_r602" ...
-%              "z0400_r602" "z0360_r602" "z0320_r602" "z0280_r602" ...
-%              "z0240_r602" "z0200_r602" "z0160_r602" "z0120_r602" ...
-%              "z0080_r602"];
+    %              "z0880_r602" "z0840_r602" "z0800_r602" "z0760_r602" ...
+    %              "z0720_r602" "z0680_r602" "z0640_r602" "z0600_r602" ...
+    %              "z0560_r602" "z0520_r602" "z0480_r602" "z0440_r602" ...
+    %              "z0400_r602" "z0360_r602" "z0320_r602" "z0280_r602" ...
+    %              "z0240_r602" "z0200_r602" "z0160_r602" "z0120_r602" ...
+    %              "z0080_r602"];
+filenames = ["z1100_r602", "z1200_r602", "z1300_r602"];
 tic
-for i = 1:length(filenames)
-    gsplot_CCS_for_finemesh_merge22(filenames(i))
-end
-toc
 
+for i = 1:length(filenames)
+    gsplot_CCS_for_finemesh_merge2(filenames(i))
+end
+
+toc
 
 function gsplot_CCS_for_finemesh_merge22(dirname)
 
@@ -25,9 +26,11 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
     saveflag = 1;
     % 保存するdir
     save_dir = "GSPLOT_OUTPUT/" + dirname;
+
     if not(exist(save_dir, 'dir'))
         mkdir(save_dir);
     end
+
     FONT = 'Times';
     fs = 8;
 
@@ -37,9 +40,9 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
     env3c = vars3c.param;
     flux3c = vars3c.psi0;
     psi_v_3c = flux3c';
-    
+
     % 部分的な解のデータ
-    data_dir = "OUTPUT/"+ dirname + "/";
+    data_dir = "OUTPUT/" + dirname + "/";
     vars = load(data_dir + "vars");
     env = vars.param;
     flux = vars.psi;
@@ -66,7 +69,7 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
 
     psi = psi_v_3c * 0;
     psi(1:env.Nr, 1:env.Nz) = psi0;
-    psi(1:env.Nr, end - env.Nz + 1:end)=psi(1:env.Nr, end - env.Nz + 1:end) + psi0(:, end:-1:1);
+    psi(1:env.Nr, end - env.Nz + 1:end) = psi(1:env.Nr, end - env.Nz + 1:end) + psi0(:, end:-1:1);
     % 反対側にコピーした磁場のグラフ2020/12/21
     % ah = subplot(1, 5, 3);
     % contour(r, z, psi' * 1000, v, 'r')
@@ -77,12 +80,11 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
     jt = psi_v_3c * 0;
     jt(1:env.Nr, 1:env.Nz) = jt(1:env.Nr, 1:env.Nz) + flux(1:env.Nz, 1:env.Nr)' / (4 * pi * 1e-7);
     jt(1:env.Nr, end:-1:end - env.Nz + 1) = jt(1:env.Nr, end:-1:end - env.Nz + 1) + ...
-                             flux(1:env.Nz, 1:env.Nr)' / (4 * pi * 1e-7);
+        flux(1:env.Nz, 1:env.Nr)' / (4 * pi * 1e-7);
 
     %% Calc virtual eddy current on center
     delz = z(2) - z(1);
     delr = r(2) - r(1);
-
 
     jt_center = -squeeze(psi0(2:env.Nr - 1, env.Nz - 1)) / delz ./ r(2:env.Nr - 1)' / 2 / pi / 4 / pi / 1e-7 * delr;
 
@@ -110,7 +112,6 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
     % ah = subplot(1, 5, 4);
     % contour(r, z, psi' * 1000, v, 'r')
     psi = psi - psi222;
-    
 
     %% Calc Bz and Br from psi
     zdiff = z(2:end - 1);
@@ -129,12 +130,11 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
     %% CCSdata
     datanum = 0;
 
-    % 602*2033 
+    % 602*2033
     % 1017 ... Nzの中央
     % 1016 ...  Nzの中央-1
     % 2028 ... Nzから5点内側
     % 6    ... Nzから５点内側
-
 
     for i = 1:length(z(1017:2028))
         r_CCS(i) = r(6);
@@ -223,7 +223,6 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
         fclose(fp);
     end
 
-    
     %% Calc eddy current
     psi_eddy = psi - psi_v_3c + psi222;
 
@@ -300,4 +299,5 @@ function gsplot_CCS_for_finemesh_merge22(dirname)
     if (saveflag)
         save([save_dir + '/merged.mat'], 'env', 'delr', 'delz', 'psi', 'psi_v_3c', 'jt', 'r', 'rr', 'z', 'zz');
     end
+
 end

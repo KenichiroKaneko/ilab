@@ -11,144 +11,201 @@ y = log10(Y);
 % Y = sin(X) + X.^2;
 % x = X;
 % y = Y;
-
+f = fit(x', y', "cubicspline");
+fnplt(f.p, "-k", 1)
+hold on
+scatter(x, y);
+hold off
 % 前後の無視する数/点群の数、num < cut
 cut = 5;
 num = 1;
+pad = zeros(1, cut);
 
 len = length(X);
 m = 0;
-KUP = 1;
+KbyTilt = 1;
 
+% １
 % ３点で求める曲率
-for i = 1:len - cut * 2
+if 1
+    spX = x(cut):(x(end - cut) - x(cut)) / 100:x(end - cut);
+    spY = spline(x, y, spX);
 
-    j = i + cut;
-    p0 = [x(j - 1); y(j - 1)];
-    p1 = [x(j); y(j)];
-    p2 = [x(j + 1); y(j + 1)];
-
-    A = p2 - p1;
-    B = p0 - p1;
-
-    Numerator = 2 * abs(det([p2 - p1 p0 - p1]));
-    Denominator = norm(p2 - p1) * norm(p0 - p1) * norm(p2 - p0);
-
-    K(i) = Numerator / Denominator;
-
-end
-
-% 傾きの差の最大値
-for i = 1:length(x) - cut * 2
-
-    j = i + cut;
-    Left = (y(j) - y(j - 1)) / (x(j) - x(j - 1));
-    Right = (y(j + 1) - y(j)) / (x(j + 1) - x(j));
-
-    tilt(i) = Right - Left;
-
-    if m < tilt(i)
-        m = tilt(i);
-        KUP = i;
+    for i = 1:100 - cut * 2
+        j = i + num;
+        xs = spX(j - num:j + num);
+        ys = spY(j - num:j + num);
+        [cx, cy, r] = CircleFitting(xs, ys);
+        spR(i) = 1 / r;
     end
 
+    figure()
+    plot(spX, spY)
+    hold on
+    % figure()
+    % plot(1:100 - cut * 2, spR)
+
+    x = spX;
+    y = spY;
+
+    % for i = 1:len - cut * 2
+    for i = 1:100 - cut * 2
+        j = i + cut;
+        p0 = [x(j - 1); y(j - 1)];
+        p1 = [x(j); y(j)];
+        p2 = [x(j + 1); y(j + 1)];
+
+        A = p2 - p1;
+        B = p0 - p1;
+
+        Numerator = 2 * abs(det([p2 - p1 p0 - p1]));
+        Denominator = norm(p2 - p1) * norm(p0 - p1) * norm(p2 - p0);
+
+        Kby3(i) = Numerator / Denominator;
+
+    end
+
+    [Mk, IndKby3] = max(Kby3)
+    IndKby3 = IndKby3 + cut;
+    KUPIndex_K = len + 1 - IndKby3;
+    KUPIndex_K = IndKby3;
+
+    scatter(spX(KUPIndex_K), spY(KUPIndex_K))
+
+    % figure('Name', '３点で求める曲率')
+    % loglog(X, Y, 's')
+    % hold on
+    % scatter(X(KUPIndex_K), Y(KUPIndex_K), "r*")
+    % Kby3 = [pad Kby3 pad];
 end
 
+% ２
+% 傾きの差の最大値
+if 0
+
+    for i = 1:length(x) - cut * 2
+
+        j = i + cut;
+        Left = (y(j) - y(j - 1)) / (x(j) - x(j - 1));
+        Right = (y(j + 1) - y(j)) / (x(j + 1) - x(j));
+
+        tilt(i) = Right - Left;
+
+        if m < tilt(i)
+            m = tilt(i);
+            KbyTilt = i;
+        end
+
+    end
+
+    KbyTilt = KbyTilt + cut;
+    figure('Name', '前後の傾きの最大値法')
+    loglog(X, Y, 's')
+    hold on
+    scatter(X(KbyTilt), Y(KbyTilt), 'b*')
+    % tilt = [pad tilt pad];
+    % scatter(x(KbyTilt), tilt(KbyTilt), "b*")
+end
+
+% ３
 % num点で求める曲率
-for i = 1:length(x) - cut * 2
+if 0
 
-    j = i + cut;
-    xs = x(j - num:j + num);
-    ys = y(j - num:j + num);
+    for i = 1:length(x) - cut * 2
 
-    [cx, cy, r] = CircleFitting(xs, ys);
+        j = i + cut;
+        xs = x(j - num:j + num);
+        ys = y(j - num:j + num);
 
-    R(i) = r;
+        [cx, cy, r] = CircleFitting(xs, ys);
 
+        R(i) = 1 / r;
+
+    end
+
+    [Mr, Ir] = max(R)
+    I = Ir + cut;
+    KUPIndex = len + 1 - I;
+    figure('Name', 'ネットで見つけた曲率求めるやつ①')
+    loglog(X, Y, 's')
+    hold on
+    scatter(X(KUPIndex), Y(KUPIndex), "g*")
+    R = [pad R pad];
 end
 
+% ４
+% 曲線をスプライン近似してやる
+if 1
+    spX = x(cut):(x(end - cut) - x(cut)) / 100:x(end - cut);
+    spY = spline(x, y, spX);
+
+    for i = 1:100 - cut * 2
+        j = i + num;
+        xs = spX(j - num:j + num);
+        ys = spY(j - num:j + num);
+        [cx, cy, r] = CircleFitting(xs, ys);
+        spR(i) = 1 / r;
+    end
+
+    figure()
+    plot(spX, spY)
+    figure()
+    plot(1:100 - cut * 2, spR)
+end
+
+% ５
 % y=x-1000と一番近い点 ax + by + c = 0
-y_intercept = 10;
-a = 1;
-b = 1;
-c = y_intercept;
+if 0
+    y_intercept = 10;
+    a = 1;
+    b = 1;
+    c = y_intercept;
 
-for i = 1:length(x) - cut * 2
-    j = i + cut;
-    d(i) = abs(a * x(j) + b * y(j) + c) / norm([a b]);
+    for i = 1:length(x) - cut * 2
+        j = i + cut;
+        d(i) = abs(a * x(j) + b * y(j) + c) / norm([a b]);
+    end
+
+    [My Iy] = min(d);
+    Iy = Iy + cut;
+    KUPIndex_Y = len + 1 - Iy;
+    abcx = -10:0;
+    abcy = -(abcx) - y_intercept;
+    d = [pad d pad];
+
+    figure('Name', '直線との距離y=-x-10')
+    loglog(X, Y, 's')
+    hold on
+    scatter(X(Iy), Y(Iy), "y*")
+    hold off
 end
 
-[Mk, Ik] = max(K)
-Ik = Ik + cut;
-KUPIndex_K = len + 1 - Ik;
-
-KUP = KUP + cut;
-
-[Mr, Ir] = max(R)
-I = Ir + cut;
-KUPIndex = len + 1 - I;
-
-[My Iy] = min(d);
-Iy = Iy + cut;
-KUPIndex_Y = len + 1 - Iy;
-abcx = -10:0;
-abcy = -(abcx) - y_intercept;
-
-pad = zeros(1, cut);
-K = [pad K pad];
-tilt = [pad tilt pad];
-R = [pad R pad];
-d = [pad d pad];
-
-figure()
-% ｘーｙと曲率最大のポイント赤色
-loglog(X, Y, 's')
-hold on
-scatter(X(KUPIndex_K), Y(KUPIndex_K), "r*")
-scatter(X(KUP), Y(KUP), 'b*')
-scatter(X(KUPIndex), Y(KUPIndex), "g*")
-scatter(X(Iy), Y(Iy), "y*")
-hold off
 % 曲率、傾きをｘーｙに合わせてプロットしたもの
-figure()
-hold on
-% plot(x, y * 10, "black")
-plot(x, K, "r")
-plot(x, tilt, "b")
-plot(x, R, "g")
-plot(x, d, "y");
-scatter(x(Ik), K(Ik), "r*")
-scatter(x(KUP), tilt(KUP), "b*")
-scatter(x(I), R(I), 'g*')
-scatter(x(Iy), R(Iy), 'y*')
-hold off
-% 曲率、傾きをプロットしたもの
-figure()
-hold on
-% x = fliplr(x);
-% plot(y * 10, "black")
-plot(K, "r")
-plot(tilt, "b")
-plot(R, "g")
-plot(d, "y")
-scatter(Ik, K(Ik), "r*");
-scatter(KUP, tilt(KUP), "b*");
-scatter(I, R(I), "g*");
-scatter(Iy, R(Iy), "y*");
-hold off
-
-figure()
-scatter(x, y);
-hold on
-plot(abcx, abcy)
-scatter(x(Iy), y(Iy), "r*")
-scatter(x(KUPIndex_Y), y(KUPIndex_Y), "b*")
-
-figure()
-hold on
-scatter(1:length(d), d);
-scatter(Iy, d(Iy), "r*")
-scatter(KUPIndex_Y, d(KUPIndex_Y), "b*")
+% figure()
+% hold on
+% % plot(x, y * 10, "black")
+% plot(x, Kby3, "r")
+% plot(x, tilt, "b")
+% plot(x, R, "g")
+% plot(x, d, "y");
+% scatter(x(IndKby3), Kby3(IndKby3), "r*")
+% scatter(x(I), R(I), 'g*')
+% scatter(x(Iy), R(Iy), 'y*')
+% hold off
+% % 曲率、傾きをプロットしたもの
+% figure()
+% hold on
+% % x = fliplr(x);
+% % plot(y * 10, "black")
+% plot(Kby3, "r")
+% plot(tilt, "b")
+% plot(R, "g")
+% plot(d, "y")
+% scatter(IndKby3, Kby3(IndKby3), "r*");
+% scatter(KbyTilt, tilt(KbyTilt), "b*");
+% scatter(I, R(I), "g*");
+% scatter(Iy, R(Iy), "y*");
+% hold off
 
 % function KUP = curvature(f)
 

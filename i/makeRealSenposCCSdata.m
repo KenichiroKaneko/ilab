@@ -1,4 +1,4 @@
-function makeRealSenposCCSdata(psi, Bz, Br)
+function makeRealSenposCCSdata(psi, Bz, Br, save_dir)
 
     f0 = readmatrix("sensorCoordinate0.txt");
     f1 = readmatrix("sensorCoordinate1.txt");
@@ -32,7 +32,7 @@ function makeRealSenposCCSdata(psi, Bz, Br)
     hold on
     title("pos");
 
-    fp = fopen("Sensor_Flux.txt", "w");
+    fp = fopen(save_dir + "/Sensor_Flux.txt", "w");
     fprintf(fp, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
 
     for i = 1:length(r)
@@ -48,7 +48,7 @@ function makeRealSenposCCSdata(psi, Bz, Br)
     z = f1(:, 2);
     plot(r, z, 'o');
     legend('flux', 'B')
-    fp = fopen("Sensor_B.txt", "w");
+    fp = fopen(save_dir + "/Sensor_B.txt", "w");
     fprintf(fp, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
 
     for i = 1:length(r)

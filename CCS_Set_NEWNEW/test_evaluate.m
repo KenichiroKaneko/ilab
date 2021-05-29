@@ -1,18 +1,27 @@
 % 最小２乗誤差を返すプログラム
-vars = load("vars_result_600");
-% vars = load("vars_result_800");
-% vars = load("vars_result_1000R");
-% vars = load("vars_result_2033R");
+close all;
+clear all;
+vars = load("vars_result_UTST_numel_0600R");
+vars = load("vars_result_UTST_numel_0800R");
+% vars = load("vars_result_UTST_numel_1000R");
+% vars = load("vars_result_UTST_numel_2033R");
 
 psi = vars.psi;
 REF = vars.REF;
 PARAM = vars.PARAM;
 CCR = vars.CCR;
 CCZ = vars.CCZ;
+figure()
+contour(REF.R, REF.Z, REF.Flux, '--m', 'LevelStep', 0.0003)
+contour(CCR, CCZ, psi, '-k', 'LevelStep', 0.0003);
 
 MSE = EVALUATE0(psi, REF, PARAM, CCR, CCZ)
 
 function MSE = EVALUATE0(psi, REF, PARAM, CCR, CCZ)
+    % limiterRef = 0.1656627;
+    limiterRef = -10;
+    limiterRecon = -10;
+
     figure()
     xlim([0.1 0.9]);
     ylim([-1 1]);
@@ -27,44 +36,53 @@ function MSE = EVALUATE0(psi, REF, PARAM, CCR, CCZ)
             range2 = 1 + j * 1016:1017 + j * 1016;
 
             % 再構成した磁束のLCFSを探索
-            [LCFSrecon, disuseNum1, disuseNum2] = detectLCFS(psi(range1, :), CCR, CCZ(range1), -1, "reconstruction");
+            [LCFSrecon, disuseNum1, disuseNum2] = detectLCFS(psi(range1, :), CCR, CCZ(range1), limiterRecon, "reconstruction");
             % referenceのLCFSを探索
-            [LCFSref, MAxisR, MAxisZ] = detectLCFS(REF.Flux(range2, :), REF.R, REF.Z(range2), 0.1656627, "reference");
+            [LCFSref, MAxisR, MAxisZ] = detectLCFS(REF.Flux(range2, :), REF.R, REF.Z(range2), limiterRef, "reference");
             % 求めた2つの磁気面上の何点かと磁気軸からの距離をそれぞれ計算し、２乗誤差を計算
             MSE(i) = calcError(LCFSrecon, LCFSref, MAxisR, MAxisZ, CCR, CCZ(range1), REF.R, REF.Z(range2));
         end
 
-        % [LCFSrecon, disuseNum1, disuseNum2] = detectLCFS(psi(51:101, :), CCR, CCZ(51:101), -1, "reconstruction");
-        % [LCFSref, MAxisR, MAxisZ] = detectLCFS(REF.Flux(1017:2033, :), REF.R, REF.Z(1017:2033), 0.1656627, "reference");
-        % MSE(2) = calcError(LCFSrecon, LCFSref, MAxisR, MAxisZ, CCR, CCZ(51:101), REF.R, REF.Z(1017:2033));
     else
         % 2つのプラズマが接近した場合
-
-        [LCFSrecon, disuseNum1, disuseNum2] = detectLCFS(psi, CCR, CCZ, -1, "reconstruction");
-        [LCFSref, MAxisR, MAxisZ] = detectLCFS(REF.Flux, REF.R, REF.Z, 0.1656627, "reference");
+        [LCFSrecon, disuseNum1, disuseNum2] = detectLCFS(psi, CCR, CCZ, limiterRecon, "reconstruction");
+        [LCFSref, MAxisR, MAxisZ] = detectLCFS(REF.Flux, REF.R, REF.Z, limiterRef, "reference");
         MSE = calcError(LCFSrecon, LCFSref, MAxisR, MAxisZ, CCR, CCZ, REF.R, REF.Z);
     end
 
     MSE = sum(MSE) / length(MSE);
+
+    str = sprintf('MSE= %e', MSE);
+    text(0.4, -0.8, str, 'FontSize', 14)
 
 end
 
 function [STRUCTURE, MAxisR, MAxisZ] = detectLCFS(psi, psiR, psiZ, limiter, type)
     psi_temp = psi;
     psi_inside = psi;
+    plottype = 1;
 
     % 磁気軸の中心を探す→refでは利用されるがreconでは要らない
     [M1 MAxisR] = min(min(psi));
     [M2 MAxisZ] = min(psi(:, MAxisR));
+    % scatter(psiR(MAxisR), psiZ(MAxisZ));
 
     if limiter == -1
         % リミターがない場合→０未満の磁束の最大値
         LCFS_min = max(max(psi_temp(psi_temp < 0))) - 0.0005;
+    elseif limiter == -10
+        % 再構成でもリミター位置での磁束を元に計算することにしたので後から追加した
+        limiter = 0.1656627;
+        [m limiterR] = min(abs(psiR - limiter));
+        [m limiterZ] = min(psi(:, limiterR));
+        LCFS_min = m;
+
     else
         % リミターがある場合→リミター位置の磁束
         % scatter(psiR(MAxisR), psiZ(MAxisZ), "*m");
         [m limiterR] = min(abs(psiR - limiter));
         LCFS_min = psi(MAxisZ, limiterR);
+        % scatter(psiR(limiterR), psiZ(MAxisZ), "*")
     end
 
     if type == "reference"
@@ -73,13 +91,22 @@ function [STRUCTURE, MAxisR, MAxisZ] = detectLCFS(psi, psiR, psiZ, limiter, type
         line = "-r";
     end
 
-    psi_inside(psi_temp > LCFS_min) = 0; % LCFSの外側を０にする
-    [Z, R] = ind2sub(size(psi_temp), find(psi_inside)); % LCFSの内側の座標
-    j = boundary(R, Z);
-    STRUCTURE.j = j;
-    STRUCTURE.R = R;
-    STRUCTURE.Z = Z;
-    % scatter(psiR(R), psiZ(Z), 'k');
+    if plottype
+
+        if type == "reconstruction"
+            contour(psiR, psiZ, psi, [LCFS_min LCFS_min], 'LineColor', 'r', 'LineWidth', 2)
+        end
+
+    else
+
+        psi_inside(psi_temp > LCFS_min) = 0; % LCFSの外側を０にする
+        [Z, R] = ind2sub(size(psi_temp), find(psi_inside)); % LCFSの内側の座標
+        j = boundary(R, Z, 0.1);
+        STRUCTURE.j = j;
+        STRUCTURE.R = R;
+        STRUCTURE.Z = Z;
+        % scatter(psiR(R), psiZ(Z), 'k');
+    end
 
     % 他の境界プロット法
     % [B, L] = bwboundaries(psi_inside, 'noholes');

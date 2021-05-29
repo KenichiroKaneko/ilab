@@ -1,4 +1,4 @@
-function dispSensorPosition(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT)
+function dispSensorPosition(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, REF)
     figure()
     hold on
 
@@ -16,7 +16,11 @@ function dispSensorPosition(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDA
         scatter(CCSDAT.RCCN(i, :), CCSDAT.ZCCN(i, :), 'mo', "filled");
     end
 
+    v = linspace(-20, 20, 11);
+    contour(REF.R, REF.Z, REF.Flux, '--k', "LineWidth", 1); % ????
+    xlabel("R[m]");
+    ylabel("Z[m]");
     hold off
     legend("B-tangencial", "B-norm", "Flux", "CCSNode");
-    title("sensor pos");
+    title("Sensor positions and Reference");
 end

@@ -1,4 +1,4 @@
-UTST_numel_800	%001_input_file_directory
+UTST_numel_0800R	%001_input_file_directory
 CCS_temporary	%002_temporary_file_directory
 CCS_output		%003_output_file_directory
 9				%01_IUTST

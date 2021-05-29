@@ -35,7 +35,9 @@ param.Sw_init = 1;
 %             "z0080_r602"];
 
 % filenames = ["z0240_r602" "z0200_r602" "z0160_r602" "z0120_r602" "z0080_r602"];
-filenames = ["z2033_r602"];
+% filenames = ["z2033_r602"];
+filenames = ["z1100_r602", "z1200_r602", "z1300_r602"];
+% filenames = ["z1200_r602", "z1300_r602"];
 
 for fileNum = 1:length(filenames)
     disp(["****  " + filenames(fileNum) + "  " + fileNum + "/" + length(filenames) + "  ****"])
@@ -139,9 +141,13 @@ for fileNum = 1:length(filenames)
     psi0 = zeros(param.Nz, param.Nr);
     [param, psi0] = cal_psi(param, psi0);
 
+    if not(exist(output_dir, 'dir'))
+        mkdir(output_dir);
+    end
+
     % 変数の保存
     save(output_dir + "vars", "param", "psi", "mu_jt", "Ip", "p", "psi0");
-    gs_graph(param, psi, p, Ip, mu_jt)
+    % gs_graph(param, psi, p, Ip, mu_jt)
 end
 
 toc

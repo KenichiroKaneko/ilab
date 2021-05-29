@@ -9,8 +9,8 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, A, B, FC, ...
     KSN = WALL.KSN;
 
     % 2021/05/24
-    % BSNSR = SENSOR_TPRB.TPRB;
-    BSNSR = SENSOR_TPRB.TNPRB;
+    BSNSR = SENSOR_TPRB.TPRB;
+    % BSNSR = SENSOR_TPRB.TNPRB;
     GETA_YN = PARAM.GETA_YN;
 
     AUTO = 1;
@@ -93,7 +93,10 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, A, B, FC, ...
 
     % L-curve法 2021/05/17
     KUP0 = LCURVE(A, ss, vv, uu, X, FC);
+    % KUP0 = 40;
     % KUP0 = 50;
+    % KUP0 = 60;
+    KUP0 = 69;
 
     fprintf(IPRN, '%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');
     fprintf('%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');

@@ -6,6 +6,8 @@ function gsplot_CCS_for_finemesh_merge2(dirname)
     % fluxは平衡解、flux0はpsiの初期状態
 
     saveflag = 1;
+    dispFigure = 0;
+    realFlag = 0;
     % 保存するdir
     save_dir = "GSPLOT_OUTPUT/" + dirname + "2021";
 
@@ -137,10 +139,6 @@ function gsplot_CCS_for_finemesh_merge2(dirname)
     % 2021/04/28 UTST装置のセンサー配置
     save("psiGSplotTest", "psi");
 
-    makeRealSenposCCSdata(psi, Bz, Br);
-    % error('test');
-    % ここまで
-
     for i = 1:length(z(1017:2028))
         r_CCS(i) = r(6);
         z_CCS(i) = z(1016 + i);
@@ -190,25 +188,28 @@ function gsplot_CCS_for_finemesh_merge2(dirname)
     end
 
     if (saveflag)
-        save([save_dir + '/merged.mat']);
-    end
 
-    datanum = length(r_CCS);
+        if realFlag
+            makeRealSenposCCSdata(psi, Bz, Br, save_dir);
+            % error('test');
+            % ここまで
+        else
+            datanum = length(r_CCS);
 
-    if (saveflag)
+            fp = fopen(save_dir + '/Sensor_.txt', 'w');
+            fprintf(fp, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
+
+            for i = 1:30:datanum
+                fprintf(fp, '%f\t%f\t%f\t%f\t%f\n', r_CCS(i), z_CCS(i), psi_CCS(i), Bz_CCS(i), Br_CCS(i));
+            end
+
+            fclose(fp);
+        end
+
         fp = fopen(save_dir + '/CCS.txt', 'w');
         fprintf(fp, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
 
         for i = 1:datanum
-            fprintf(fp, '%f\t%f\t%f\t%f\t%f\n', r_CCS(i), z_CCS(i), psi_CCS(i), Bz_CCS(i), Br_CCS(i));
-        end
-
-        fclose(fp);
-
-        fp = fopen(save_dir + '/Sensor_.txt', 'w');
-        fprintf(fp, 'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
-
-        for i = 1:60:datanum
             fprintf(fp, '%f\t%f\t%f\t%f\t%f\n', r_CCS(i), z_CCS(i), psi_CCS(i), Bz_CCS(i), Br_CCS(i));
         end
 
@@ -228,55 +229,62 @@ function gsplot_CCS_for_finemesh_merge2(dirname)
         fclose(fp);
     end
 
-    fh = figure;
-    set(fh, 'position', [50 50 600 600], 'Name', ['psi contour'], 'NumberTitle', 'off');
+    if (saveflag)
+        save([save_dir + '/merged.mat']);
+    end
 
-    ah = subplot(3, 1, 1);
-    set(ah, 'box', 'on', 'FontSize', fs, 'FontName', FONT);
+    if dispFigure
 
-    hold on
-    pcolor(z, r, sqrt(Bz.^2 + Br.^2) * 1e3)
-    axis equal
-    shading interp
+        fh = figure;
+        set(fh, 'position', [50 50 600 600], 'Name', ['psi contour'], 'NumberTitle', 'off');
 
-    ca = [-100 100];
-    caxis(ca);
+        ah = subplot(3, 1, 1);
+        set(ah, 'box', 'on', 'FontSize', fs, 'FontName', FONT);
 
-    v = linspace(-100, 100, 31);
-    contour(z, r, sqrt(Bz.^2 + Br.^2) * 10000, v, 'k')
-    v = linspace(0, 5, 11);
-    contour(z, r, sqrt(Bz.^2 + Br.^2) * 10000, v, 'k')
-    plot([env3c.zmin env3c.zmin env3c.z1 env3c.z2 env3c.z3 env3c.z4 env3c.zmax env3c.zmax], [env3c.rmin env3c.rmirror env3c.rmirror env3c.rmax env3c.rmax env3c.rmirror env3c.rmirror env3c.rmin], 'r', 'LineWidth', 2);
-    title('|Bp| [mT]');
-    set(ah, 'Box', 'on', 'FontSize', fs, 'FontName', FONT, 'FontWeight', 'bold'); %,'xlim', [-1.2 1.2], 'ylim', [0 0.8]);
+        hold on
+        pcolor(z, r, sqrt(Bz.^2 + Br.^2) * 1e3)
+        axis equal
+        shading interp
 
-    ah = subplot(3, 1, 2);
-    set(ah, 'box', 'on', 'FontSize', fs, 'FontName', FONT);
+        ca = [-100 100];
+        caxis(ca);
 
-    hold on
-    pcolor(z, r, psi * -1000)
-    axis equal
-    shading interp
+        v = linspace(-100, 100, 31);
+        contour(z, r, sqrt(Bz.^2 + Br.^2) * 10000, v, 'k')
+        v = linspace(0, 5, 11);
+        contour(z, r, sqrt(Bz.^2 + Br.^2) * 10000, v, 'k')
+        plot([env3c.zmin env3c.zmin env3c.z1 env3c.z2 env3c.z3 env3c.z4 env3c.zmax env3c.zmax], [env3c.rmin env3c.rmirror env3c.rmirror env3c.rmax env3c.rmax env3c.rmirror env3c.rmirror env3c.rmin], 'r', 'LineWidth', 2);
+        title('|Bp| [mT]');
+        set(ah, 'Box', 'on', 'FontSize', fs, 'FontName', FONT, 'FontWeight', 'bold'); %,'xlim', [-1.2 1.2], 'ylim', [0 0.8]);
 
-    ca = [-5 5];
-    caxis(ca);
+        ah = subplot(3, 1, 2);
+        set(ah, 'box', 'on', 'FontSize', fs, 'FontName', FONT);
 
-    v = linspace(-15, 15, 11);
-    contour(z, r, psi * -1000, v, 'k')
-    v = linspace(-5, 5, 11);
-    contour(z, r, psi * -1000, v, 'w')
-    %contour(z,r,psi*-1000,-2:0.1:0,'r')
-    plot([env3c.zmin env3c.zmin env3c.z1 env3c.z2 env3c.z3 env3c.z4 env3c.zmax env3c.zmax], [env3c.rmin env3c.rmirror env3c.rmirror env3c.rmax env3c.rmax env3c.rmirror env3c.rmirror env3c.rmin], 'r', 'LineWidth', 2);
+        hold on
+        pcolor(z, r, psi * -1000)
+        axis equal
+        shading interp
 
-    % plot(z_PS,r_PS,'r','LineWidth',2);
-    % plot(z_LCFS,r_LCFS,'g','LineWidth',2);
-    title('poloidal flux [mWb]');
-    set(ah, 'Box', 'on', 'FontSize', fs, 'FontName', FONT, 'FontWeight', 'bold'); %,'xlim', [-1.2 1.2], 'ylim', [0 0.8]);
+        ca = [-5 5];
+        caxis(ca);
 
-    ah = subplot(3, 1, 3);
-    set(ah, 'box', 'on', 'FontSize', fs, 'FontName', FONT);
+        v = linspace(-15, 15, 11);
+        contour(z, r, psi * -1000, v, 'k')
+        v = linspace(-5, 5, 11);
+        contour(z, r, psi * -1000, v, 'w')
+        %contour(z,r,psi*-1000,-2:0.1:0,'r')
+        plot([env3c.zmin env3c.zmin env3c.z1 env3c.z2 env3c.z3 env3c.z4 env3c.zmax env3c.zmax], [env3c.rmin env3c.rmirror env3c.rmirror env3c.rmax env3c.rmax env3c.rmirror env3c.rmirror env3c.rmin], 'r', 'LineWidth', 2);
 
-    if env.Nz ~= 2033
+        % plot(z_PS,r_PS,'r','LineWidth',2);
+        % plot(z_LCFS,r_LCFS,'g','LineWidth',2);
+        title('poloidal flux [mWb]');
+        set(ah, 'Box', 'on', 'FontSize', fs, 'FontName', FONT, 'FontWeight', 'bold'); %,'xlim', [-1.2 1.2], 'ylim', [0 0.8]);
+
+        ah = subplot(3, 1, 3);
+        set(ah, 'box', 'on', 'FontSize', fs, 'FontName', FONT);
+    end
+
+    if env.Nz ~= 2033 && dispFigure
         hold on
         pcolor(z, r, -jt / 1e3)
         axis equal

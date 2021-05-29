@@ -49,44 +49,47 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
     figure()
     hold on
 
-    % インボード側だけを見るためのコード
-    % 端が極大でも認識できるようにB、ZZを拡張してある
-    RR0index = RR < 0.15;
-    B = B(RR0index); ZZ = ZZ(RR0index);
-    % B = [B(1) * 2 - B(2) B B(end - 1) * 2 - B(end)];
-    % ZZ = [ZZ(1) * 2 - ZZ(2) ZZ ZZ(end) * 2 - ZZ(end - 1)];
-    ZZ = ZZ'; B = B';
+    % % インボード側だけを見るためのコード
+    % % 端が極大でも認識できるようにB、ZZを拡張してある
+    % RR0index = RR < 0.15;
+    % B = B(RR0index); ZZ = ZZ(RR0index);
+    % % B = [B(1) * 2 - B(2) B B(end - 1) * 2 - B(end)];
+    % % ZZ = [ZZ(1) * 2 - ZZ(2) ZZ ZZ(end) * 2 - ZZ(end - 1)];
+    % ZZ = ZZ'; B = B';
 
-    plot(fliplr(ZZ), B);
-    f = fit(ZZ, B, 'smoothingspline', 'SmoothingParam', 1);
-    fnplt(f.p)
-    x = fnzeros(fnder(f.p));
-    x = unique(x(:));
-    y = fnval(f.p, x);
-    plot(x, y, 'o')
-    xlim([-1 1]);
-    matrix = [x y];
-    matrix = sortrows(matrix, 2, 'descend');
-    plot(matrix(1, 1), matrix(1, 2), "*");
-    plot(matrix(2, 1), matrix(2, 2), "*");
-    hold off
-    lmax = islocalmax(B);
-    lmax(1) = [];
-    lmax(end) = [];
+    % plot(fliplr(ZZ), B);
+    % f = fit(ZZ, B, 'smoothingspline', 'SmoothingParam', 1);
+    % fnplt(f.p)
+    % x = fnzeros(fnder(f.p));
+    % x = unique(x(:));
+    % y = fnval(f.p, x);
+    % plot(x, y, 'o')
+    % xlim([-1 1]);
+    % matrix = [x y];
+    % matrix = sortrows(matrix, 2, 'descend');
+    % plot(matrix(1, 1), matrix(1, 2), "*");
+    % plot(matrix(2, 1), matrix(2, 2), "*");
+    % hold off
+    % lmax = islocalmax(B);
+    % lmax(1) = [];
+    % lmax(end) = [];
 
-    view(90, 90);
+    % view(90, 90);
 
-    CCS1 = matrix(1, 1);
-    CCS2 = matrix(2, 1);
+    % CCS1 = matrix(1, 1);
+    % CCS2 = matrix(2, 1);
 
-    if length(ZZ(lmax)) > 1
+    % if length(ZZ(lmax)) > 1
 
-        CCS(1) = max(CCS1, CCS2);
-        CCS(2) = min(CCS1, CCS2);
+    %     CCS(1) = max(CCS1, CCS2);
+    %     CCS(2) = min(CCS1, CCS2);
 
-    else
-        size(matrix)
-        CCS(1) = matrix(1, 1);
+    % else
+    %     size(matrix)
+    %     CCS(1) = matrix(1, 1);
+    % end
+    for i = 1:PARAM.CCS
+        CCS(i) = PARAM.Z0(i)
     end
 
     % 2021/05/21
@@ -135,7 +138,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
 
     save('vars_RZ')
 
-    error('error description', A1)
+    % error('error description', A1)
     %
     %     %%  *************************************************************************
     %     %%     Generation of CCS input data

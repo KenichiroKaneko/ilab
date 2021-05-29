@@ -9,8 +9,9 @@ close all;
     %             "z0200_r602", "z0160_r602", "z0120_r602", "z0080_r602"];
 % data_dirs = ["z2033_r6022021", "z1000_r602", "z0960_r602", ];
 % data_dirs = ["z0800_r602"];
-data_dirs = ["z2033_r6022021" "z1000_r602", "z0840_r602", ...
-            "z0680_r602", "z0520_r602", "z0360_r602", "z0200_r602", ];
+% data_dirs = ["z2033_r6022021" "z1000_r602", "z0840_r602", ...
+    %             "z0680_r602", "z0520_r602", "z0360_r602", "z0200_r602", ];
+data_dirs = ["z1300_r6022021"];
 gsOutputDir = "GSPLOT_OUTPUT/";
 
 % 変数の定義
@@ -23,13 +24,18 @@ figure()
 for i = 1:length(data_dirs)
     vars = load(gsOutputDir + data_dirs(i) + "/merged.mat");
     psi = vars.psi;
-    v = linspace(-20, 20, 21);
+
+    v = linspace(-20, 20, 11);
     subplot(1, length(data_dirs), i);
-    contour(rr, zz, psi' * 1000, v, 'r');
+    contour(rr, zz, psi' * 1000, v, 'k', "LineWidth", 3);
+    xlabel("R[m]");
+    ylabel("Z[m]");
+
+    % ylim([-0.4 0.4])
     hold on
-    [M1 y] = min(min(psi));
-    [M2 x] = min(psi(:, y));
-    scatter(rr(x), zz(y))
+    % [M1 y] = min(min(psi));
+    % [M2 x] = min(psi(:, y));
+    % scatter(rr(x), zz(y))
 
 end
 

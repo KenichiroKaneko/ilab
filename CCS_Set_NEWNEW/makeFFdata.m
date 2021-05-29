@@ -17,7 +17,7 @@ function FFDAT = makeFFdata(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP)
         FFDAT0(i + SENSOR_TPRB.NUM + SENSOR_NPRB.NUM) = SENSOR_FLXLP.FLXLP(i) / 2 / pi;
     end
 
-    if startsWith(PARAM.input_file_directory, "UTST")
+    if 0 % startsWith(PARAM.input_file_directory, "UTST")
         %% FFDAT (w. noise)
         rng(PARAM.SEED);
         GASDEV = randn(SENSOR_TPRB.NUM + SENSOR_NPRB.NUM + SENSOR_FLXLP.NUM, 1);
