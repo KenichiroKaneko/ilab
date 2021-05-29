@@ -2,7 +2,7 @@
 %% loadsensordata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 %% loadsensordata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 %% loadsensordata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
+function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadsensordata(PARAM)
 
     sensordata_B0 = fileread([PARAM.input_file_directory '/Sensor_B.txt']);
     sensordata_B = strsplit(sensordata_B0, {'\n', '\t', '\r'});
@@ -37,6 +37,9 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
         end
 
     end
+
+    % 2021/5/24 SVD_MT_matlab2での整合性
+    SENSOR_TPRB.TNPRB = SENSOR_TPRB.TPRB;
 
     SENSOR_TPRB.NUM = chnum * 2;
     disp(['Number of TPRB =  ' num2str(SENSOR_TPRB.NUM)]);
@@ -89,7 +92,8 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadsensordata(PARAM)
     %     CCS(1) = matrix(1, 1);
     % end
     for i = 1:PARAM.CCS
-        CCS(i) = PARAM.Z0(i)
+        CCS_Z(i) = PARAM.Z0(i);
+        CCS_R(i) = PARAM.R0(i);
     end
 
     % 2021/05/21

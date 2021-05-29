@@ -14,13 +14,13 @@ function CCS_UTST_matlab(inputfile)
     REF = loadreference(PARAM);
 
     % 2021/05/06実際のセンサー配置にするかどうか
+    % オリジナルのコード
     [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z] = loadsensordata(PARAM);
-    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z] = loadRealsensordata(PARAM);
-    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z] = loadRealsensordataTN(PARAM);
+    % 実際のセンサー位置で再構成するコード、入力は末尾がRと、実験データが対応(例)UTST_numel_2033R、180515_010_t9650
+    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadRealsensordata(PARAM);
+    % 法線方向、接線方向を考慮して読み込むためのコード、入力は末尾がRと、実験データが対応
+    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z,CCS_R] = loadRealsensordataTN(PARAM);
     % 2021/05/06
-
-    % CCS面の自動決定
-    CCS_R = CalcPlasmaCenter(PARAM, CCS_Z);
 
     for i = 1:PARAM.CCS
         PARAM.Z0(i) = CCS_Z(i);

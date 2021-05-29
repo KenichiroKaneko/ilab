@@ -1,5 +1,5 @@
 %% loadsensordata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARAM)
+function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadRealsensordata(PARAM)
 
     sensordata_B0 = fileread([PARAM.input_file_directory '/Sensor_B.txt']);
     sensordata_B = strsplit(sensordata_B0, {'\n', '\t', '\r'});
@@ -85,14 +85,16 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS] = loadRealsensordata(PARA
     if length(ZZ(lmax)) > 1
 
         for i = 1:2
-            CCS(i) = matrix(i, 1);
+            CCS_Z(i) = matrix(i, 1);
         end
 
     else
         size(matrix)
-        CCS(1) = matrix(1, 1);
+        CCS_Z(1) = matrix(1, 1);
     end
 
+    % CCS面の自動決定R方向
+    CCS_R = CalcPlasmaCenter(PARAM, CCS_Z);
     % ここまで
 
     %% No NPRB
