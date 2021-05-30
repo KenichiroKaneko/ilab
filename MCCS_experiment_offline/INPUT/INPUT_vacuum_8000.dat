@@ -1,0 +1,50 @@
+10         %1   JT-60U?/U/U merg/U break/U merg 2/U merg unequal?=(0/1,2,3,4,5/6,7/8/9/10,..) 5:after merge 10:unequal(worse),11:unequal(better), 7:equal    1-4:error
+1         %2   Use Geta iteration? (Yes/No)=(1/0)
+1         %3   Conforming EddyCrnt BE? / Non-Conforming BE? =(0/1)
+0      %4   0.03 for 3% sigma; 0.00 for no noise
+0         %5   Choose the SEED number of Gaussian noise (1,2,3...)
+0         %6   CCSの数は?(0,1 or 2)
+0         %7   CCS形状は楕円？D型？=(0/1)
+0.32      %8    ①CCS1 location R [m]?0.22 (%1:10, 0.22)
+0     %9    ①CCS1 location Z [m]?0.395 (%1:10, 0.39)
+0.005     %10    ①CCS radius in R direction [m]?0.005 (%1:10, 0.01)
+1.7       %11    ①CCSの縦横比(縦径ΔZ/横径ΔR)は? (例： 1.3)
+2         %12    ①[elliptic]非適合境界要素数(CC節点数の1/3)は?（推奨値＝6）
+2         %13    ①[D-shape] 非適合境界要素数(CC節点数の1/3)D_CCS曲率部上は?（推奨値＝2)
+2         %14    ①[D-shape] 非適合境界要素数(CC節点数の1/3)D_CCS曲率部下は?（推奨値＝2）
+2         %15    ①[D-shape] 非適合境界要素数(CC節点数の1/3)D_CCSインボード側は?（推奨値＝2)
+5         %16    ①CCS形状修正の際、LCMSとCCSの相似比は？（例：=5.0)　今のところ意味なし
+0.32     %17    ②CCS1 location R [m]?0.26 (%1:10, 0.26)
+-0.01     %18    ②CCS1 location Z [m]?-0.415 (%1:10, -0.41)
+0.01      %19  　②CCS radius in R direction [m]? (%1:10, 0.01)
+1.7       %20    ②CCSの縦横比(縦径ΔZ/横径ΔR)は? (例： 1.3)
+2         %21    ②[elliptic]非適合境界要素数(CC節点数の1/3)は?（推奨値＝6）
+2         %22    ②[D-shape]非適合境界要素数(CC節点数の1/3)D_CCS曲率部上は?（推奨値＝2)
+2         %23    ②[D-shape]非適合境界要素数(CC節点数の1/3)D_CCS曲率部下は?（推奨値＝2）
+2         %24    ②[D-shape]非適合境界要素数(CC節点数の1/3)D_CCSインボード側は?（推奨値＝2)
+5         %25    ②CCS形状修正の際、LCMSとCCSの相似比は？（例：=5.0)
+1         %26    導体上の渦電流を考慮する？ (Yes/No)=(1/0)   
+1         %27    下駄サーチを INTERの反復でもやる？ (0)下駄サーチをSVD_MT内部のみでやる？(1)
+1         %28    Truncate SMALL singular values (SVs)? (Yes/No)=(1/0)
+1         %29    Input, Cond.No.(0) or No. of Untruncated SVs (1)?
+2         %30    Pause, Stop or Not = (0/1/2)
+25       %31    Then, Input No. of Untruncated Singular Values (98?)
+0         %32    Ordinary TSVD? / Modified TSVD? =(0/1)
+1         %33    Time consuming, but you draw a whole flux profile?(Yes/No)=(1/0)
+1         %34    Plot a whole or zoomed flux profile? (1/0)
+0         %35    Pause, Stop or Not = (0/1/2)
+1         %36    境界を探索する? (yes/no) = (1/0)
+1         %37    磁気面上の点を指定? / Ｘ点(Bp=0)をサーチ? =(1/0)
+0.184884  %38    ①磁気面上の点の座標R[m]は？
+0.387214  %39    ①磁気面上の点の座標Z[m]は？
+0.164132  %40    ②磁気面上の点の座標R[m]は？
+-0.413749 %41    ②磁気面上の点の座標Z[m]は？
+0         %42    X点サーチの左限位置(r[m])
+0.1       %43    X点サーチの右限位置(r[m])
+1         %44    ①②Modify the normal derivative output? (Yes/No)=(1/0)
+0.1       %45    ①Input the true value of total current [MA]
+0.1       %46    ②Input the true value of total current [MA]
+1         %47    Plot the plasma boundary? (Yes/No)=(1/0)
+          %48    Make the data for plasma current density reconstruction? (Yes/No)=(1/0)
+
+
