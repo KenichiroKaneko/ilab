@@ -1,8 +1,0 @@
-1.01	%alpha
-1.30 %beta
-500.0 %P0
--70.e3	%Iplasma
-400.e3	%Itfc
-1.e-8	%errormax
-1000	%itermax
-1.945	%omega
