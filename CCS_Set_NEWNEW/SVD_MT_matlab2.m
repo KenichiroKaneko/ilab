@@ -69,12 +69,15 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, A, B, FC, ...
     % ###############################################################################
     % ↓特異値をソート、最大値で割って規格化したものがSVS
     [SVS] = SVSORT_matlab(PARAM, W); % OK
-    figure('Name', 'Singular Value', 'NumberTitle', 'off')
-    semilogy(1:numel(SVS), SVS(1:numel(SVS)), 'ko', 'MarkerEdgeColor', 'k', ...
-        'MarkerFaceColor', 'k', 'MarkerSize', 2)
-    % hold on;
-    ylabel({'Normalized Singular Value'});
-    set(gca, 'FontSize', 14);
+
+    if PARAM.dispFigures
+        figure('Name', 'Singular Value', 'NumberTitle', 'off')
+        semilogy(1:numel(SVS), SVS(1:numel(SVS)), 'ko', 'MarkerEdgeColor', 'k', ...
+            'MarkerFaceColor', 'k', 'MarkerSize', 2)
+        % hold on;
+        ylabel({'Normalized Singular Value'});
+        set(gca, 'FontSize', 14);
+    end
 
     % Xが求める未知数のベクトル1xN (Ap = q の p)
     [C, X, GET] = KUPCHK_matlab(PARAM, A, B, U, V, W, NAPB, NFLX, sum(NCCN)); % OK ushiki
@@ -92,11 +95,11 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, A, B, FC, ...
     % hold off;
 
     % L-curve法 2021/05/17
-    KUP0 = LCURVE(A, ss, vv, uu, X, FC);
-    % KUP0 = 40;
+    KUP0 = LCURVE(PARAM, A, ss, vv, uu, X, FC);
+    % KUP0 = 30;
     % KUP0 = 50;
-    % KUP0 = 60;
-    % KUP0 = 69;
+    KUP0 = 62;
+    % KUP0 = 73;
 
     fprintf(IPRN, '%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');
     fprintf('%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');

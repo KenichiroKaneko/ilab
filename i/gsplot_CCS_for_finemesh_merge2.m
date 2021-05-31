@@ -5,8 +5,8 @@ function gsplot_CCS_for_finemesh_merge2(dirname)
     % 部分的な解を全体に拡張する際に、CCS03cのメッシュデータが必要
     % fluxは平衡解、flux0はpsiの初期状態
 
-    saveflag = 1;
-    dispFigure = 0;
+    saveflag = 0;
+    dispFigure = 1;
     realFlag = 0;
     % 保存するdir
     save_dir = "GSPLOT_OUTPUT/" + dirname + "2021";

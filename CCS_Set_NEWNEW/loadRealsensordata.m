@@ -50,25 +50,25 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadRealsensor
 
     % インボード側の磁束のプロットと、CCS面の決定2021年4月18日
     % スプライン補完でCCS面決定2021/05/06
-    figure()
+    % figure()
 
     RR0index = RR < 0.15;
     B = B(RR0index); ZZ = ZZ(RR0index);
-    plot(ZZ, B);
+    % plot(ZZ, B);
     ZZ = ZZ'; B = B';
     f = fit(ZZ, B, 'smoothingspline', 'SmoothingParam', 1);
     hold on
-    fnplt(f.p);
+    % fnplt(f.p);
     x = fnzeros(fnder(f.p));
     x = unique(x(:));
     y = fnval(f.p, x);
-    plot(x, y, 'o');
-    xlim([-1 1]);
+    % plot(x, y, 'o');
+    % xlim([-1 1]);
     matrix = [x y];
     matrix = sortrows(matrix, 2, 'descend');
-    plot(matrix(1, 1), matrix(1, 2), "*");
-    plot(matrix(2, 1), matrix(2, 2), "*");
-    hold off
+    % plot(matrix(1, 1), matrix(1, 2), "*");
+    % plot(matrix(2, 1), matrix(2, 2), "*");
+    % hold off
     lmax = islocalmax(B);
 
     % hold on
@@ -124,7 +124,8 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadRealsensor
 
             SENSOR_FLXLP.R(chnum) = R;
             SENSOR_FLXLP.Z(chnum) = Z;
-            SENSOR_FLXLP.FLXLP(chnum) = PSI / (pi * R^2);
+            SENSOR_FLXLP.FLXLP(chnum) = PSI;
+            % SENSOR_FLXLP.FLXLP(chnum) = PSI / (pi * R^2); % 21/05/30
             SENSOR_FLXLP.TET(chnum) = 0.0D0;
             SENSOR_FLXLP.ITYPE(chnum) = 0;
         end

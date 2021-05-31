@@ -30,11 +30,11 @@ function KUP = CURVATURE(X, Y);
     d = [pad d pad];
 
     % ｘーｙと曲率最大のポイント赤色
-    figure()
-    loglog(X, Y, 's')
-    hold on
-    scatter(X(Iy), Y(Iy), "y*")
-    hold off
+    % figure()
+    % loglog(X, Y, 's')
+    % hold on
+    % scatter(X(Iy), Y(Iy), "y*")
+    % hold off
     KUP = Iy;
 
 end

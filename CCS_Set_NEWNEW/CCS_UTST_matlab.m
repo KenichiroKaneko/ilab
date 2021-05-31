@@ -10,12 +10,13 @@ function CCS_UTST_matlab(inputfile)
     %MXINT = 10000;       % MAX! / NUMBER OF INTERNAL POINTS
 
     PARAM = loadinputfile(inputfile);
+    PARAM.dispFigures = 1;
 
     REF = loadreference(PARAM);
 
     % 2021/05/06実際のセンサー配置にするかどうか
     % オリジナルのコード、入力は、末尾にRがないもの、UTST_numel_5,9が対応
-    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z] = loadsensordata(PARAM);
+    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadsensordata(PARAM);
 
     % 実際のセンサー位置で再構成するコード、入力は末尾がRと、実験データが対応(例)UTST_numel_2033R、180515_010_t9650
     [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadRealsensordata(PARAM);
@@ -40,7 +41,9 @@ function CCS_UTST_matlab(inputfile)
     CCSDAT = makeCCSdata(PARAM, GHR, GHZ);
 
     % 各センサーポジションを表示する
-    dispSensorPosition(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, REF);
+    if PARAM.dispFigures
+        dispSensorPosition(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, REF);
+    end
 
     FF = FFDAT;
     FF(end + 1:end + sum(CCSDAT.NCCN)) = 0.0;
@@ -113,19 +116,21 @@ function CCS_UTST_matlab(inputfile)
     EDDYP(FFOUT, PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL);
 
     % plot eddy current
-    DISF = dlmread([PARAM.output_file_directory '/EddyCurrentProfile.txt']);
-    figure('Name', 'Eddy Current Plofile', 'NumberTitle', 'off')
-    plot(DISF(:, 1), DISF(:, 2), '-ko', 'MarkerEdgeColor', 'r', 'MarkerFaceColor', 'r', 'MarkerSize', 2)
-    xlabel({'Distance (m)'});
-    ylabel({'Eddy Current Density (MA/m)'});
-    axis([0 DISF(end, 1) -0.2 0.2])
-    set(gca, 'FontSize', 14);
+    if PARAM.dispFigures
+        DISF = dlmread([PARAM.output_file_directory '/EddyCurrentProfile.txt']);
+        figure('Name', 'Eddy Current Plofile', 'NumberTitle', 'off')
+        plot(DISF(:, 1), DISF(:, 2), '-ko', 'MarkerEdgeColor', 'r', 'MarkerFaceColor', 'r', 'MarkerSize', 2)
+        xlabel({'Distance (m)'});
+        ylabel({'Eddy Current Density (MA/m)'});
+        axis([0 DISF(end, 1) -0.2 0.2])
+        set(gca, 'FontSize', 14);
 
-    axis([0 DISF(end, 1) -0.4 0.4])
-    set(gca, 'FontSize', 14);
-    hold on
-    JEDDY = dlmread(strcat([PARAM.input_file_directory '/jeddy.txt']));
-    plot(JEDDY(:, 1), JEDDY(:, 2), '-b')
+        axis([0 DISF(end, 1) -0.4 0.4])
+        set(gca, 'FontSize', 14);
+        hold on
+        JEDDY = dlmread(strcat([PARAM.input_file_directory '/jeddy.txt']));
+        plot(JEDDY(:, 1), JEDDY(:, 2), '-b')
+    end
 
     if 0
         % plot sensor position
@@ -225,24 +230,27 @@ function CCS_UTST_matlab(inputfile)
     CCZ = unique(CZ);
     CCR(1) = [];
     psi = reshape(PSI(1:numel(CCR) * numel(CCZ)), numel(CCZ), numel(CCR));
-    figure
-    contour(CCR, CCZ, psi, '-k', 'LevelStep', 0.0003);
-    hold on
-    contour(REF.R, REF.Z, REF.Flux, '--m', 'LevelStep', 0.0003); % ????
-    % scatter(CCSDAT.RCCN, CCSDAT.ZCCN, 'o')
-    plot(CCSDAT.RGI, CCSDAT.ZGI);
-    hold off
-    xlabel({'r (m)'});
-    ylabel({'z (m)'});
-    title("M-CCS")
-    axis equal
 
-    %% Data positions for 2D plot
-    PLOT.R = 0.1:0.01:0.9;
-    PLOT.Z = -1:0.02:1;
+    if PARAM.dispFigures
+        figure
+        contour(CCR, CCZ, psi, '-k', 'LevelStep', 0.0003);
+        hold on
+        % contour(REF.R, REF.Z, REF.Flux, '--m', 'LevelStep', 0.0003); % ????
+        % scatter(CCSDAT.RCCN, CCSDAT.ZCCN, 'o')
+        % plot(CCSDAT.RGI, CCSDAT.ZGI);
+        hold off
+        xlabel({'r (m)'});
+        ylabel({'z (m)'});
+        title("Reconstructed flux")
+        axis equal
+
+        %% Data positions for 2D plot
+        PLOT.R = 0.1:0.01:0.9;
+        PLOT.Z = -1:0.02:1;
+    end
 
     % 評価関数
-    MSE = EVALUATE(psi, REF, PARAM, CCR, CCZ)
+    MSE = EVALUATE(psi, REF, PARAM, CCSDAT, CCR, CCZ)
     save("vars_result_" + PARAM.input_file_directory, "psi", "REF", "PARAM", "CCR", "CCZ", "CCSDAT", "MSE");
 
     fclose('all');

@@ -14,17 +14,24 @@ function CCS_R = CalcPlasmaCenter(PARAM, CCS_Z)
     z = [flipud(z); -z]; r = [flipud(r); r];
     z(num) = []; r(num) = [];
 
-    figure()
-    title("プラズマ中心の時間発展とスプライン補完によるCCS面中心の決定")
-    f = fit(z, r, "smoothingspline");
-    fnplt(f.p, "-k", 1)
-    hold on
-
     for i = 1:PARAM.CCS
         CCS_R(i) = spline(z, r, CCS_Z(i));
-        plot(z, r, "om", CCS_Z(i), CCS_R(i), "*r")
     end
 
-    view(90, 90);
-    hold off
+    if PARAM.dispFigures
+        figure()
+        title("プラズマ中心の時間発展とスプライン補完によるCCS面中心の決定")
+        f = fit(z, r, "smoothingspline");
+        fnplt(f.p, "-k", 1)
+        hold on
+
+        for i = 1:PARAM.CCS
+            CCS_R(i) = spline(z, r, CCS_Z(i));
+            plot(z, r, "om", CCS_Z(i), CCS_R(i), "*r")
+        end
+
+        view(90, 90);
+        hold off
+    end
+
 end

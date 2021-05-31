@@ -17,7 +17,7 @@ function [SVS] = SVSORT_matlab(PARAM, SVO)
 
     end
 
-    fprintf('%s %d\r\n', 'SVMX =', SVMX);
+    % fprintf('%s %d\r\n', 'SVMX =', SVMX);
 
     % SVSを大きい順に並べ替えている
     for J = 2:N
@@ -50,6 +50,6 @@ function [SVS] = SVSORT_matlab(PARAM, SVO)
         fprintf(fid14, '%d %d\r\n', K, STEEP);
     end
 
-    save("vars_SVSORT");
+    % save("vars_SVSORT");
 
 end

@@ -45,12 +45,12 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadsensordata
     disp(['Number of TPRB =  ' num2str(SENSOR_TPRB.NUM)]);
 
     % 2021/05/21
-    figure()
+    % figure()
     % RR = [RR RR];
     % ZZ = [ZZ -ZZ];
-    scatter(RR, ZZ)
-    figure()
-    hold on
+    % scatter(RR, ZZ)
+    % figure()
+    % hold on
 
     % % インボード側だけを見るためのコード
     % % 端が極大でも認識できるようにB、ZZを拡張してある
