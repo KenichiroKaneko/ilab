@@ -11,7 +11,7 @@ function dispSensorPosition(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDA
         scatter(SENSOR_NPRB.R, SENSOR_NPRB.Z, "r");
     end
 
-    scatter(SENSOR_FLXLP.R, SENSOR_FLXLP.Z, "y", "filled");
+    scatter(SENSOR_FLXLP.R, SENSOR_FLXLP.Z, "b");
 
     for i = 1:PARAM.CCS
         scatter(CCSDAT.RCCN(i, :), CCSDAT.ZCCN(i, :), 'mo', "filled");

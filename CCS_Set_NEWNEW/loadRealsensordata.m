@@ -124,8 +124,8 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadRealsensor
 
             SENSOR_FLXLP.R(chnum) = R;
             SENSOR_FLXLP.Z(chnum) = Z;
-            SENSOR_FLXLP.FLXLP(chnum) = PSI;
-            % SENSOR_FLXLP.FLXLP(chnum) = PSI / (pi * R^2); % 21/05/30
+            % SENSOR_FLXLP.FLXLP(chnum) = PSI;
+            SENSOR_FLXLP.FLXLP(chnum) = PSI / (pi * R^2); % 21/05/30
             SENSOR_FLXLP.TET(chnum) = 0.0D0;
             SENSOR_FLXLP.ITYPE(chnum) = 0;
         end
