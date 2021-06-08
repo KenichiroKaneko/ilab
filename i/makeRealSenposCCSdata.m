@@ -1,7 +1,7 @@
 function makeRealSenposCCSdata(psi, Bz, Br, save_dir)
 
-    f0 = readmatrix("sensorCoordinate0.txt");
-    f1 = readmatrix("sensorCoordinate1.txt");
+    f0 = readmatrix("gs_temporary/sensorCoordinate0.txt");
+    f1 = readmatrix("gs_temporary/sensorCoordinate1.txt");
 
     Nz = 2033;
     Nr = 800;
@@ -15,7 +15,7 @@ function makeRealSenposCCSdata(psi, Bz, Br, save_dir)
     zz = linspace(zmin, zmax, Nz);
     rr = linspace(rmin, rmax, Nr);
 
-    psiOutside = load("psiOutside.mat").A;
+    psiOutside = load("gs_temporary/psiOutside.mat").A;
 
     padding = zeros(198, 2033);
     psi602 = [psi; padding];

@@ -10,10 +10,12 @@ function CCS_UTST_matlab(inputfile)
     %MXINT = 10000;       % MAX! / NUMBER OF INTERNAL POINTS
 
     PARAM = loadinputfile(inputfile);
-    PARAM.dispFigures = 1;
+
+    CONFIG = loadConfigure("CCS_input/config1.dat");
 
     REF = loadreference(PARAM);
 
+    % matFileだけでやりくりできるようにする2021/06/08
     % 2021/05/06実際のセンサー配置にするかどうか
     % オリジナルのコード、入力は、末尾にRがないもの、UTST_numel_5,9が対応
     [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadsensordata(PARAM);
@@ -41,7 +43,7 @@ function CCS_UTST_matlab(inputfile)
     CCSDAT = makeCCSdata(PARAM, GHR, GHZ);
 
     % 各センサーポジションを表示する
-    if PARAM.dispFigures
+    if CONFIG.ShowFig
         dispSensorPosition(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, REF);
     end
 
@@ -116,7 +118,7 @@ function CCS_UTST_matlab(inputfile)
     EDDYP(FFOUT, PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL);
 
     % plot eddy current
-    if PARAM.dispFigures
+    if CONFIG.ShowFig
         DISF = dlmread([PARAM.output_file_directory '/EddyCurrentProfile.txt']);
         figure('Name', 'Eddy Current Plofile', 'NumberTitle', 'off')
         plot(DISF(:, 1), DISF(:, 2), '-ko', 'MarkerEdgeColor', 'r', 'MarkerFaceColor', 'r', 'MarkerSize', 2)
@@ -231,7 +233,7 @@ function CCS_UTST_matlab(inputfile)
     CCR(1) = [];
     psi = reshape(PSI(1:numel(CCR) * numel(CCZ)), numel(CCZ), numel(CCR));
 
-    if PARAM.dispFigures
+    if CONFIG.ShowFig
         figure
         contour(CCR, CCZ, psi, '-k', 'LevelStep', 0.0003);
         hold on
