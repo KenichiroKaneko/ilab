@@ -2,7 +2,6 @@
 % data type .. 0:GS or 1:exp
 0
 
-
 % devide flux by pi R R? .. 0:No or 1:yes
 1
 
@@ -14,3 +13,6 @@
 
 % show figures ?  .. 0:No or 1:yes
 1
+
+% choose filename extension .. 0:.mat or 1:.txt
+0

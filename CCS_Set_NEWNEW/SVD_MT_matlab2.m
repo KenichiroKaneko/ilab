@@ -1,4 +1,4 @@
-function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, A, B, FC, ...
+function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, CONFIG, A, B, FC, ...
         LTikh, GAM0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP)
 
     [M, N] = size(A);
@@ -70,7 +70,7 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, A, B, FC, ...
     % ↓特異値をソート、最大値で割って規格化したものがSVS
     [SVS] = SVSORT_matlab(PARAM, W); % OK
 
-    if PARAM.dispFigures
+    if CONFIG.ShowFig
         figure('Name', 'Singular Value', 'NumberTitle', 'off')
         semilogy(1:numel(SVS), SVS(1:numel(SVS)), 'ko', 'MarkerEdgeColor', 'k', ...
             'MarkerFaceColor', 'k', 'MarkerSize', 2)
@@ -95,7 +95,7 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, A, B, FC, ...
     % hold off;
 
     % L-curve法 2021/05/17
-    KUP0 = LCURVE(PARAM, A, ss, vv, uu, X, FC);
+    KUP0 = LCURVE(PARAM, CONFIG, A, ss, vv, uu, X, FC);
     % KUP0 = 30;
     % KUP0 = 50;
     KUP0 = 62;

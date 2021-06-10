@@ -3,7 +3,7 @@
 %% FORM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 %% FORM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-function [FC, BR, BZ, PSIFLX, PSIC, AA, FF] = FORM(PARAM, AA, FF, ExtCOIL, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL)
+function [FC, BR, BZ, PSIFLX, PSIC, AA, FF] = FORM(PARAM, CONFIG, AA, FF, ExtCOIL, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL)
 
     ECI = ExtCOIL.I .* ExtCOIL.N * 1000;
     KCMX = ExtCOIL.NUM;
@@ -158,9 +158,11 @@ function [FC, BR, BZ, PSIFLX, PSIC, AA, FF] = FORM(PARAM, AA, FF, ExtCOIL, SENSO
 
             for K = 1:NE(III)
                 [HW, GW, GR, GZ, HR, HZ] = INTEGS(RS(I), ZS(I), RCCS(III, 2 * K - 1), ZCCS(III, 2 * K - 1), RCCS(III, 2 * K), ZCCS(III, 2 * K), RCCS(III, 2 * K + 1), ZCCS(III, 2 * K + 1)); % OK
-                %  2021/05/30
-                GW = GW / pi / RS(I)^2;
-                HW = HW / pi / RS(I)^2;
+
+                if CONFIG.DevideFlux
+                    GW = GW / pi / RS(I)^2;
+                    HW = HW / pi / RS(I)^2;
+                end
 
                 for JJ = 1:3
                     KK = 3 * (K - 1) + JJ;
@@ -181,8 +183,6 @@ function [FC, BR, BZ, PSIFLX, PSIC, AA, FF] = FORM(PARAM, AA, FF, ExtCOIL, SENSO
             for K = 1:NE(III)
                 [HW, GW, GR, GZ, HR, HZ] = INTEGS(RS(I + NFLX), ZS(I + NFLX), RCCS(III, 2 * K - 1), ...
                     ZCCS(III, 2 * K - 1), RCCS(III, 2 * K), ZCCS(III, 2 * K), RCCS(III, 2 * K + 1), ZCCS(III, 2 * K + 1)); % OK
-                % GW = GW / RS(I + NFLX);
-                % HW = HW / RS(I + NFLX);
 
                 for JJ = 1:3
                     KK = 3 * (K - 1) + JJ;
@@ -280,8 +280,12 @@ function [FC, BR, BZ, PSIFLX, PSIC, AA, FF] = FORM(PARAM, AA, FF, ExtCOIL, SENSO
                         ZEV(K + 2), NONC, fid99, fid100); % OK
 
                     for JJ = 1:3
-                        % EE = GW(JJ) * AMYU0; % ! flux*AMYU0
-                        EE = GW(JJ) * AMYU0 / pi / A^2; %  2021/05/30
+
+                        if CONFIG.DevideFlux
+                            EE = GW(JJ) * AMYU0 / pi / A^2; %  2021/05/30
+                        else
+                            EE = GW(JJ) * AMYU0; % ! flux*AMYU0
+                        end
 
                         if and(K == KNN - 1, JJ == 3)
                             AA(I + NAPB, sum(NCCN) * 2 + 1) = AA(I + NAPB, sum(NCCN) * 2 + 1) + EE; %        ! ### 2
@@ -369,8 +373,13 @@ function [FC, BR, BZ, PSIFLX, PSIC, AA, FF] = FORM(PARAM, AA, FF, ExtCOIL, SENSO
 
                     for JJ = 1:3
                         KK = 3 * (K - 1) + JJ;
-                        % EE = GW(JJ) * AMYU0; %      ! flux*AMYU0
-                        EE = GW(JJ) * AMYU0 / pi / A^2; %  2021/05/30
+
+                        if CONFIG.DevideFlux
+                            EE = GW(JJ) * AMYU0 / pi / A^2; %  2021/05/30
+                        else
+                            EE = GW(JJ) * AMYU0; %      ! flux*AMYU0
+                        end
+
                         AA(I + NAPB, sum(NCCN) * 2 + KK) = AA(I + NAPB, sum(NCCN) * 2 + KK) + EE; %  ! ### 2
                     end
 

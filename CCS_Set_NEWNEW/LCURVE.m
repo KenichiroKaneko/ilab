@@ -1,6 +1,6 @@
 % Lcurve法で打切り特異値分解の打切り項数を決定する
 
-function KUP = LCURVE(PARAM, A, W, V, U, X, FC)
+function KUP = LCURVE(PARAM, CONFIG, A, W, V, U, X, FC)
     % A：特異値分解される行列
     % W：特異値の行列
     % V：[U S V] = svd(A)のV
@@ -39,7 +39,7 @@ function KUP = LCURVE(PARAM, A, W, V, U, X, FC)
         truncateNum = truncateNum -1;
     end
 
-    if PARAM.dispFigures
+    if CONFIG.ShowFig
 
         figure()
         loglog(residual, P_norm, 's')

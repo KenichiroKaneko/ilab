@@ -4,12 +4,14 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
     % CCS05は（途中に仮想壁を置いた）部分的な解
     % 部分的な解を全体に拡張する際に、CCS03cのメッシュデータが必要
     % fluxは平衡解、flux0はpsiの初期状態
+    close all;
 
     saveflag = "modan"; % origin or modan or 0
-    dispFigure = 1;
+    dispFigure = 0;
     realFlag = 0;
     % 保存するdir
-    save_dir = "GSPLOT_OUTPUT/" + dirname;
+    id = extractBetween(dirname, 2, 5);
+    save_dir = "CCS_dataset_gs/UTST_numel_" + id;
 
     if not(exist(save_dir, 'dir'))
         mkdir(save_dir);
@@ -19,14 +21,14 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
     fs = 8;
 
     % 全体の解のデータ
-    data_dir3c = "OUTPUT/z2033_r602/";
+    data_dir3c = "GS_input/z2033_r602/";
     vars3c = load(data_dir3c + "vars");
     env3c = vars3c.param;
     flux3c = vars3c.psi0;
     psi_v_3c = flux3c';
 
     % 容器の大きさに拡張したい部分的な解のデータ
-    data_dir = "OUTPUT/" + dirname + "/";
+    data_dir = "GS_input/" + dirname + "/";
     vars = load(data_dir + "vars");
     env = vars.param;
     flux = vars.psi;
@@ -46,7 +48,8 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
         subplot(1, 5, 1)
         v = linspace(-20, 20, 21);
         contour(r, z, flipud(psi' * 1000), v, 'r')
-
+        psi222 = 0;
+        jt = 0;
     else
         % 拡張する
 
@@ -72,45 +75,40 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
         % 反対側にコピーした磁場のグラフここまで2020/12/21
         psi = psi + psi_v_3c;
 
+        %% Calc virtual eddy current on center
         flux = vars.mu_jt;
         jt = psi_v_3c * 0;
         jt(1:env.Nr, 1:env.Nz) = jt(1:env.Nr, 1:env.Nz) + flux(1:env.Nz, 1:env.Nr)' / (4 * pi * 1e-7);
         jt(1:env.Nr, end:-1:end - env.Nz + 1) = jt(1:env.Nr, end:-1:end - env.Nz + 1) + ...
             flux(1:env.Nz, 1:env.Nr)' / (4 * pi * 1e-7);
-
-        %% Calc virtual eddy current on center
         delz = z(2) - z(1);
         delr = r(2) - r(1);
-
         jt_center = -squeeze(psi0(2:env.Nr - 1, env.Nz - 1)) / delz ./ r(2:env.Nr - 1)' / 2 / pi / 4 / pi / 1e-7 * delr;
-
         [rr zz] = meshgrid(r, z(1:ceil(length(z) / 2)));
-
         psi_virtualj = rr * 0;
 
+        const = 2 * pi * 4 * pi * 1e-7;
+
         for k = 1:length(jt_center)
-            kk = 4 * rr * r(k + 1) ./ ((rr + r(k + 1) + 1e-6).^2 + (zz - z(env.Nz - 1)).^2);
-            [K, E] = ellipke(kk);
-            %    K(~isfinite(K))=0;
-            %    E(~isfinite(E))=0;
-            psi_virtualj = psi_virtualj + 2 * pi * 4 * pi * 1e-7 * jt_center(k) ./ (pi * sqrt(kk)) .* sqrt(rr * r(k + 1)) .* ((1 - kk / 2) .* K - E);
-            kk = 4 * rr * r(k + 1) ./ ((rr + r(k + 1) + 1e-6).^2 + (zz + z(env.Nz - 1)).^2);
-            [K, E] = ellipke(kk);
-            %    K(~isfinite(K))=0;
-            %    E(~isfinite(E))=0;
-            psi_virtualj = psi_virtualj + 2 * pi * 4 * pi * 1e-7 * jt_center(k) ./ (pi * sqrt(kk)) .* sqrt(rr * r(k + 1)) .* ((1 - kk / 2) .* K - E);
+            kk1 = 4 * rr * r(k + 1) ./ ((rr + r(k + 1) + 1e-6).^2 + (zz - z(env.Nz - 1)).^2);
+            [K1, E1] = ellipke(kk1);
+            kk2 = 4 * rr * r(k + 1) ./ ((rr + r(k + 1) + 1e-6).^2 + (zz + z(env.Nz - 1)).^2);
+            [K2, E2] = ellipke(kk2);
+            denominator = ((1 ./ (pi * sqrt(kk1)) .* ((1 - kk1 / 2) .* K1 - E1)) + (1 ./ (pi * sqrt(kk2)) .* ((1 - kk2 / 2) .* K2 - E2)));
+            psi_virtualj = psi_virtualj + const * jt_center(k) .* sqrt(rr * r(k + 1)) .* denominator;
         end
 
         psi222 = psi_v_3c * 0;
         psi222(1:env3c.Nr, 1:(env3c.Nz + 1) / 2) = psi_virtualj(1:(env3c.Nz + 1) / 2, 1:env3c.Nr)';
         psi222(1:env3c.Nr, end:-1:end - (env3c.Nz + 1) / 2 + 1 + 1) = psi_virtualj(1:(env3c.Nz + 1) / 2 - 1, 1:env3c.Nr)';
+
+        % 仮想壁に流れる電流を差し引く
         % 平衡解2020/12/21
         ah = subplot(1, 5, 4);
         contour(r, z, psi' * 1000, v, 'r')
         psi = psi - psi222;
         ah = subplot(1, 5, 5);
         contour(r, z, psi' * 1000, v, 'r')
-
     end
 
     %% Calc Bz and Br from psi
@@ -188,6 +186,8 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
     end
 
     if saveflag == "origin"
+        % テキストファイルで保存するならこっち
+        % matファイルで保存するなら最後
 
         if realFlag
             makeRealSenposCCSdata(psi, Bz, Br, save_dir);
@@ -216,7 +216,7 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
         fclose(fp);
 
         fp = fopen(save_dir + '/FluxProfile_2D.txt', 'w');
-        %fprintf(fp,'r[m]\tz[m]\tpsi[Wb]\tBz[T]\tBr[T]\n');
+
         for i = 1:length(z)
 
             for j = 1:length(r) - 1
@@ -227,13 +227,7 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
         end
 
         fclose(fp);
-    elseif saveflag == "modan"
-        save([save_dir + '/merged.mat'], "r_CCS", "z_CCS", "psi_CCS", "Bz_CCS", "Br_CCS", "psi");
     end
-
-    % if (saveflag)
-    %     save([save_dir + '/merged.mat']);
-    % end
 
     if dispFigure
 
@@ -286,7 +280,7 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
         set(ah, 'box', 'on', 'FontSize', fs, 'FontName', FONT);
     end
 
-    if env.Nz ~= 2033 && dispFigure
+    if dispFigure
         hold on
         pcolor(z, r, -jt / 1e3)
         axis equal
@@ -303,47 +297,52 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
         plot([env3c.zmin env3c.zmin env3c.z1 env3c.z2 env3c.z3 env3c.z4 env3c.zmax env3c.zmax], [env3c.rmin env3c.rmirror env3c.rmirror env3c.rmax env3c.rmax env3c.rmirror env3c.rmirror env3c.rmin], 'r', 'LineWidth', 2);
         title('current density [kA/m2]');
         set(ah, 'Box', 'on', 'FontSize', fs, 'FontName', FONT, 'FontWeight', 'bold'); %,'xlim', [-1.2 1.2], 'ylim', [0 0.8]);
+    end
 
-        %% Calc eddy current
-        psi_eddy = psi - psi_v_3c + psi222;
+    %% Calc eddy current
+    psi_eddy = psi - psi_v_3c + psi222;
 
-        delz = z(2) - z(1);
-        delr = r(2) - r(1);
+    delz = z(2) - z(1);
+    delr = r(2) - r(1);
 
-        jt1 = (-psi_eddy(601, 1017:1307) / delr / r(602) ...
-            - psi_eddy(601, 1017:1307) / 2 / r(602)^2) ...
-            / 2 / pi / 4 / pi / 1e-7/1e6;
+    jt1 = (-psi_eddy(601, 1017:1307) / delr / r(602) ...
+        - psi_eddy(601, 1017:1307) / 2 / r(602)^2) ...
+        / 2 / pi / 4 / pi / 1e-7/1e6;
 
-        jt2 = -squeeze(psi_eddy(600:-1:502, 1306)) / delz ./ r(600:-1:502)' ...
-            / 2 / pi / 4 / pi / 1e-7/1e6;
+    jt2 = -squeeze(psi_eddy(600:-1:502, 1306)) / delz ./ r(600:-1:502)' ...
+        / 2 / pi / 4 / pi / 1e-7/1e6;
 
-        jt3 = (-psi_eddy(502, 1306:2032) / delr / r(503) ...
-            - psi_eddy(502, 1306:2032) / 2 / r(503)^2) ...
-            / 2 / pi / 4 / pi / 1e-7/1e6;
+    jt3 = (-psi_eddy(502, 1306:2032) / delr / r(503) ...
+        - psi_eddy(502, 1306:2032) / 2 / r(503)^2) ...
+        / 2 / pi / 4 / pi / 1e-7/1e6;
 
-        jt4 = -squeeze(psi_eddy(501:-1:2, 2032)) / delz ./ r(501:-1:2)' ...
-            / 2 / pi / 4 / pi / 1e-7/1e6;
+    jt4 = -squeeze(psi_eddy(501:-1:2, 2032)) / delz ./ r(501:-1:2)' ...
+        / 2 / pi / 4 / pi / 1e-7/1e6;
 
-        jt5 = (-psi_eddy(2, 2031:-1:1017) / delr / r(1) ... % d^2 psi/dr^2
-            + psi_eddy(2, 2031:-1:1017) / 2 / r(1)^2) ... % d psi/dr
-            / 2 / pi / 4 / pi / 1e-7/1e6;
+    jt5 = (-psi_eddy(2, 2031:-1:1017) / delr / r(1) ... % d^2 psi/dr^2
+        + psi_eddy(2, 2031:-1:1017) / 2 / r(1)^2) ... % d psi/dr
+        / 2 / pi / 4 / pi / 1e-7/1e6;
 
-        L1 = delz * (1:length(jt1));
-        L2 = delz * length(jt1) + delr * (1:length(jt2));
-        L3 = delz * length(jt1) + delr * length(jt2) + delz * (1:length(jt3));
-        L4 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * (1:length(jt4));
-        L5 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * (1:length(jt5));
-        L6 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
-            delz * (1:length(jt5));
-        L7 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
-            delz * length(jt5) + delr * (1:length(jt4));
-        L8 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
-            delz * length(jt5) + delr * length(jt4) + delz * (1:length(jt3));
-        L9 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
-            delz * length(jt5) + delr * length(jt4) + delz * length(jt3) + delr * (1:length(jt2));
-        L10 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
-            delz * length(jt5) + delr * length(jt4) + delz * length(jt3) + delr * length(jt2) + delz * (1:length(jt1));
+    L1 = delz * (1:length(jt1));
+    L2 = delz * length(jt1) + delr * (1:length(jt2));
+    L3 = delz * length(jt1) + delr * length(jt2) + delz * (1:length(jt3));
+    L4 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * (1:length(jt4));
+    L5 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * (1:length(jt5));
+    L6 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
+        delz * (1:length(jt5));
+    L7 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
+        delz * length(jt5) + delr * (1:length(jt4));
+    L8 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
+        delz * length(jt5) + delr * length(jt4) + delz * (1:length(jt3));
+    L9 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
+        delz * length(jt5) + delr * length(jt4) + delz * length(jt3) + delr * (1:length(jt2));
+    L10 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
+        delz * length(jt5) + delr * length(jt4) + delz * length(jt3) + delr * length(jt2) + delz * (1:length(jt1));
 
+    Length = [L1 L2 L3 L4 L5 L6 L7 L8 L9 L10];
+    jeddy = [jt1 jt2' jt3 jt4' jt5 jt5(end:-1:1) jt4(end:-1:1)' jt3(end:-1:1) jt2(end:-1:1)' jt1(end:-1:1)];
+
+    if dispFigure
         fh = figure;
         hold on
         plot(L1, jt1, 'r');
@@ -356,26 +355,26 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
         plot(L8, jt3(end:-1:1), 'r');
         plot(L9, jt2(end:-1:1), 'r');
         plot(L10, jt1(end:-1:1), 'r');
-
+        plot(Length, cumtrapz(Length, jeddy))
         xlabel('Distance (m)');
         ylabel('Eddy current density (MA/m)');
+    end
 
-        Length = [L1 L2 L3 L4 L5 L6 L7 L8 L9 L10];
-        jeddy = [jt1 jt2' jt3 jt4' jt5 jt5(end:-1:1) jt4(end:-1:1)' jt3(end:-1:1) jt2(end:-1:1)' jt1(end:-1:1)];
+    if saveflag == "origin"
+        fp = fopen(save_dir + '/jeddy.txt', 'w');
 
-        if (saveflag)
-            fp = fopen(save_dir + '/jeddy.txt', 'w');
-
-            for j = 1:length(Length)
-                fprintf(fp, '%f\t%f\n', Length(j), jeddy(j));
-            end
-
-            fclose(fp);
+        for j = 1:length(Length)
+            fprintf(fp, '%f\t%f\n', Length(j), jeddy(j));
         end
 
-        fh = figure;
-        hold on
-        plot(Length, cumtrapz(Length, jeddy))
+        fclose(fp);
+    elseif saveflag == "modan"
+        r_CCS = [r_CCS fliplr(r_CCS)];
+        z_CCS = [z_CCS -fliplr(z_CCS)];
+        Br_CCS = [Br_CCS fliplr(Br_CCS)];
+        Bz_CCS = [Bz_CCS fliplr(Bz_CCS)];
+        psi_CCS = [psi_CCS fliplr(psi_CCS)];
+        save([save_dir + '/merged.mat'], "r_CCS", "z_CCS", "psi_CCS", "Bz_CCS", "Br_CCS", "jeddy", "psi");
     end
 
 end

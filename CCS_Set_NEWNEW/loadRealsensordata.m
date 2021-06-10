@@ -52,24 +52,24 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadRealsensor
     % スプライン補完でCCS面決定2021/05/06
     % figure()
 
-    RR0index = RR < 0.15;
-    B = B(RR0index); ZZ = ZZ(RR0index);
+    % RR0index = RR < 0.15;
+    % B = B(RR0index); ZZ = ZZ(RR0index);
     % plot(ZZ, B);
-    ZZ = ZZ'; B = B';
-    f = fit(ZZ, B, 'smoothingspline', 'SmoothingParam', 1);
-    hold on
+    % ZZ = ZZ'; B = B';
+    % f = fit(ZZ, B, 'smoothingspline', 'SmoothingParam', 1);
+    % hold on
     % fnplt(f.p);
-    x = fnzeros(fnder(f.p));
-    x = unique(x(:));
-    y = fnval(f.p, x);
+    % x = fnzeros(fnder(f.p));
+    % x = unique(x(:));
+    % y = fnval(f.p, x);
     % plot(x, y, 'o');
     % xlim([-1 1]);
-    matrix = [x y];
-    matrix = sortrows(matrix, 2, 'descend');
+    % matrix = [x y];
+    % matrix = sortrows(matrix, 2, 'descend');
     % plot(matrix(1, 1), matrix(1, 2), "*");
     % plot(matrix(2, 1), matrix(2, 2), "*");
     % hold off
-    lmax = islocalmax(B);
+    % lmax = islocalmax(B);
 
     % hold on
     % plot(ZZ(lmin), B(lmin), 'r*');
@@ -80,21 +80,21 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadRealsensor
     % matrix = sortrows(matrix, 'descend');
     % plot(matrix(1, 2), matrix(1, 1), "yo");
     % plot(matrix(2, 2), matrix(2, 1), "yo");
-    view(90, 90);
+    % view(90, 90);
 
-    if length(ZZ(lmax)) > 1
+    % if length(ZZ(lmax)) > 1
 
-        for i = 1:2
-            CCS_Z(i) = matrix(i, 1);
-        end
+    %     for i = 1:2
+    %         CCS_Z(i) = matrix(i, 1);
+    %     end
 
-    else
-        size(matrix)
-        CCS_Z(1) = matrix(1, 1);
-    end
+    % else
+    %     size(matrix)
+    %     CCS_Z(1) = matrix(1, 1);
+    % end
 
     % CCS面の自動決定R方向
-    CCS_R = CalcPlasmaCenter(PARAM, CCS_Z);
+    % CCS_R = CalcPlasmaCenter(PARAM, CCS_Z);
     % ここまで
 
     %% No NPRB

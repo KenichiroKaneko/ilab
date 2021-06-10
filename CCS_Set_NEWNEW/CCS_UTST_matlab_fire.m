@@ -10,7 +10,7 @@ function CCS_UTST_matlab(inputfile)
     %MXINT = 10000;       % MAX! / NUMBER OF INTERNAL POINTS
 
     PARAM = loadinputfile(inputfile);
-    PARAM.dispFigures = 0;
+    CONFIG.ShowFig = 0;
 
     REF = loadreference(PARAM);
 
@@ -41,7 +41,7 @@ function CCS_UTST_matlab(inputfile)
     CCSDAT = makeCCSdata(PARAM, GHR, GHZ);
 
     % 各センサーポジションを表示する
-    if PARAM.dispFigures
+    if CONFIG.ShowFig
         dispSensorPosition(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, REF);
     end
 

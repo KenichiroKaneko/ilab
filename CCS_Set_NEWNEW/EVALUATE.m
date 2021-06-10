@@ -1,10 +1,10 @@
 % 最小２乗誤差を返すプログラム
-function MSE = EVALUATE(psi, REF, PARAM, CCSDAT, CCR, CCZ)
+function MSE = EVALUATE(psi, REF, PARAM, CONFIG, CCSDAT, CCR, CCZ)
     % limiterRef = 0.1656627;
     limiterRef = -10;
     limiterRecon = -10;
 
-    if PARAM.dispFigures
+    if CONFIG.ShowFig
         figure()
         contour(CCR, CCZ, psi, '-k', 'LevelStep', 0.0003);
         xlim([0.1 0.9]);
@@ -29,19 +29,19 @@ function MSE = EVALUATE(psi, REF, PARAM, CCSDAT, CCR, CCZ)
             % referenceのLCFSを探索
             [LCFSref, MAxisR, MAxisZ] = detectLCFS(PARAM, CCSDAT, REF.Flux(range2, :), REF.R, REF.Z(range2), limiterRef, "reference");
             % 求めた2つの磁気面上の何点かと磁気軸からの距離をそれぞれ計算し、２乗誤差を計算
-            MSE(i) = calcError(PARAM, LCFSrecon, LCFSref, MAxisR, MAxisZ, CCR, CCZ(range1), REF.R, REF.Z(range2));
+            MSE(i) = calcError(PARAM, CONFIG, LCFSrecon, LCFSref, MAxisR, MAxisZ, CCR, CCZ(range1), REF.R, REF.Z(range2));
         end
 
     else
         % 2つのプラズマが接近した場合
         [LCFSrecon, disuseNum1, disuseNum2] = detectLCFS(PARAM, CCSDAT, psi, CCR, CCZ, limiterRecon, "reconstruction");
         [LCFSref, MAxisR, MAxisZ] = detectLCFS(PARAM, CCSDAT, REF.Flux, REF.R, REF.Z, limiterRef, "reference");
-        MSE = calcError(PARAM, LCFSrecon, LCFSref, MAxisR, MAxisZ, CCR, CCZ, REF.R, REF.Z);
+        MSE = calcError(PARAM, CONFIG, LCFSrecon, LCFSref, MAxisR, MAxisZ, CCR, CCZ, REF.R, REF.Z);
     end
 
     MSE = sum(MSE) / length(MSE);
 
-    if PARAM.dispFigures
+    if CONFIG.ShowFig
         legend("Recon flux", "Ref LCFS", "Recon LCFS");
         str = sprintf('MSE= %.3e', MSE);
         % text(0.4, -0.8, str, 'FontSize', 10, 'BackgroundColor', "white")
@@ -85,7 +85,7 @@ function [STRUCTURE, MAxisR, MAxisZ] = detectLCFS(PARAM, CCSDAT, psi, psiR, psiZ
 
     if plottype
 
-        if type == "reconstruction" & PARAM.dispFigures
+        if type == "reconstruction" & CONFIG.ShowFig
             contour(psiR, psiZ, psi, [LCFS_min LCFS_min], 'LineColor', 'r', 'LineWidth', 2)
         end
 
@@ -145,12 +145,12 @@ function [STRUCTURE, MAxisR, MAxisZ] = detectLCFS(PARAM, CCSDAT, psi, psiR, psiZ
     % end
 end
 
-function MSE = calcError(PARAM, LCFSrecon, LCFSref, MAxisR, MAxisZ, CCR, CCZ, REFR, REFZ)
+function MSE = calcError(PARAM, CONFIG, LCFSrecon, LCFSref, MAxisR, MAxisZ, CCR, CCZ, REFR, REFZ)
 
     poly2 = polyshape(REFR(LCFSref.R(LCFSref.j)), REFZ(LCFSref.Z(LCFSref.j)));
     poly1 = polyshape(CCR(LCFSrecon.R(LCFSrecon.j)), CCZ(LCFSrecon.Z(LCFSrecon.j)));
 
-    if PARAM.dispFigures
+    if CONFIG.ShowFig
 
         plot(poly2, 'FaceAlpha', 0.4, 'FaceColor', "none", 'EdgeColor', "m", "LineWidth", 3)
         plot(poly1, 'FaceAlpha', 0.4, 'FaceColor', "none", 'EdgeColor', "c", "LineWidth", 3)

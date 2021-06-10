@@ -13,18 +13,9 @@ function CCS_UTST_matlab(inputfile)
 
     CONFIG = loadConfigure("CCS_input/config1.dat");
 
-    REF = loadreference(PARAM);
+    [REF, JEDDY] = loadreference(PARAM, CONFIG);
 
-    % matFileだけでやりくりできるようにする2021/06/08
-    % 2021/05/06実際のセンサー配置にするかどうか
-    % オリジナルのコード、入力は、末尾にRがないもの、UTST_numel_5,9が対応
-    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadsensordata(PARAM);
-
-    % 実際のセンサー位置で再構成するコード、入力は末尾がRと、実験データが対応(例)UTST_numel_2033R、180515_010_t9650
-    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadRealsensordata(PARAM);
-
-    % 法線方向、接線方向を考慮して読み込むためのコード、入力は末尾がRと、実験データが対応
-    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z,CCS_R] = loadRealsensordataTN(PARAM);
+    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadSensorDataX(PARAM, CONFIG);
 
     for i = 1:PARAM.CCS
         PARAM.Z0(i) = CCS_Z(i);
@@ -83,10 +74,10 @@ function CCS_UTST_matlab(inputfile)
 
     AA = zeros(NMAX, JMAX);
     [FC, BR, BZ, PSIFLX, PSIC, AA, FF] = ...
-        FORM(PARAM, AA, FF, ExtCOIL, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL);
+        FORM(PARAM, CONFIG, AA, FF, ExtCOIL, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL);
 
     % 2021/05/08
-    save('vars_afterForm');
+    % save('vars_afterForm');
     % error('saved vars')
     % 2021/05/08
 
@@ -107,7 +98,7 @@ function CCS_UTST_matlab(inputfile)
     fprintf('NCCN/KNN/KSN = %d %d %d\n', sum(CCSDAT.NCCN), sum(WALL.KNN), sum(WALL.KSN));
 
     [C, W, U, V, FFOUT, XBFR, XMT] = ...
-        SVD_MT_matlab2(PARAM, AA, FF, FC, 0, 0.0D0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP);
+        SVD_MT_matlab2(PARAM, CONFIG, AA, FF, FC, 0, 0.0D0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP);
 
     % save("vars_afterSVD");
     % error('error description')
@@ -115,7 +106,7 @@ function CCS_UTST_matlab(inputfile)
     half_norm = sqrt((sum((FFOUT).^2)));
     fprintf('%s%d\r\n', 'norm of the solution vector = ', half_norm);
 
-    EDDYP(FFOUT, PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL);
+    % EDDYP(FFOUT, PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL);
 
     % plot eddy current
     if CONFIG.ShowFig
@@ -130,7 +121,6 @@ function CCS_UTST_matlab(inputfile)
         axis([0 DISF(end, 1) -0.4 0.4])
         set(gca, 'FontSize', 14);
         hold on
-        JEDDY = dlmread(strcat([PARAM.input_file_directory '/jeddy.txt']));
         plot(JEDDY(:, 1), JEDDY(:, 2), '-b')
     end
 
@@ -252,8 +242,8 @@ function CCS_UTST_matlab(inputfile)
     end
 
     % 評価関数
-    MSE = EVALUATE(psi, REF, PARAM, CCSDAT, CCR, CCZ)
-    save("vars_result_" + PARAM.input_file_directory, "psi", "REF", "PARAM", "CCR", "CCZ", "CCSDAT", "MSE");
+    MSE = EVALUATE(psi, REF, PARAM, CONFIG, CCSDAT, CCR, CCZ)
+    % save("vars_result_" + PARAM.input_file_directory, "psi", "REF", "PARAM", "CCR", "CCZ", "CCSDAT", "MSE");
 
     fclose('all');
 end
