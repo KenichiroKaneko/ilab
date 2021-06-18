@@ -227,9 +227,9 @@ function CCS_UTST_matlab(inputfile)
         figure
         contour(CCR, CCZ, psi, '-k', 'LevelStep', 0.0003);
         hold on
-        % contour(REF.R, REF.Z, REF.Flux, '--m', 'LevelStep', 0.0003); % ????
+        contour(REF.R, REF.Z, REF.Flux, '--m', 'LevelStep', 0.0003); % ????
         % scatter(CCSDAT.RCCN, CCSDAT.ZCCN, 'o')
-        % plot(CCSDAT.RGI, CCSDAT.ZGI);
+        plot(CCSDAT.RGI, CCSDAT.ZGI);
         hold off
         xlabel({'r (m)'});
         ylabel({'z (m)'});

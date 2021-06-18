@@ -87,6 +87,10 @@ function [FC, BR, BZ, PSIFLX, PSIC, AA, FF] = FORM(PARAM, CONFIG, AA, FF, ExtCOI
 
         PSIFLX(L) = PSIFLX(L) + sum(PPSIFLX(1:KCMX) .* ECI(1:KCMX) * RMYU0);
 
+        if CONFIG.DevideFlux
+            PSIFLX(L) = PSIFLX(L) / pi / SENSOR_FLXLP.R(L)^2;
+        end
+
         FF(L + NAPB) = FF(L + NAPB) - PSIFLX(L); %! 下駄処理を含む
         FC(L + NAPB) = PSIFLX(L); %! コイル電流寄与
     end

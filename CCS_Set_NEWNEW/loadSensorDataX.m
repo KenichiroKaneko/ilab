@@ -31,7 +31,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadsensordata
 
         % センサー位置でデータを間引く
         len = length(R);
-        index = [1:90:len];
+        index = [1:100:len];
         R = R(index);
         Z = Z(index);
         BR = BR(index);
