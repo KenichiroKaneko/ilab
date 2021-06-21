@@ -1,5 +1,5 @@
 function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, CONFIG, A, B, FC, ...
-        LTikh, GAM0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP)
+        LTikh, GAM0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP, FF)
 
     [M, N] = size(A);
     NAPB = SENSOR_TPRB.NUM + SENSOR_NPRB.NUM;
@@ -103,7 +103,7 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, CONFIG, A, B, FC, ..
     KUP0 = 65;
 
     % 2021/06/11 各要素の相対誤差を計算１
-    CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, A, ss, vv, uu, X, FC);
+    CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, A, ss, vv, uu, X, FC, FF);
 
     fprintf(IPRN, '%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');
     fprintf('%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');
