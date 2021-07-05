@@ -75,6 +75,6 @@ function CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, 
         legend('A*X', 'FF');
     end
 
-    save("vars_inMRE");
-    error('f', A1)
+    % save("vars_inMRE  ");
+    % error('f', A1)
 end

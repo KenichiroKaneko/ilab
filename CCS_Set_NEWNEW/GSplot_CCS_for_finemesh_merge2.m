@@ -371,7 +371,7 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
     elseif saveflag == "modan"
         r_CCS = [r_CCS fliplr(r_CCS)];
         z_CCS = [z_CCS -fliplr(z_CCS)];
-        Br_CCS = [Br_CCS fliplr(Br_CCS)];
+        Br_CCS = [Br_CCS -fliplr(Br_CCS)];
         Bz_CCS = [Bz_CCS fliplr(Bz_CCS)];
         psi_CCS = [psi_CCS fliplr(psi_CCS)];
         save([save_dir + '/merged.mat'], "r_CCS", "z_CCS", "psi_CCS", "Bz_CCS", "Br_CCS", "jeddy", "psi");

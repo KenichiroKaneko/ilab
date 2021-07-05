@@ -82,7 +82,7 @@ function CCS_UTST_matlab(inputfile)
     % 2021/05/08
 
     %% INOMOTO start
-    fluxfactor = 10;
+    fluxfactor = 1;
 
     FF(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) = FF(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) * fluxfactor;
     AA(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM, :) = AA(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM, :) * fluxfactor;
@@ -124,7 +124,7 @@ function CCS_UTST_matlab(inputfile)
         plot(JEDDY(:, 1), JEDDY(:, 2), '-b')
     end
 
-    if 0
+    if CONFIG.ShowFig
         % plot sensor position
         VV = dlmread([PARAM.temporary_file_directory '/VacuumVesselMeshPoints.txt']);
         SEN0 = dlmread([PARAM.temporary_file_directory '/SENPOS0.txt']);
@@ -183,8 +183,8 @@ function CCS_UTST_matlab(inputfile)
     JCRE = 2;
     NINT = 0;
 
-    % 再構成する磁束のサイズ
-    % cm単位の範囲の指定
+    % % 再構成する磁束のサイズ
+    % % cm単位の範囲の指定
     % MINR = 10.815;
     % MAXR = 88.80;
     % MINZ = -99.85;
@@ -225,9 +225,10 @@ function CCS_UTST_matlab(inputfile)
 
     if CONFIG.ShowFig
         figure
-        contour(CCR, CCZ, psi, '-k', 'LevelStep', 0.0003);
+        v = linspace(-30, 30, 61);
+        contour(CCR, CCZ, psi * 3000, v, '-k');
         hold on
-        contour(REF.R, REF.Z, REF.Flux, '--m', 'LevelStep', 0.0003); % ????
+        contour(REF.R, REF.Z, REF.Flux * 3000, v, '--m'); % ????
         % scatter(CCSDAT.RCCN, CCSDAT.ZCCN, 'o')
         plot(CCSDAT.RGI, CCSDAT.ZGI);
         hold off

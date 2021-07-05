@@ -99,8 +99,8 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, CONFIG, A, B, FC, ..
     % KUP0 = 30;
     % KUP0 = 50;
     % KUP0 = 62;
-    % KUP0 = N;
-    KUP0 = 65;
+    KUP0 = N;
+    % KUP0 = 65;
 
     % 2021/06/11 各要素の相対誤差を計算１
     CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, A, ss, vv, uu, X, FC, FF);
@@ -213,7 +213,7 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, CONFIG, A, B, FC, ..
     %
     [X] = SVBKSB(U, W, V, C); % OK
     % 2021/06/11 各要素の相対誤差を計算２
-    CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, A, ss, vv, uu, X, FC);
+    CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, A, ss, vv, uu, X, FC, FF);
     % save('vars_afterSVBKSB')
     % error('error description svbksb')
 

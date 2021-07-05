@@ -1,5 +1,11 @@
 % 最小２乗誤差を返すプログラム
 function MSE = EVALUATE(psi, REF, PARAM, CONFIG, CCSDAT, CCR, CCZ)
+    % psi 再構成結果の磁束分布
+    % REF referenceの情報（磁束分布、R座標、Z座標）
+    % PARAM, CONFIG 設定ファイル
+    % CCSDAT CCS面に関するデータ（中心位置や大きさなど）
+    % CCR,CCZ 再構成結果のR座標、Z座標のリスト
+
     % limiterRef = 0.1656627;
     limiterRef = -10;
     limiterRecon = -10;
@@ -25,18 +31,25 @@ function MSE = EVALUATE(psi, REF, PARAM, CONFIG, CCSDAT, CCR, CCZ)
             range2 = 1 + j * 1016:1017 + j * 1016;
 
             % 再構成した磁束のLCFSを探索
-            [LCFSrecon, disuseNum1, disuseNum2] = detectLCFS(PARAM, CCSDAT, psi(range1, :), CCR, CCZ(range1), limiterRecon, "reconstruction");
+            [LCFSrecon, disuseNum1, disuseNum2, LCFS_min_recon] = detectLCFS(PARAM, CONFIG, CCSDAT, psi(range1, :), CCR, CCZ(range1), limiterRecon, "reconstruction");
             % referenceのLCFSを探索
-            [LCFSref, MAxisR, MAxisZ] = detectLCFS(PARAM, CCSDAT, REF.Flux(range2, :), REF.R, REF.Z(range2), limiterRef, "reference");
+            [LCFSref, MAxisR, MAxisZ, LCFS_min_ref] = detectLCFS(PARAM, CONFIG, CCSDAT, REF.Flux(range2, :), REF.R, REF.Z(range2), limiterRef, "reference");
+            % LCFSを描画
+            contour(CCR, CCZ, psi(range1, :), [LCFS_min_recon LCFS_min_recon], 'LineColor', 'c', 'LineWidth', 2);
+            contour(REF.R, REF.Z, REF.Flux(range2, :), [LCFS_min_ref LCFS_min_ref], 'LineColor', 'm', 'LineWidth', 2);
             % 求めた2つの磁気面上の何点かと磁気軸からの距離をそれぞれ計算し、２乗誤差を計算
-            MSE(i) = calcError(PARAM, CONFIG, LCFSrecon, LCFSref, MAxisR, MAxisZ, CCR, CCZ(range1), REF.R, REF.Z(range2));
+            MSE(i) = calcError(PARAM, CONFIG, LCFSrecon, LCFSref, MAxisR, MAxisZ, LCFS_min_recon, LCFS_min_ref, CCR, CCZ(range1), REF.R, REF.Z(range2));
         end
 
     else
         % 2つのプラズマが接近した場合
-        [LCFSrecon, disuseNum1, disuseNum2] = detectLCFS(PARAM, CCSDAT, psi, CCR, CCZ, limiterRecon, "reconstruction");
-        [LCFSref, MAxisR, MAxisZ] = detectLCFS(PARAM, CCSDAT, REF.Flux, REF.R, REF.Z, limiterRef, "reference");
-        MSE = calcError(PARAM, CONFIG, LCFSrecon, LCFSref, MAxisR, MAxisZ, CCR, CCZ, REF.R, REF.Z);
+        [LCFSrecon, disuseNum1, disuseNum2, LCFS_min_recon] = detectLCFS(PARAM, CONFIG, CCSDAT, psi, CCR, CCZ, limiterRecon, "reconstruction");
+        [LCFSref, MAxisR, MAxisZ, LCFS_min_ref] = detectLCFS(PARAM, CONFIG, CCSDAT, REF.Flux, REF.R, REF.Z, limiterRef, "reference");
+        % LCFSを描画
+        contour(CCR, CCZ, psi, [LCFS_min_recon LCFS_min_recon], 'LineColor', 'c', 'LineWidth', 2);
+        contour(REF.R, REF.Z, REF.Flux, [LCFS_min_ref LCFS_min_ref], 'LineColor', 'm', 'LineWidth', 2);
+        % 求めた2つの磁気面上の何点かと磁気軸からの距離をそれぞれ計算し、２乗誤差を計算
+        MSE = calcError(PARAM, CONFIG, LCFSrecon, LCFSref, MAxisR, MAxisZ, LCFS_min_recon, LCFS_min_ref, CCR, CCZ, REF.R, REF.Z);
     end
 
     MSE = sum(MSE) / length(MSE);
@@ -49,7 +62,14 @@ function MSE = EVALUATE(psi, REF, PARAM, CONFIG, CCSDAT, CCR, CCZ)
 
 end
 
-function [STRUCTURE, MAxisR, MAxisZ] = detectLCFS(PARAM, CCSDAT, psi, psiR, psiZ, limiter, type)
+function [STRUCTURE, MAxisR, MAxisZ, LCFS_min] = detectLCFS(PARAM, CONFIG, CCSDAT, psi, psiR, psiZ, limiter, type)
+    % PARAM,CONFIG 設定ファイル
+    % CCSDAT CCS面に関するデータ（中心位置や大きさなど）
+    % LCFSを探す対象の磁束分布
+    % psiR,psiZ LCFSを探す対象の磁束分布のR座標、Z座標
+    % limiter リミターに関する調整
+    % type reference/reconstruction
+
     psi_temp = psi;
     psi_inside = psi;
     plottype = 0;
@@ -145,15 +165,21 @@ function [STRUCTURE, MAxisR, MAxisZ] = detectLCFS(PARAM, CCSDAT, psi, psiR, psiZ
     % end
 end
 
-function MSE = calcError(PARAM, CONFIG, LCFSrecon, LCFSref, MAxisR, MAxisZ, CCR, CCZ, REFR, REFZ)
+function MSE = calcError(PARAM, CONFIG, LCFSrecon, LCFSref, MAxisR, MAxisZ, LCFS_min_recon, LCFS_min_ref, CCR, CCZ, REFR, REFZ)
+    % PARAM,CONFIG 設定ファイル
+    % CCSDAT CCS面に関するデータ（中心位置や大きさなど）
+    % LCFSrecon, LCFSref 構造体 jは２次元配列、境界の座標 R,Zは座標
+    % MAxisR,MAxisZ referenceの磁気軸の中心 ここを基準に誤差を計測する
+    % LCFS_min_recon, LCFS_min_ref LCFSを描く時の基準の値 この値の投稿線がLCFS
+    % CCR,CCZ 再構成結果のR座標、Z座標のリスト
+    % REFR, REFZ referencdのR座標、Z座標のリスト
 
     poly2 = polyshape(REFR(LCFSref.R(LCFSref.j)), REFZ(LCFSref.Z(LCFSref.j)));
     poly1 = polyshape(CCR(LCFSrecon.R(LCFSrecon.j)), CCZ(LCFSrecon.Z(LCFSrecon.j)));
 
     if CONFIG.ShowFig
-
-        plot(poly2, 'FaceAlpha', 0.4, 'FaceColor', "none", 'EdgeColor', "m", "LineWidth", 3)
-        plot(poly1, 'FaceAlpha', 0.4, 'FaceColor', "none", 'EdgeColor', "c", "LineWidth", 3)
+        % plot(poly2, 'FaceAlpha', 0.4, 'FaceColor', "none", 'EdgeColor', "m", "LineWidth", 3)
+        % plot(poly1, 'FaceAlpha', 0.4, 'FaceColor', "none", 'EdgeColor', "c", "LineWidth", 3)
         scatter(REFR(MAxisR), REFZ(MAxisZ));
     end
 

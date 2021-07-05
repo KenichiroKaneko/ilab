@@ -107,10 +107,10 @@ function [FC, BR, BZ, PSIFLX, PSIC, AA, FF] = FORM(PARAM, CONFIG, AA, FF, ExtCOI
 
         BR(L) = sum((-PHIB(1:KCMX) / RS(L + NFLX)) .* ECI(1:KCMX) * RMYU0);
         BZ(L) = sum((PHIA(1:KCMX) / RS(L + NFLX)) .* ECI(1:KCMX) * RMYU0);
-        BBB = BR(L) * cos(TET(L + NFLX)) + BZ(L) * sin(TET(L + NFLX));
+        BBB(L) = BR(L) * cos(TET(L + NFLX)) + BZ(L) * sin(TET(L + NFLX));
         %        fprintf(WAHAHA,'%d %d\r\n',L,BBB);
-        FF(L) = FF(L) - BBB;
-        FC(L) = BBB; %! コイル電流寄与
+        FF(L) = FF(L) - BBB(L);
+        FC(L) = BBB(L); %! コイル電流寄与
     end
 
     %    !CCS

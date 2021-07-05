@@ -31,7 +31,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadsensordata
 
         % センサー位置でデータを間引く
         len = length(R);
-        index = [1:1:len];
+        index = [1:100:len];
         R = R(index);
         Z = Z(index);
         BR = BR(index);
@@ -63,7 +63,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadsensordata
         SENSOR_FLXLP.Z = Z;
 
         if CONFIG.DevideFlux
-            SENSOR_FLXLP.FLXLP = PSI ./ (pi .* R .* R);
+            SENSOR_FLXLP.FLXLP = PSI ./ (pi .* SENSOR_FLXLP.R .* SENSOR_FLXLP.R);
         else
             SENSOR_FLXLP.FLXLP = PSI;
         end
@@ -115,6 +115,8 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadsensordata
     % CCS面の自動決定R方向
     if CONFIG.DetermineCCSRPos
         CCS_R = CalcPlasmaCenter(PARAM, CONFIG, CCS_Z);
+        % CCS_R = CCS_R * 0.7;
+        CCS_R = 0.295
     end
 
 end
