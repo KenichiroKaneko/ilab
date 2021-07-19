@@ -31,7 +31,8 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadsensordata
 
         % センサー位置でデータを間引く
         len = length(R);
-        index = [1:100:len];
+        num = 30;
+        index = [1:ceil(len / num):len];
         R = R(index);
         Z = Z(index);
         BR = BR(index);
@@ -73,7 +74,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadsensordata
         SENSOR_FLXLP.NUM = len;
         disp(['Number of FLXLP = ' num2str(SENSOR_FLXLP.NUM)]);
 
-        save("vars_inloadX")
+        % save("vars_inloadX")
     end
 
     % CCSセンター位置の決定
@@ -110,13 +111,20 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadsensordata
             CCS_Z(1) = matrix(1, 1);
         end
 
+    else
+
+        for i = 1:PARAM.CCS
+            CCS_Z(i) = PARAM.Z0(i);
+            CCS_R(i) = PARAM.R0(i);
+        end
+
     end
 
     % CCS面の自動決定R方向
     if CONFIG.DetermineCCSRPos
         CCS_R = CalcPlasmaCenter(PARAM, CONFIG, CCS_Z);
-        % CCS_R = CCS_R * 0.7;
-        CCS_R = 0.295
+        % CCS_R = CCS_R * 0.9;
+        % CCS_R = 0.295
     end
 
 end

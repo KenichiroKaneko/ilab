@@ -11,7 +11,7 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
     realFlag = 0;
     % 保存するdir
     id = extractBetween(dirname, 2, 5);
-    save_dir = "CCS_dataset_gs/UTST_numel_" + id;
+    save_dir = "CCS_dataset_gs_mini/UTST_numel_" + id;
 
     if not(exist(save_dir, 'dir'))
         mkdir(save_dir);
@@ -22,6 +22,7 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
 
     % 全体の解のデータ
     data_dir3c = "GS_input/z2033_r602/";
+    % data_dir3c = "GS_input/z201_r101/";
     vars3c = load(data_dir3c + "vars");
     env3c = vars3c.param;
     flux3c = vars3c.psi0;
@@ -39,8 +40,10 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
     % グラフの領域2020/12/21
     z = linspace(env3c.zmin, env3c.zmax, env3c.Nz);
     r = linspace(env3c.rmin, env3c.rmax, env3c.Nr);
+    delz = z(2) - z(1);
+    delr = r(2) - r(1);
 
-    if env.Nz == 2033
+    if env.Nz == env3c.Nz
         % 拡張しなくて良い
 
         psi = flux';
@@ -81,8 +84,7 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
         jt(1:env.Nr, 1:env.Nz) = jt(1:env.Nr, 1:env.Nz) + flux(1:env.Nz, 1:env.Nr)' / (4 * pi * 1e-7);
         jt(1:env.Nr, end:-1:end - env.Nz + 1) = jt(1:env.Nr, end:-1:end - env.Nz + 1) + ...
             flux(1:env.Nz, 1:env.Nr)' / (4 * pi * 1e-7);
-        delz = z(2) - z(1);
-        delr = r(2) - r(1);
+
         jt_center = -squeeze(psi0(2:env.Nr - 1, env.Nz - 1)) / delz ./ r(2:env.Nr - 1)' / 2 / pi / 4 / pi / 1e-7 * delr;
         [rr zz] = meshgrid(r, z(1:ceil(length(z) / 2)));
         psi_virtualj = rr * 0;
@@ -137,53 +139,113 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
     % 2021/04/28 UTST装置のセンサー配置
     % save("psiGSplotTest", "psi");
 
-    for i = 1:length(z(1017:2028))
-        r_CCS(i) = r(6);
-        z_CCS(i) = z(1016 + i);
-        psi_CCS(i) = psi(6, 1016 + i);
-        Bz_CCS(i) = Bz(6, 1016 + i);
-        Br_CCS(i) = Br(6, 1016 + i);
+    % 2021/07/19
+    % フレキシブルな座標
+    % I...何点内側か
+    I = 5;
+    zCenter = ceil(env3c.Nz / 2)
+    rSharp = ceil((env3c.rmirror - env3c.rmin) / delr) - I
+    zSharp = env3c.Nz - I - floor((env3c.zmax - env3c.z3) / delz)
+
+    count = 0;
+
+    for i = zCenter:env3c.Nz - I
+        % １中央から下までインボード側
+        count = count + 1;
+        r_CCS(count) = r(I + 1);
+        z_CCS(count) = z(i);
+        psi_CCS(count) = psi(I + 1, i);
+        Bz_CCS(count) = Bz(I + 1, i);
+        Br_CCS(count) = Br(I + 1, i);
     end
 
-    datanum = length(r_CCS);
-
-    for i = 1:length(r(7:499))
-        r_CCS(datanum + i) = r(6 + i);
-        z_CCS(datanum + i) = z(2028);
-        psi_CCS(datanum + i) = psi(6 + i, 2028);
-        Bz_CCS(datanum + i) = Bz(6 + i, 2028);
-        Br_CCS(datanum + i) = Br(6 + i, 2028);
+    for i = I + 2:rSharp - 1
+        % ２底面インボード側からアウトボード側
+        count = count + 1;
+        r_CCS(count) = r(i);
+        z_CCS(count) = z(env3c.Nz - I);
+        psi_CCS(count) = psi(i, env3c.Nz - I);
+        Bz_CCS(count) = Bz(i, env3c.Nz - I);
+        Br_CCS(count) = Br(i, env3c.Nz - I);
     end
 
-    datanum = length(r_CCS);
-
-    for i = 1:length(z(1302:2027))
-        r_CCS(datanum + i) = r(499);
-        z_CCS(datanum + i) = z(2028 - i);
-        psi_CCS(datanum + i) = psi(499, 2028 - i);
-        Bz_CCS(datanum + i) = Bz(499, 2028 - i);
-        Br_CCS(datanum + i) = Br(499, 2028 - i);
+    for i = env3c.Nz - I:-1:zSharp
+        % ３底面からくびれまで
+        count = count + 1;
+        r_CCS(count) = r(rSharp);
+        z_CCS(count) = z(i);
+        psi_CCS(count) = psi(rSharp, i);
+        Bz_CCS(count) = Bz(rSharp, i);
+        Br_CCS(count) = Br(rSharp, i);
     end
 
-    datanum = length(r_CCS);
-
-    for i = 1:length(r(500:597))
-        r_CCS(datanum + i) = r(499 + i);
-        z_CCS(datanum + i) = z(1302);
-        psi_CCS(datanum + i) = psi(499 + i, 1302);
-        Bz_CCS(datanum + i) = Bz(499 + i, 1302);
-        Br_CCS(datanum + i) = Br(499 + i, 1302);
+    for i = rSharp + 1:env3c.Nr - I - 1
+        % くびれからくびれの外側まで
+        count = count + 1;
+        r_CCS(count) = r(i);
+        z_CCS(count) = z(zSharp);
+        psi_CCS(count) = psi(i, zSharp);
+        Bz_CCS(count) = Bz(i, zSharp);
+        Br_CCS(count) = Br(i, zSharp);
     end
 
-    datanum = length(r_CCS);
-
-    for i = 1:length(z(1017:1301))
-        r_CCS(datanum + i) = r(597);
-        z_CCS(datanum + i) = z(1302 - i);
-        psi_CCS(datanum + i) = psi(597, 1302 - i);
-        Bz_CCS(datanum + i) = Bz(597, 1302 - i);
-        Br_CCS(datanum + i) = Br(597, 1302 - i);
+    for i = zSharp:-1:zCenter
+        % くびれの外側から中央へ
+        count = count + 1;
+        r_CCS(count) = r(env3c.Nr - I);
+        z_CCS(count) = z(i);
+        psi_CCS(count) = psi(env3c.Nr - I, i);
+        Bz_CCS(count) = Bz(env3c.Nr - I, i);
+        Br_CCS(count) = Br(env3c.Nr - I, i);
     end
+
+    % for i = 1:length(z(1017:2028))
+    %     r_CCS(datanum + i) = r(6);
+    %     z_CCS(datanum + i) = z(1016 + i);
+    %     psi_CCS(datanum + i) = psi(6, 1016 + i);
+    %     Bz_CCS(datanum + i) = Bz(6, 1016 + i);
+    %     Br_CCS(datanum + i) = Br(6, 1016 + i);
+    % end
+
+    % datanum = length(r_CCS);
+
+    % for i = 1:length(r(7:499))
+    %     r_CCS(datanum + i) = r(6 + i);
+    %     z_CCS(datanum + i) = z(2028);
+    %     psi_CCS(datanum + i) = psi(6 + i, 2028);
+    %     Bz_CCS(datanum + i) = Bz(6 + i, 2028);
+    %     Br_CCS(datanum + i) = Br(6 + i, 2028);
+    % end
+
+    % datanum = length(r_CCS);
+
+    % for i = 1:length(z(1302:2027))
+    %     r_CCS(datanum + i) = r(499);
+    %     z_CCS(datanum + i) = z(2028 - i);
+    %     psi_CCS(datanum + i) = psi(499, 2028 - i);
+    %     Bz_CCS(datanum + i) = Bz(499, 2028 - i);
+    %     Br_CCS(datanum + i) = Br(499, 2028 - i);
+    % end
+
+    % datanum = length(r_CCS);
+
+    % for i = 1:length(r(500:597))
+    %     r_CCS(datanum + i) = r(499 + i);
+    %     z_CCS(datanum + i) = z(1302);
+    %     psi_CCS(datanum + i) = psi(499 + i, 1302);
+    %     Bz_CCS(datanum + i) = Bz(499 + i, 1302);
+    %     Br_CCS(datanum + i) = Br(499 + i, 1302);
+    % end
+
+    % datanum = length(r_CCS);
+
+    % for i = 1:length(z(1017:1301))
+    %     r_CCS(datanum + i) = r(597);
+    %     z_CCS(datanum + i) = z(1302 - i);
+    %     psi_CCS(datanum + i) = psi(597, 1302 - i);
+    %     Bz_CCS(datanum + i) = Bz(597, 1302 - i);
+    %     Br_CCS(datanum + i) = Br(597, 1302 - i);
+    % end
 
     if saveflag == "origin"
         % テキストファイルで保存するならこっち
@@ -300,47 +362,49 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
     end
 
     %% Calc eddy current
-    psi_eddy = psi - psi_v_3c + psi222;
+    if 1
+        psi_eddy = psi - psi_v_3c + psi222;
 
-    delz = z(2) - z(1);
-    delr = r(2) - r(1);
+        delz = z(2) - z(1);
+        delr = r(2) - r(1);
 
-    jt1 = (-psi_eddy(601, 1017:1307) / delr / r(602) ...
-        - psi_eddy(601, 1017:1307) / 2 / r(602)^2) ...
-        / 2 / pi / 4 / pi / 1e-7/1e6;
+        jt1 = (-psi_eddy(601, 1017:1307) / delr / r(602) ...
+            - psi_eddy(601, 1017:1307) / 2 / r(602)^2) ...
+            / 2 / pi / 4 / pi / 1e-7/1e6;
 
-    jt2 = -squeeze(psi_eddy(600:-1:502, 1306)) / delz ./ r(600:-1:502)' ...
-        / 2 / pi / 4 / pi / 1e-7/1e6;
+        jt2 = -squeeze(psi_eddy(600:-1:502, 1306)) / delz ./ r(600:-1:502)' ...
+            / 2 / pi / 4 / pi / 1e-7/1e6;
 
-    jt3 = (-psi_eddy(502, 1306:2032) / delr / r(503) ...
-        - psi_eddy(502, 1306:2032) / 2 / r(503)^2) ...
-        / 2 / pi / 4 / pi / 1e-7/1e6;
+        jt3 = (-psi_eddy(502, 1306:2032) / delr / r(503) ...
+            - psi_eddy(502, 1306:2032) / 2 / r(503)^2) ...
+            / 2 / pi / 4 / pi / 1e-7/1e6;
 
-    jt4 = -squeeze(psi_eddy(501:-1:2, 2032)) / delz ./ r(501:-1:2)' ...
-        / 2 / pi / 4 / pi / 1e-7/1e6;
+        jt4 = -squeeze(psi_eddy(501:-1:2, 2032)) / delz ./ r(501:-1:2)' ...
+            / 2 / pi / 4 / pi / 1e-7/1e6;
 
-    jt5 = (-psi_eddy(2, 2031:-1:1017) / delr / r(1) ... % d^2 psi/dr^2
-        + psi_eddy(2, 2031:-1:1017) / 2 / r(1)^2) ... % d psi/dr
-        / 2 / pi / 4 / pi / 1e-7/1e6;
+        jt5 = (-psi_eddy(2, 2031:-1:1017) / delr / r(1) ... % d^2 psi/dr^2
+            + psi_eddy(2, 2031:-1:1017) / 2 / r(1)^2) ... % d psi/dr
+            / 2 / pi / 4 / pi / 1e-7/1e6;
 
-    L1 = delz * (1:length(jt1));
-    L2 = delz * length(jt1) + delr * (1:length(jt2));
-    L3 = delz * length(jt1) + delr * length(jt2) + delz * (1:length(jt3));
-    L4 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * (1:length(jt4));
-    L5 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * (1:length(jt5));
-    L6 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
-        delz * (1:length(jt5));
-    L7 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
-        delz * length(jt5) + delr * (1:length(jt4));
-    L8 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
-        delz * length(jt5) + delr * length(jt4) + delz * (1:length(jt3));
-    L9 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
-        delz * length(jt5) + delr * length(jt4) + delz * length(jt3) + delr * (1:length(jt2));
-    L10 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
-        delz * length(jt5) + delr * length(jt4) + delz * length(jt3) + delr * length(jt2) + delz * (1:length(jt1));
+        L1 = delz * (1:length(jt1));
+        L2 = delz * length(jt1) + delr * (1:length(jt2));
+        L3 = delz * length(jt1) + delr * length(jt2) + delz * (1:length(jt3));
+        L4 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * (1:length(jt4));
+        L5 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * (1:length(jt5));
+        L6 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
+            delz * (1:length(jt5));
+        L7 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
+            delz * length(jt5) + delr * (1:length(jt4));
+        L8 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
+            delz * length(jt5) + delr * length(jt4) + delz * (1:length(jt3));
+        L9 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
+            delz * length(jt5) + delr * length(jt4) + delz * length(jt3) + delr * (1:length(jt2));
+        L10 = delz * length(jt1) + delr * length(jt2) + delz * length(jt3) + delr * length(jt4) + delz * length(jt5) + ...
+            delz * length(jt5) + delr * length(jt4) + delz * length(jt3) + delr * length(jt2) + delz * (1:length(jt1));
 
-    Length = [L1 L2 L3 L4 L5 L6 L7 L8 L9 L10];
-    jeddy = [jt1 jt2' jt3 jt4' jt5 jt5(end:-1:1) jt4(end:-1:1)' jt3(end:-1:1) jt2(end:-1:1)' jt1(end:-1:1)];
+        Length = [L1 L2 L3 L4 L5 L6 L7 L8 L9 L10];
+        jeddy = [jt1 jt2' jt3 jt4' jt5 jt5(end:-1:1) jt4(end:-1:1)' jt3(end:-1:1) jt2(end:-1:1)' jt1(end:-1:1)];
+    end
 
     if dispFigure
         fh = figure;
@@ -369,6 +433,7 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
 
         fclose(fp);
     elseif saveflag == "modan"
+        % jeddy = load("CCS_dataset_gs/UTST_numel_2033/merged").jeddy;
         r_CCS = [r_CCS fliplr(r_CCS)];
         z_CCS = [z_CCS -fliplr(z_CCS)];
         Br_CCS = [Br_CCS -fliplr(Br_CCS)];

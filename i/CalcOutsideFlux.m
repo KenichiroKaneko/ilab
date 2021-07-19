@@ -4,7 +4,6 @@
 % fp = fopen(save_dir+'/jeddy_'+suffix+'.txt', 'w')
 % fprintf(fp, 'a');
 
-
 % SEN0 = dlmread('i/sensorCoordinate0.txt');
 % r = SEN0(:, 1);
 % z = SEN0(:, 2);
@@ -49,8 +48,8 @@ v = linspace(-50, 50, 21);
 
 figure()
 
-contour(r, z, psi*1000, v)
-save("psi800", "psi")
+contour(r, z, psi * 1000, v)
+% save("psi800", "psi")
 
 function [param, psi] = cal_psi(param, psi)
 

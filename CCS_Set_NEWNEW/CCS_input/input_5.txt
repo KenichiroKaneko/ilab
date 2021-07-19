@@ -8,7 +8,7 @@ CCS_output		%003_output_file_directory
 3				%05_SEED
 1				%06_CCS_ORIG
 0				%07_IDECCS
-0.295			%08_R0(1)
+0.295 			%08_R0(1)
 0.0				%09_Z0(1)
 0.03			%10_RR(1)
 1.4				%11_CAPPER(1)

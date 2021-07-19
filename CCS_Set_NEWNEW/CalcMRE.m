@@ -1,5 +1,7 @@
-function CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, A, ss, vv, uu, X, FC, FF)
+function CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, A, ss, vv, uu, X, FC, FF, f1, f2)
     % 各センサーの相対誤差を計算
+    % センサーの順番はprobe,Flux,CCSだが、コードでは間違えている
+    % 今度直す
 
     NFLX = SENSOR_FLXLP.NUM;
     NAPB = SENSOR_TPRB.NUM + SENSOR_NPRB.NUM;
@@ -21,8 +23,8 @@ function CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, 
 
     MREs = [MREFlux, MREAPB, MRECCS];
     % disp(MREs);
-    txt1 = sprintf("Flux Sensor   Num:%4d  MRE:%.3e\n", NFLX, MREFlux);
-    txt2 = sprintf("Probe Sensor  Num:%4d  MRE:%.3e\n", NAPB, MREAPB);
+    txt1 = sprintf("Probe Sensor  Num:%4d  MRE:%.3e\n", NFLX, MREFlux);
+    txt2 = sprintf("Flux  Sensor  Num:%4d  MRE:%.3e\n", NAPB, MREAPB);
     txt3 = sprintf("CCS Node      Num:%4d  MRE:%.3e\n", NCCN, MRECCS);
     disp(txt1 + txt2 + txt3)
 
@@ -73,6 +75,14 @@ function CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, 
 
         title('各センサー位置の再構成結果');
         legend('A*X', 'FF');
+
+        figure(f2)
+        plot(NFLXl:NCCSr, A * X' - FF');
+        % hold on
+        % x = [NFLXr, NFLXr, NAPBl, NAPBr, NCCSl, NCCSr];
+        % scatter(x, zeros(1, length(x)), "m*")
+        title("A * X'-FF");
+        % legend();
     end
 
     % save("vars_inMRE  ");

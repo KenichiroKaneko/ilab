@@ -50,7 +50,7 @@ function KUP = LCURVE(PARAM, CONFIG, A, W, V, U, X, FC)
         ylabel("||p^*||")
     end
 
-    save("vars_inLcurve");
+    % save("vars_inLcurve");
 
     KUP = CURVATURE(residual, P_norm)
 

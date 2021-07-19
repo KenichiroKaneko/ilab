@@ -1,5 +1,5 @@
 flag = 0;
 
-if (flag || 1)
-    disp("aa")
+for i = 10:-1:0
+    disp(i)
 end

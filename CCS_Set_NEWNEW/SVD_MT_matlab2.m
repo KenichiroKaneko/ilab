@@ -98,122 +98,131 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, CONFIG, A, B, FC, ..
     % KUP0 = LCURVE(PARAM, CONFIG, A, ss, vv, uu, X, FC);
     % KUP0 = 30;
     % KUP0 = 50;
-    % KUP0 = 62;
+    % KUP0 = 67;
     KUP0 = N;
     % KUP0 = 65;
 
     % 2021/06/11 各要素の相対誤差を計算１
-    CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, A, ss, vv, uu, X, FC, FF);
+    f1 = figure();
+    hold on
+    f2 = figure();
+    legend()
+    hold on
+    CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, A, ss, vv, uu, X, FC, FF, f1, f2);
 
-    fprintf(IPRN, '%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');
-    fprintf('%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');
+    for i = 1:1
+        % KUP0 = 70 - i;
+        fprintf(IPRN, '%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');
+        fprintf('%s %d %s\r\n', 'You truncate SVs smaller than', KUP0, '-th SV');
 
-    fid209 = fopen([PARAM.temporary_file_directory '/@Determined_Gap.txt'], 'w'); % 209
-    CKUP = KUP0 + KUP0 + 1;
-    CKUP = CKUP / 2.0D0;
-    fprintf(fid209, '%d %d\r\n', CKUP, W(N));
-    fprintf('%s\r\n', 'OK?');
+        fid209 = fopen([PARAM.temporary_file_directory '/@Determined_Gap.txt'], 'w'); % 209
+        CKUP = KUP0 + KUP0 + 1;
+        CKUP = CKUP / 2.0D0;
+        fprintf(fid209, '%d %d\r\n', CKUP, W(N));
+        fprintf('%s\r\n', 'OK?');
 
-    SMAX = -1.0E20;
-    SMIN = +1.0E20;
-    WMAX = 0.0;
+        SMAX = -1.0E20;
+        SMIN = +1.0E20;
+        WMAX = 0.0;
 
-    for K = 1:N
+        for K = 1:N
 
-        if (W(K) > WMAX)
-            WMAX = W(K);
-        end
-
-        if (W(K) > SMAX)
-            SMAX = W(K);
-        end
-
-        if (W(K) < SMIN)
-            SMIN = W(K);
-        end
-
-    end
-
-    CONDNO = SMAX / SMIN;
-    SMAX00 = SMAX;
-    fprintf(IPRN, 'Condition Number = %d\r\n', CONDNO);
-    fprintf('Condition Number = %d\r\n', CONDNO);
-
-    if (LTikh == 0) % true
-
-        if (IDCN == 0) % false
-            COND = COND0;
-        else
-            COND = WMAX / W(KUP0); % これが実行される
-        end
-
-    else
-        COND = 1.0d30;
-    end
-
-    WMIN = WMAX / COND;
-    %        !  Zero the "small" singular values
-    % 打切りしている↓
-    W(KUP0 + 1:N) = 0.0D0;
-    KUP = KUP0;
-
-    fprintf('%s %d\r\n', '***  KUP=', KUP);
-    fprintf('%s %d\r\n', '***  KUP0=', KUP0);
-
-    GETA = 0;
-
-    %
-    %cccccccccccccccccccccccccccccccccccccccccccccccc
-    %       ! DAMPING!
-    GAMMA = 0.0D0 .* (LTikh == 0) + GAM0 .* (LTikh ~= 0);
-    SMAX = -1.0E20;
-    SMIN = +1.0E20;
-
-    for K = 1:N
-
-        if (W(K) == 0.0D0) %GOTO 444
-            continue
-        else
-            W(K) = (W(K)^2 + GAMMA) / W(K);
+            if (W(K) > WMAX)
+                WMAX = W(K);
+            end
 
             if (W(K) > SMAX)
                 SMAX = W(K);
-            elseif (W(K) < SMIN)
+            end
+
+            if (W(K) < SMIN)
                 SMIN = W(K);
             end
 
         end
 
-    end %444
+        CONDNO = SMAX / SMIN;
+        SMAX00 = SMAX;
+        fprintf(IPRN, 'Condition Number = %d\r\n', CONDNO);
+        fprintf('Condition Number = %d\r\n', CONDNO);
 
-    CONDNO = SMAX / SMIN;
-    %cccccccccccccccccccccccccccccccccccccccccccccccc
-    %c
-    for K = 1:N
-        fprintf(IPRN, '%d\r\n', W(K));
+        if (LTikh == 0) % true
+
+            if (IDCN == 0) % false
+                COND = COND0;
+            else
+                COND = WMAX / W(KUP0); % これが実行される
+            end
+
+        else
+            COND = 1.0d30;
+        end
+
+        WMIN = WMAX / COND;
+        %        !  Zero the "small" singular values
+        % 打切りしている↓
+        W(KUP0 + 1:N) = 0.0D0;
+        KUP = KUP0;
+
+        fprintf('%s %d\r\n', '***  KUP=', KUP);
+        fprintf('%s %d\r\n', '***  KUP0=', KUP0);
+
+        GETA = 0;
+
+        %
+        %cccccccccccccccccccccccccccccccccccccccccccccccc
+        %       ! DAMPING!
+        GAMMA = 0.0D0 .* (LTikh == 0) + GAM0 .* (LTikh ~= 0);
+        SMAX = -1.0E20;
+        SMIN = +1.0E20;
+
+        for K = 1:N
+
+            if (W(K) == 0.0D0) %GOTO 444
+                continue
+            else
+                W(K) = (W(K)^2 + GAMMA) / W(K);
+
+                if (W(K) > SMAX)
+                    SMAX = W(K);
+                elseif (W(K) < SMIN)
+                    SMIN = W(K);
+                end
+
+            end
+
+        end %444
+
+        CONDNO = SMAX / SMIN;
+        %cccccccccccccccccccccccccccccccccccccccccccccccc
+        for K = 1:N
+            fprintf(IPRN, '%d\r\n', W(K));
+        end
+
+        fprintf('Improved Condition Number = %d\r\n', CONDNO);
+        CONDNO = SMAX00 / SMIN;
+        fprintf('Newly Defined Improved Cond.No. = %d\r\n', CONDNO);
+        %
+        % **********************************************************************
+        %  Backsubstitute for each right-hand side vector
+        % **********************************************************************
+        %
+        %    !↓ここ、下駄の件で手直しがいる。
+        %XGETA = GETA.*(ITSKP > 0);
+        XGETA = GETA;
+        C(1:M) = (B(1:M) - XGETA) .* and(1:M > NAPB, 1:M <= (NAPB + NFLX)) ...
+            + B(1:M) .* or(1:M <= NAPB, 1:M > (NAPB + NFLX));
+        %***************************
+        %
+        [X] = SVBKSB(U, W, V, C); % OK
+        % 2021/06/11 各要素の相対誤差を計算２
+        CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, A, ss, vv, uu, X, FC, FF, f1, f2);
+        hold off
+        hold off
+
     end
 
-    fprintf('Improved Condition Number = %d\r\n', CONDNO);
-    CONDNO = SMAX00 / SMIN;
-    fprintf('Newly Defined Improved Cond.No. = %d\r\n', CONDNO);
-    %
-    %
-    % **********************************************************************
-    %  Backsubstitute for each right-hand side vector
-    % **********************************************************************
-    %
-
-    %    !↓ここ、下駄の件で手直しがいる。
-    %XGETA = GETA.*(ITSKP > 0);
-    XGETA = GETA;
-    C(1:M) = (B(1:M) - XGETA) .* and(1:M > NAPB, 1:M <= (NAPB + NFLX)) ...
-        + B(1:M) .* or(1:M <= NAPB, 1:M > (NAPB + NFLX));
-    %***************************
-    %***************************
-    %
-    [X] = SVBKSB(U, W, V, C); % OK
-    % 2021/06/11 各要素の相対誤差を計算２
-    CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, A, ss, vv, uu, X, FC, FF);
+    % error('error description', A1)
     % save('vars_afterSVBKSB')
     % error('error description svbksb')
 
@@ -230,11 +239,10 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, CONFIG, A, B, FC, ..
     end
 
     fprintf(IPRN, '%s\r\n', '     Result of (matrix)*(sol''n vector):');
-    %
+
     C = zeros(1, M);
     C(1:M) = A(1:M, 1:N) * X(1:N)';
     %
-    %***************************
     %***************************
     %        !↓ここ、下駄の件で手直しがいる。
     RESD(1:M) = (C(1:M) - (B(1:M) - XGETA)) .* and(1:M > NAPB, 1:M <= (NAPB + NFLX)) ...

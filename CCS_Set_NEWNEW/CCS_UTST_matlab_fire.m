@@ -111,7 +111,7 @@ function CCS_UTST_matlab(inputfile)
 
         try
             [C, W, U, V, FFOUT, XBFR, XMT] = ...
-                SVD_MT_matlab_fire(PARAM, AA, FF, FC, 0, 0.0D0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP, superKUP);
+                SVD_MT_matlab_fire(PARAM, AA, FF, FC, 0, 0.0e0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP, superKUP);
 
             % % save("vars_afterSVD");
             % error('error description')

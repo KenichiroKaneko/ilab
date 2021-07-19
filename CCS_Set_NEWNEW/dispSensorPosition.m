@@ -23,11 +23,11 @@ function dispSensorPosition(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDA
     ylabel("Z[m]");
     hold off
 
-    if SENSOR_NPRB.NUM > 0
-        legend("B-tangencial", "B-norm", "Flux", "CCSNode", "Ref-flux");
-    else
-        legend("B", "Flux", "CCSNode", "Ref-flux");
-    end
+    % if SENSOR_NPRB.NUM > 0
+    %     legend("B-tangencial", "B-norm", "Flux", "CCSNode", "Ref-flux");
+    % else
+    %     legend("B", "Flux", "CCSNode", "Ref-flux");
+    % end
 
     title("Sensor positions and Reference");
 end

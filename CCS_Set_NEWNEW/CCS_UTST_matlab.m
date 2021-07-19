@@ -27,7 +27,7 @@ function CCS_UTST_matlab(inputfile)
     ExtCOIL = loadcoildata(PARAM);
 
     FFDAT = makeFFdata(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP);
-    save("vars_aftermakeFFdata");
+    % save("vars_aftermakeFFdata");
 
     GHR = zeros(1, 300);
     GHZ = zeros(1, 300);
@@ -46,7 +46,7 @@ function CCS_UTST_matlab(inputfile)
     end
 
     % 2021/05/08
-    save("vars_afterLoadData");
+    % save("vars_afterLoadData");
     % error('vars saved');
     % 2021/05/08
     %% *************************************************************
@@ -82,11 +82,17 @@ function CCS_UTST_matlab(inputfile)
     % 2021/05/08
 
     %% INOMOTO start
-    fluxfactor = 1;
+    fluxfactor = 10;
 
     FF(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) = FF(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) * fluxfactor;
     AA(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM, :) = AA(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM, :) * fluxfactor;
     FC(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) = FC(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) * fluxfactor;
+
+    % KANEKO start
+    % fluxfactor = 0.05;
+    % FF(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) = FF(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) + fluxfactor;
+    % AA(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM, :) = AA(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM, :) + fluxfactor;
+    % FC(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) = FC(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) + fluxfactor;
 
     FLXLP = FFDAT(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) * fluxfactor;
 
@@ -96,7 +102,8 @@ function CCS_UTST_matlab(inputfile)
     %% Singular Value Decompoition
 
     fprintf('NCCN/KNN/KSN = %d %d %d\n', sum(CCSDAT.NCCN), sum(WALL.KNN), sum(WALL.KSN));
-
+    % [C, W, U, V, FFOUT, XBFR, XMT] = ...
+    %     SVD_MT_matlab(PARAM, AA, FF, FC, 0, 0.0D0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP);
     [C, W, U, V, FFOUT, XBFR, XMT] = ...
         SVD_MT_matlab2(PARAM, CONFIG, AA, FF, FC, 0, 0.0D0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP, FF);
 
@@ -121,7 +128,7 @@ function CCS_UTST_matlab(inputfile)
         axis([0 DISF(end, 1) -0.4 0.4])
         set(gca, 'FontSize', 14);
         hold on
-        plot(JEDDY(:, 1), JEDDY(:, 2), '-b')
+        % plot(JEDDY(:, 1), JEDDY(:, 2), '-b')
     end
 
     if CONFIG.ShowFig
@@ -224,12 +231,19 @@ function CCS_UTST_matlab(inputfile)
     psi = reshape(PSI(1:numel(CCR) * numel(CCZ)), numel(CCZ), numel(CCR));
 
     if CONFIG.ShowFig
+        % figure
+        % v = linspace(-20, 20, 41);
+        % contour(CCR, CCZ, psi * 1000, v, '-k');
+        % hold on
+        % contour(REF.R, REF.Z, REF.Flux * 1000, v, '--m'); % ????
+        % % scatter(CCSDAT.RCCN, CCSDAT.ZCCN, 'o')
+        % plot(CCSDAT.RGI, CCSDAT.ZGI);
         figure
-        v = linspace(-30, 30, 61);
-        contour(CCR, CCZ, psi * 3000, v, '-k');
+        contour(CCR, CCZ, psi, '-k', 'LevelStep', 0.0003);
         hold on
-        contour(REF.R, REF.Z, REF.Flux * 3000, v, '--m'); % ????
-        % scatter(CCSDAT.RCCN, CCSDAT.ZCCN, 'o')
+        contour(REF.R, REF.Z, REF.Flux, '--m', 'LevelStep', 0.0003); % 正解
+        contour(CCR, CCZ, psi, [0 0], 'LineColor', 'c', 'LineWidth', 2);
+        contour(REF.R, REF.Z, REF.Flux, [0 0], 'LineColor', 'm', 'LineWidth', 2);
         plot(CCSDAT.RGI, CCSDAT.ZGI);
         hold off
         xlabel({'r (m)'});
@@ -243,8 +257,8 @@ function CCS_UTST_matlab(inputfile)
     end
 
     % 評価関数
-    MSE = EVALUATE(psi, REF, PARAM, CONFIG, CCSDAT, CCR, CCZ)
-    % save("vars_result_" + PARAM.input_file_directory, "psi", "REF", "PARAM", "CCR", "CCZ", "CCSDAT", "MSE");
+    % MSE = EVALUATE(psi, REF, PARAM, CONFIG, CCSDAT, CCR, CCZ)
+    % save("vars_result_ima1ji", "psi", "REF", "PARAM", "CCR", "CCZ", "CCSDAT", "MSE");
 
     fclose('all');
 end
