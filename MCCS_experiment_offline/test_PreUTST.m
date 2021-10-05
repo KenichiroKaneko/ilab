@@ -3,13 +3,22 @@
 %     WAHAHA, nsemx, eddy_time, SENSio, LWALL, select_phase, time_CCS, foldername_TF, shotnum_TF, ...
 %     foldername, shotnum, EF_voltage, Normalization)
 
-%function [RS,ZS,ITYPE,TET] = PreUTST(IUTST,WAHAHA,nsemx,LWALL,IPPP,L0BR)
-IMAX = 512; % IMAX=513 (?��d?��?��?��f?��[?��^?����?)
+time_CCS = 9.525;
+EF_voltage = 120;
+% phase select (after merging: 1, 9950 us: 2, 9450 us: 3, 9530 us: 4, 8000 us: 5, 9510 us: 6, vacuum: 7)
+select_phase = 6;
+eddy_time = 0;
+SENSio = 0;
+LWALL = 0;
+IUTST = 5;
+
+IMAX = 512; % IMAX=513 (???d?????????f???[???^??????)
 MAXM = 10;
 RSENS = 0.113150;
 RWALL = 0.108150;
+
 % ***********************************************************************
-% ?��s?��?��̑傫?��?��?��?��?��w?��肵?��Ȃ�?��?��?��?��?��?��?��?��?��\?��?��?��?��?��?��?��?��̂ŃR?��?��?��?��?��g?��A?��E?��g
+% ???s???????????????????????w?????????????????????????????????????\??????????????????????????R???????????????g???A???E???g
 %RS = zeros(1,nsemx);
 %ZS = zeros(1,nsemx);
 %ITYPE = zeros(1,nsemx);
@@ -26,72 +35,57 @@ RWALL = 0.108150;
 TPRB = zeros(1, 1024);
 FLXLP = zeros(1, 1024);
 %
-% UTST ?��̕ǂ̊􉽍\?��?��?��?��?��?��?��?��
+% UTST ???????\????????????????????????
 RSEC = [0.694D0, 0.694D0, 0.5985D0, 0.5985D0, 0.10815D0, 0.10815D0, ...
         0.10815D0, 0.5985D0, 0.5985D0, 0.694D0, 0.694D0];
 ZSEC = [0.0D0, 0.285D0, 0.285D0, 0.9985D0, 0.9985D0, 0.0D0, ...
         -0.9985D0, -0.9985D0, -0.285D0, -0.285D0, 0.0D0];
 
-% foldername_TF = '180528';
-% shotnum_TF = '001';
-% foldername = '180913';
-% shotnum = '001';
+% 実験データを持ってきているからこの辺の数字追いかけたい
+foldername_TF = '210906';
+shotnum_TF = '001';
+foldername = '210906';
+shotnum = '007';
 [time, Plasma_Current_TFshot, Coil_Current_TFshot, Flux_Loop_TFshot, Magnetic_Probe_TFshot, Magnetic_Probe_Lowpass_TFshot] = read_CCS_data(foldername_TF, shotnum_TF);
-% foldername = '180515';
-% shotnum = '009';
-% foldername = '180913';
-% shotnum = '007';
 [time, Plasma_Current, Coil_Current, Flux_Loop, Magnetic_Probe, Magnetic_Probe_Lowpass] = read_CCS_data(foldername, shotnum);
 
-size(Plasma_Current)
-
 Plasma_Current_minus_offset = Plasma_Current - mean(Plasma_Current(1000:2000));
-% plot(time, Plasma_Current)
-% hold on
-% 100us?��ňړ�?��?��?��?��
-% figure('Name','Plasma Current smooth','NumberTitle','off')
 Plasma_Current_minus_offset_smooth = smoothdata(Plasma_Current_minus_offset, 'gaussian', 200);
-% plot(time, Plasma_Current_minus_offset_smooth)
-% xlim([8.5, 10.5])
-%
 
-% figure('Name','Plasma Current','NumberTitle','off')
-% subplot(5, 1, 5); plot(time, Plasma_Current_minus_offset, 'color', [0.7 0.7 0.7], 'DisplayName', 'Plasma current (raw)')
-% hold on
-% subplot(5, 1, 5);plot(time, Plasma_Current_minus_offset_smooth, 'r', 'DisplayName', 'Plasma current (smoothing)')
-% xlim([8.5, 10.5])
-% ylim([-100, 150])
-% xlabel('Time [ms]');
-% ylabel('Current [kA]');
-% legend({}, 'FontSize', 5, 'Location', 'eastoutside')
+figure('Name', 'Plasma Current', 'NumberTitle', 'off')
+subplot(5, 1, 5); plot(time, Plasma_Current_minus_offset, 'color', [0.7 0.7 0.7], 'DisplayName', 'Plasma current (raw)')
+hold on
+subplot(5, 1, 5); plot(time, Plasma_Current_minus_offset_smooth, 'r', 'DisplayName', 'Plasma current (smoothing)')
+xlim([8.5, 10.5])
+ylim([-100, 150])
+xlabel('Time [ms]');
+ylabel('Current [kA]');
+legend({}, 'FontSize', 5, 'Location', 'eastoutside')
 
-% hold on
-% plot(time_CCS, Plasma_Current_minus_offset(time_CCS / (0.5 * 0.001)), 'o')
+hold on
+plot(time_CCS, Plasma_Current_minus_offset(time_CCS / (0.5 * 0.001)), 'o')
 
 PF_Current_for_CCS = zeros(4, 1);
 % figure('Name','Coil Current','NumberTitle','off')
 % smoothdata(Plasma_Current_minus_offset, 'gaussian', 200, 'DisplayName', 'Plasma Current smoothed')
 for i = 1:4
-    % ?��㉺?��̃R?��C?��?��?��̓d?��?��?��l?��̕�?��ς�p?��?��?��?��
     PF_Current_for_CCS(i, 1) = (Coil_Current(2 * i - 1, round(time_CCS / (0.5 * 0.001))) + Coil_Current(2 * i, round(time_CCS / (0.5 * 0.001)))) / 2;
-    % ?��ۂ�
-    %     PF_Current_for_CCS(i, 1) = round(PF_Current_for_CCS(i, 1), 5);
-    %     subplot(4, 1, i); plot(time, Coil_Current(2 * i - 1, :), time_CCS, Coil_Current(2 * i - 1, time_CCS / (0.5 * 0.001)), 'o', 'DisplayName', 'PF%d (upper side)')
-    %     subplot(5, 1, i); plot(time, Coil_Current(2 * i - 1, :), 'color', [0.7 0.7 0.7], 'DisplayName', 'PF#   current (upper side)')
-    %     xlim([8.5, 10.5])
-    %     ylim([-50, 100])
-    %     hold on
-    %     subplot(5, 1, i); plot(time, Coil_Current(2 * i, :), 'color', [0.9 0.9 0.9], 'DisplayName', 'PF#   current (lower side)')
-    %     hold on
-    %     subplot(5, 1, i); plot(time, smoothdata(Coil_Current(2 * i - 1, :), 'gaussian', 200), 'r', 'DisplayName', 'Smoothed PF#   current (upper side)')
-    %     hold on
-    %     subplot(5, 1, i); plot(time, smoothdata(Coil_Current(2 * i, :), 'gaussian', 200), 'b', 'DisplayName', 'Smoothed PF#   current (lower side)')
-    %     hold on
-    %     legend({}, 'FontSize', 5, 'Location', 'eastoutside')
-
+    PF_Current_for_CCS(i, 1) = round(PF_Current_for_CCS(i, 1), 5);
+    subplot(4, 1, i); plot(time, Coil_Current(2 * i - 1, :), time_CCS, Coil_Current(2 * i - 1, time_CCS / (0.5 * 0.001)), 'o', 'DisplayName', 'PF%d (upper side)')
+    subplot(5, 1, i); plot(time, Coil_Current(2 * i - 1, :), 'color', [0.7 0.7 0.7], 'DisplayName', 'PF#   current (upper side)')
+    xlim([8.5, 10.5])
+    ylim([-50, 100])
+    hold on
+    subplot(5, 1, i); plot(time, Coil_Current(2 * i, :), 'color', [0.9 0.9 0.9], 'DisplayName', 'PF#   current (lower side)')
+    hold on
+    subplot(5, 1, i); plot(time, smoothdata(Coil_Current(2 * i - 1, :), 'gaussian', 200), 'r', 'DisplayName', 'Smoothed PF#   current (upper side)')
+    hold on
+    subplot(5, 1, i); plot(time, smoothdata(Coil_Current(2 * i, :), 'gaussian', 200), 'b', 'DisplayName', 'Smoothed PF#   current (lower side)')
+    hold on
+    legend({}, 'FontSize', 5, 'Location', 'eastoutside')
 end
 
-fprintf('%d', PF_Current_for_CCS)
+% fprintf('%d', PF_Current_for_CCS)
 
 MP_size = size(Magnetic_Probe);
 BZ_t = zeros(MP_size(1), MP_size(2));
@@ -100,51 +94,44 @@ BZ_t_Lowpass = zeros(MP_size(1), MP_size(2));
 BZ_t_minusTF = zeros(MP_size(1), MP_size(2));
 
 fileid = fopen('TF.txt', 'r');
-TF = fscanf(fileid, '%f');
+TF = fscanf(fileid, '%f'); % 1200000x1
 
 fileid2 = fopen('Bz_EF_at_MP_clockwise.txt', 'r');
-EF_MP = fscanf(fileid2, '%f');
+EF_MP = fscanf(fileid2, '%f'); % 1x40
 
 fileid3 = fopen('psi_EF_at_FL_clockwise.txt', 'r');
-EF_FL = fscanf(fileid3, '%f');
+EF_FL = fscanf(fileid3, '%f'); % 1x35
 
-% ?��Z?��?��?��T?��ʒu?��ł�EF?��̊�^?��?��?��v?��Z
 fid61 = fopen('CCS_FLXLP_sensor_position.txt', 'r');
 fid68 = fopen('CCS_MP_sensor_position.txt', 'r');
 textscan(fid61, '%s', 1, 'Delimiter', '\n');
 z_flxlp = zeros(1, 35);
 r_flxlp = ones(1, 35);
 
-for i = 1:35
+for i = 1:35 % FluxLoopの位置を読み取っている
     temp = textscan(fid61, '%s', 1, 'Delimiter', '\n');
     temp_m = strsplit(temp{1}{1});
     r_flxlp(1, i) = str2double(temp_m(1));
     z_flxlp(1, i) = str2double(temp_m(2));
 end
 
-% ?��?��?��?��?��t?��?��?��b?��N?��X?��?��?��[?��v?��?��r=0.108785m?��ɐݒu
+% ここ謎
 r_flxlp = r_flxlp .* 0.108785;
 
 z_mp = zeros(1, 40);
 r_mp = ones(1, 40);
 textscan(fid68, '%s', 1, 'Delimiter', '\n');
 
-for i = 1:40
+for i = 1:40 % MPの位置を読み取っている
     temp = textscan(fid68, '%s', 1, 'Delimiter', '\n');
     temp_m = strsplit(temp{1}{1});
     r_mp(1, i) = str2double(temp_m(1));
     z_mp(1, i) = str2double(temp_m(2));
 end
 
+% 各センサー位置にEFコイルが作る磁場磁束を計算している？
 [Bz_EF_at_sensor_f, Psi_EF_at_sensor_f] = EF_calc_for_CCS_probe(r_flxlp, z_flxlp, 1, 19, EF_voltage);
 [Bz_EF_at_sensor_b, Psi_EF_at_sensor_b] = EF_calc_for_CCS_probe(r_mp, z_mp, 1, 40, EF_voltage);
-
-% plot(EF_MP)
-%
-% plot(EF_FL)
-%
-% plot(TF(1 : 30000))
-%
 
 TF_txt = zeros(40, 30000);
 BZ_Distribution = zeros(1, MP_size(1));
@@ -187,7 +174,7 @@ for i = 1:FL_size(1)
 end
 
 % (kondo)
-figure
+figure('Name', 'PSI_normalization_value')
 subplot(1, 2, 1)
 plot(PSI_normalization_value(1, 1:19).^(0.5))
 hold on
@@ -196,17 +183,24 @@ subplot(1, 2, 2)
 plot(PSI_normalization_value(1, 20:35).^(0.5))
 hold on
 plot([0, 20], [mean(PSI_normalization_value(1, 20:35).^(0.5)), mean(PSI_normalization_value(1, 20:35).^(0.5))])
-mean(PSI_normalization_value(1, 1:19).^(0.5))
-mean(PSI_normalization_value(1, 20:35).^(0.5))
+mean(PSI_normalization_value(1, 1:19).^(0.5));
+mean(PSI_normalization_value(1, 20:35).^(0.5));
 % pause
 
 % PSI_Distribution = PSI_Distribution + EF_Distribution_FL;
 PSI_Distribution = PSI_Distribution + Psi_EF_at_sensor_f;
 
-% figure('Name','Poloidal Flux Distribution (all) including EF effect','NumberTitle','off')
-% PSI_Distribution(6) = [];
-% PSI_Distribution(35 - 1) = [];
-% plot(PSI_Distribution)
+figure('name', 'sensorData Bz')
+plot(BZ_normalization_value)
+hold on
+plot(BZ_Distribution)
+figure('name', 'sensorData flux')
+plot(PSI_Distribution)
+
+figure('Name', 'Poloidal Flux Distribution (all) including EF effect', 'NumberTitle', 'off')
+PSI_Distribution(6) = [];
+PSI_Distribution(35 - 1) = [];
+plot(PSI_Distribution)
 
 if (select_phase == 0)
     %     fid61 = fopen('Parameters_FL_crockwise_180515010_t9500_inpsizero.txt','r');
@@ -220,7 +214,7 @@ elseif (select_phase == 1)
     %     fid61 = fopen('Parameters_FL_clockwise_180515010_t9650.txt','r');
     %     fid68 = fopen('Parameters_MP_clockwise_180515010_t9650.txt','r');
 
-    %inboard?��?��?��?��?��l?��?��?��X?��?��?��[?��W?��?��?��O?��?��?��?��?��?��?��?��
+    %inboard???????????????l?????????X?????????[???W?????????O????????????????????????
     %     fid61 = fopen('Parameters_FL_clockwise_180515010_t9650_inboard_smoothing.txt','r');
     %     fid68 = fopen('Parameters_MP_clockwise_180515010_t9650.txt','r');
     %
@@ -272,13 +266,13 @@ elseif (select_phase == 7)
 end
 
 fid60 = fopen('@UTST_CheckWrite.txt', 'w');
-%%%?��?��?��?��fid62?��?��?��v?��?��?��n?��̍�?��W?��ɂ�?��?��
+%%%????????????fid62?????????v?????????n????????W???????????
 fid62 = fopen('@UTST_SenPos.txt', 'w');
 fid63 = fopen('@UTST_VECTOR.txt', 'w');
 fid64 = fopen('@UTST_WallGeom.txt', 'w');
 fid65 = fopen('@UTST_CoilGeom.txt', 'w');
-% ?��?��?��C?��f?��[?��^?��ǂݍ�?��?��
-textscan(fid61, '%s', 1, 'Delimiter', '\n'); % ?��?��s?��Ƃ΂�
+% ?????????C???f???[???^????????????
+textscan(fid61, '%s', 1, 'Delimiter', '\n'); % ??????s??????
 %for I = 1:IMAX
 for I = 1:IMAX_f
     temp = textscan(fid61, '%s', 1, 'Delimiter', '\n');
@@ -301,10 +295,10 @@ fprintf(fid65, '%d %d\r\n', 0.80, -1.07);
 %   Flux Loop                                           %
 % ***************************************************** %
 frewind(fid61);
-textscan(fid61, '%s', 1, 'Delimiter', '\n'); %?��?��?��?��?��?��?��傤?��Ƃ΂�
+textscan(fid61, '%s', 1, 'Delimiter', '\n'); %????????????????????????????
 II = 0;
 %
-LGP = 1; % ?��?��?���?��f?��[?��^?��?��?��΂�?��?��?��?��?��?��?��Ō�?��?��I?��I?��I?��I17 15
+LGP = 1; % ???????????????f???[???^????????????????????????????????????????I???I???I???I17 15
 LGPH = floor(LGP / 2) + 1;
 LG = 0;
 
@@ -319,35 +313,35 @@ for I = 1:IMAX_f
     LG = LG + 1;
     LLG = LG;
 
-    if (LG == LGP) % 1?��?��?��?��?���??��?��Z?��b?��g?��?��?��?��
+    if (LG == LGP) % 1???????????????????????Z???b???g????????????
         LG = 0;
     end
 
-    if (LLG ~= LGPH) % 1?��?��?��?��?��?��܂ł͓ǂ݂Ƃ΂�
+    if (LLG ~= LGPH) % 1??????????????????????????
         continue
     end
 
-    if and(LWALL > 0, and (R < 0.12, abs(Z) < 0.9)); % ?��ǉ�?��?��?��̃Z?��?��?��T?��[?��?��?��?��2016.9.5ushiki
+    if and(LWALL > 0, and (R < 0.12, abs(Z) < 0.9)); % ???????????????Z?????????T???[????????????2016.9.5ushiki
         continue
     end
 
-    % ?��s?��K?��v?��ȃt?��?��?��b?��N?��X?��?��?��[?��v?��?��p?��?��
+    % ???s???K???v????t?????????b???N???X?????????[???v??????p??????
 
     %     if R < 0.2
     %         continue
     %     end
 
-    % inbord?��?��?��̃t?��?��?��b?��N?��X?��?��?��[?��v?��?��p?��?��
-    %     if and(R < 0.13, abs(Z) < 1) % ?��ǉ�?��?��?��̃Z?��?��?��T?��[?��?��?��?��
+    % inbord??????????t?????????b???N???X?????????[???v??????p??????
+    %     if and(R < 0.13, abs(Z) < 1) % ???????????????Z?????????T???[????????????
     %          continue
     %     end
-    %     if or(and(R == 0.689126, abs(Z) < 0.085),and(and(R ~= 0.689126, R ~= 0.113024), abs(Z) < 0.25)); % ?��ǉ�?��?��?��̃Z?��?��?��T?��[?��?��?��?��
+    %     if or(and(R == 0.689126, abs(Z) < 0.085),and(and(R ~= 0.689126, R ~= 0.113024), abs(Z) < 0.25)); % ???????????????Z?????????T???[????????????
     %          continue
     %     end
     E = abs((R - RSENS) / RSENS);
     %     if and(LWALL > 0, E < 1.0D-5)
     %         II = II+1;
-    %         % (IPPP == 0) ?��ǂ�PSI?��?��0?��ɂ�?��?�� (IPPP ~= 0) ?��ʏ�
+    %         % (IPPP == 0) ?????PSI??????0??????????? (IPPP ~= 0) ?????
     %             RS(2*II-1)=RWALL.*(IPPP == 0) + R.*(IPPP ~= 0);
     %             RS(2*II)=RWALL.*(IPPP == 0) + R.*(IPPP ~= 0);
     %             FLXLP(2*II-1)=0.0D0.*(IPPP == 0) + PSI.*(IPPP ~= 0);
@@ -388,16 +382,16 @@ for I = 1:IMAX_f
 
 end % 100
 
-% ?��ߓ�
+% ?????
 z_sp_max = 0.6;
 z_sp_min = -0.6;
 del_z_sp = 0.01;
 zz = z_sp_min:del_z_sp:z_sp_max; % zz = 0.01 * (n - 1) + (-0.60)
-% 2?��?��?��?��?��A?��?��?��C?��f?��[?��^?��ɑ�?��?��?��?��?�����?��鎥?��?��?��?��o?��@?��?��?��@FLXLP_inboard_spline
+% 2???????????????A?????????C???f???[???^???????????????????????????????????????o???@?????????@FLXLP_inboard_spline
 % zz_pickup = 0.0;
 zz_pickup = [-0.2, -0.1, 0, 0.1, 0.2];
 zz_idx = round((zz_pickup + 0.60) / 0.01 + 1);
-FLXLP_inboard_spline = spline(ZS(1:18), FLXLP(1:18), zz);
+FLXLP_inboard_spline = spline(ZS(1:17), FLXLP(1:17), zz);
 % figure('Name','Axial Distribution Inboard-side Flux','NumberTitle','off')
 % plot(ZS(1 : 18), FLXLP(1 : 18), 'ko')
 % hold on
@@ -413,19 +407,14 @@ f_Bz_EF_z0 = fopen('180515009_9650_psi_r_z0.0.dat', 'r');
 f_Bz_EF_z_nega_100 = fopen('180515009_9650_psi_r_z-0.1.dat', 'r');
 f_Bz_EF_z_nega_200 = fopen('180515009_9650_psi_r_z-0.2.dat', 'r');
 
-for i = 1:4
-    temp = textscan(f_Bz_EF_z200, '%s', 1, 'Delimiter', '\n');
-    temp_m = strsplit(temp{1}{1})
-end
-
-R_2d = zeros(1, 50)
-psi = zeros(1, 50)
+R_2d = zeros(1, 50);
+psi = zeros(1, 50);
 
 for i = 1:50
-    temp = textscan(f_Bz_EF_z200, '%s', 1, 'Delimiter', '\n');
+    temp = textscan(f_Bz_EF_z200, '%s', 1, 'Delimiter', '\n')
     temp_m = strsplit(temp{1}{1});
-    R_2d(1, i) = str2double(temp_m(1))
-    psi(1, i) = str2double(temp_m(2))
+    R_2d(1, i) = str2double(temp_m(1));
+    psi(1, i) = str2double(temp_m(2));
 end
 
 plus_inboard_flux = ones(1, 50) * FLXLP_inboard_spline(zz_idx(5));
@@ -433,17 +422,17 @@ Psi_z200 = psi + plus_inboard_flux;
 
 for i = 1:4
     temp = textscan(f_Bz_EF_z100, '%s', 1, 'Delimiter', '\n');
-    temp_m = strsplit(temp{1}{1})
+    temp_m = strsplit(temp{1}{1});
 end
 
-R_2d = zeros(1, 50)
-psi = zeros(1, 50)
+R_2d = zeros(1, 50);
+psi = zeros(1, 50);
 
 for i = 1:50
     temp = textscan(f_Bz_EF_z100, '%s', 1, 'Delimiter', '\n');
     temp_m = strsplit(temp{1}{1});
-    R_2d(1, i) = str2double(temp_m(1))
-    psi(1, i) = str2double(temp_m(2))
+    R_2d(1, i) = str2double(temp_m(1));
+    psi(1, i) = str2double(temp_m(2));
 end
 
 plus_inboard_flux = ones(1, 50) * FLXLP_inboard_spline(zz_idx(4));
@@ -517,11 +506,11 @@ hold on
 plot(0.11, FLXLP_inboard_spline(zz_idx(5)), 'o')
 
 filename = '180515009_9650_psi_r_z0.2.dat';
-M = csvread(filename)
-
-psi_r = textscan(fid61, '%s', 1, 'Delimiter', '\n');
+M = csvread(filename);
+frewind(fid61);
+psi_r = textscan(fid61, '%s', 1, 'Delimiter', '\n')
 psi_r = strsplit(psi_r);
-c = textscan(f_Bz_EF, '%d %d'); % 4?��?��̃f?��[?��^?��?��int32?��^?��œǂݍ�?��?��
+c = textscan(f_Bz_EF, '%d %d'); % 4???????f???[???^??????int32???^?????????????
 pri_r = str2double(psi_r);
 disp(c)
 
@@ -550,7 +539,7 @@ LGB = 1; %21
 LGBH = floor(LGB / 2) + 1;
 LG = 0;
 %%C####      MGB=1
-MGB = 1; % ?��?��?���?��ƂɃf?��[?��^?��?��?��Ԉ�?��?��?��Ă�?��邩?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I
+MGB = 1; % ????????????????f???[???^?????????????????????????????I???I???I???I???I???I???I???I???I???I???I???I???I???I???I???I???I???I???I
 MGBH = floor(MGB / 2) + 1;
 MG = 0;
 
@@ -570,7 +559,7 @@ for I = 1:IMAX_b
     LG = LG + 1;
     LLG = LG;
 
-    if (LG == LGB) % 1?��?��?��?��?���??��?��Z?��b?��g?��?��?��?��
+    if (LG == LGB) % 1???????????????????????Z???b???g????????????
         LG = 0;
     end
 
@@ -583,12 +572,12 @@ for I = 1:IMAX_b
 
     %
     %%C      IF(LLG.NE.LGBH) GOTO 200
-    if and (E < 1.0D - 5, MMG ~= MGBH)
+    if and (E < 1.0e-5, MMG ~= MGBH)
         continue
-    elseif and (E >= 1.0D - 5, LLG ~= LGBH)
+    elseif and (E >= 1.0e-5, LLG ~= LGBH)
         continue
 
-    elseif and(LWALL > 0, and (R < 0.12, abs(Z) < 0.9)); % ?��ǉ�?��?��?��̃Z?��?��?��T?��[?��?��?��?��2016.9.5ushiki
+    elseif and(LWALL > 0, and (R < 0.12, abs(Z) < 0.9)); % ???????????????Z?????????T???[????????????2016.9.5ushiki
         continue
     end
 
@@ -611,9 +600,9 @@ for I = 1:IMAX_b
         Z2 = -Z; BR2 = -BR;
         TET1 = atan2(BZ, BR1);
         TET2 = atan2(BZ, BR2);
-        % ?��?��?��͐�?��̐ڐ�?��?��?��?��?��̎�?��?��?��?��E?��?��?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I
+        % ??????????????????????????????????????????????E?????????I???I???I???I???I???I???I???I???I???I???I???I???I???I???I???I???I???I???I???I
         TET(NFLX + 2 * II - 1) = TET1; %  !
-        TET(NFLX + 2 * II) = TET2; %  !?��@
+        TET(NFLX + 2 * II) = TET2; %  !???@
         ITYPE(NFLX + 2 * II - 1) = 1;
         ITYPE(NFLX + 2 * II) = 1;
         BB1 = BR1 * cos(TET1) + BZ * sin(TET1);
@@ -654,9 +643,9 @@ for I = 1:IMAX_b
         Z1 = Z; BR1 = BR;
         %         TET1 = atan2(BZ,BR1);
         TET1 = 0.5 * pi;
-        TET(NFLX + II) = TET1; %?��@
+        TET(NFLX + II) = TET1; %???@
         ITYPE(NFLX + II) = 1;
-        %?��?��?��?��
+        %????????????
         %         BB1 = BR1*cos(TET1) + BZ*sin(TET1);
         %         disp(BB1)
         BB1 = BZ;
@@ -680,8 +669,8 @@ for I = 1:IMAX_b
         ZS(NFLX + II) = Z;
         Z1 = Z; BR1 = BR;
         TET1 = atan2(BZ, BR1);
-        % ?��?��?��͐�?��̐ڐ�?��?��?��?��?��̎�?��?��?��?��E?��?��?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I?��I
-        TET(NFLX + II) = TET1; %?��@
+        % ??????????????????????????????????????????????E?????????I???I???I???I???I???I???I???I???I???I???I???I???I???I???I???I???I???I???I???I
+        TET(NFLX + II) = TET1; %???@
         ITYPE(NFLX + II) = 1;
         BB1 = BR1 * cos(TET1) + BZ * sin(TET1);
         XBR1 = BB1 * cos(TET1);
@@ -772,7 +761,7 @@ end
 fprintf(fid10, '%s\r\n', '****** MINR * MAXR * MINZ * MAXZ ****');
 fprintf(fid10, '  %s\r\n', '10   90  -100  100');
 fprintf(fid10, '%s\r\n', '*********');
-fprintf(fid10, '%s\r\n', '* ---?��R?��C?��?��?��d?��?��?��f?��[?��^?��̕�?��?��---?��P?��?��[kA]');
+fprintf(fid10, '%s\r\n', '* ---???R???C?????????d?????????f???[???^???????????---???P??????[kA]');
 fprintf(fid10, '%s\r\n', '* EF');
 fprintf(fid10, '%s\r\n', '* PF#1');
 fprintf(fid10, '%s\r\n', '* PF#2');
@@ -782,7 +771,7 @@ fprintf(fid10, '%s\r\n', '* PF#4');
 PF_Current_for_CCS = zeros(4, 1);
 
 for i = 1:4
-    % ?��㉺?��̃R?��C?��?��?��̓d?��?��?��l?��̕�?��ς�p?��?��?��?��
+    % ????????R???C??????????d?????????l??????????p????????????
     PF_Current_for_CCS(i, 1) = (Coil_Current(2 * i - 1, round(time_CCS / (0.5 * 0.001))) + Coil_Current(2 * i, round(time_CCS / (0.5 * 0.001)))) / 2;
     %     subplot(4, 1, i); plot(time, Coil_Current(2 * i - 1, :), time_CCS, Coil_Current(2 * i - 1, time_CCS / (0.5 * 0.001)), 'o', 'DisplayName', 'PF%d (upper side)')
     %     hold on

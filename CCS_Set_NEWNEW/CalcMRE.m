@@ -55,11 +55,13 @@ function CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, 
 
     end
 
+    % plot(NFLXl:NFLXr, FF(NFLXl:NFLXr))
+
     if CONFIG.ShowFig
         figure()
         hold on
-        plot(NFLXl:NCCSr, A * X');
-        plot(NFLXl:NCCSr, FF);
+        plot(NFLXl:NCCSr, A * X', '-o');
+        plot(NFLXl:NCCSr, FF, '-o');
         % plot(NFLXl:NCCSr, RE);
 
         x = [NFLXr, NFLXr, NAPBl, NAPBr, NCCSl, NCCSr];
@@ -77,7 +79,7 @@ function CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, 
         legend('A*X', 'FF');
 
         figure(f2)
-        plot(NFLXl:NCCSr, A * X' - FF');
+        plot(NFLXl:NCCSr, A * X' - FF', '-o');
         % hold on
         % x = [NFLXr, NFLXr, NAPBl, NAPBr, NCCSl, NCCSr];
         % scatter(x, zeros(1, length(x)), "m*")

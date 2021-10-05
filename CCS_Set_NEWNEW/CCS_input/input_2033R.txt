@@ -1,4 +1,4 @@
-UTST_numel_2033R	%001_input_file_directory
+CCS_dataset_gs_old/UTST_numel_2033R	%001_input_file_directory
 CCS_temporary	%002_temporary_file_directory
 CCS_output		%003_output_file_directory
 5				%01_IUTST

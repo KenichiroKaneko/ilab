@@ -3,7 +3,6 @@
 %% loadcoildata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 %% loadcoildata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 function ExtCOIL = loadcoildata(PARAM)
-
     %% Here, the geometory should be derived from input file
     ExtCOIL.NUM = 10;
     ExtCOIL.NAME = ['EFL', 'EFU', 'PF1L', 'PF1U', 'PF2L', 'PF2U', 'PF3L', 'PF3U', 'PF4L', 'PF4U'];
@@ -13,7 +12,7 @@ function ExtCOIL = loadcoildata(PARAM)
     ExtCOIL.N = [200, 200, 8, 8, 3, 3, 8, 8, 3, 3];
     ExtCOIL.I = [0.28, 0.28, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
     % ExtCOIL.I = [0.28, 0.28, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] ./ pi ./ ExtCOIL.R ./ ExtCOIL.R;
-    % ExtCOIL.I = [0.28, 0.28, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 2;
+    % ExtCOIL.I = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 end
 
 %% loadcoildata kokomade!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -6,10 +6,10 @@
 0
 
 % determine CCS center Z position automaticaly? .. 0:No or 1:yes
-0
+1
 
 % determine CCS center R position automaticaly? .. 0:No or 1:yes
-0
+1
 
 % show figures ?  .. 0:No or 1:yes
 1
