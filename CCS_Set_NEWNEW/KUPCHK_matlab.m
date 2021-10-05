@@ -73,7 +73,7 @@ function [C, X, GET] = KUPCHK_matlab(PARAM, A, B, U, V, W, NAPB, NFLX, NCCN)
             DELGE = DELGE / CNT0;
             EPSDEL = abs((DELGE - OLDEL) / OLDEL);
 
-            if and(IT > 2, EPSDEL < 0.1D0)
+            if and(IT > 2, EPSDEL < 0.1e0)
                 OMGA = OMGA + 5.0D0;
                 fprintf(fid200, '%s %d\r\n', '    ******  OMGA changed to', OMGA);
             end
@@ -84,7 +84,7 @@ function [C, X, GET] = KUPCHK_matlab(PARAM, A, B, U, V, W, NAPB, NFLX, NCCN)
             fprintf(fid200, '%d %d %d %d\r\n', KUP, IT, GETA, DELGE);
             ITEND = IT;
 
-            if (EPS < 1.0D-5)
+            if (EPS < 1.0E-5)
                 break
             end
 

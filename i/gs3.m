@@ -34,12 +34,16 @@ param.Sw_init = 1;
 %             "z0240_r602""z0200_r602""z0160_r602""z0120_r602" ...
 %             "z0080_r602"];
 
-% filenames = ["z0240_r602" "z0200_r602" "z0160_r602" "z0120_r602" "z0080_r602"];
-% filenames = ["z2033_r602"];
-filenames = ["z1100_r602", "z1200_r602", "z1300_r602"];
-% filenames = ["z1200_r602", "z1300_r602"];
+% filenames = ["z0120_r602" "z0080_r602"];
+filenames = ["z201_r101"];
+% filenames = ["z1100_r602", "z1200_r602", "z1300_r602"];
+
+% ログ
+gsLog = fopen("gs_temporary/gsLog.txt", "a");
+fprintf(gsLog, "■%s\n", datestr(now, "yyyy年mm月dd日 HH時MM分"));
 
 for fileNum = 1:length(filenames)
+    startT = tic;
     disp(["****  " + filenames(fileNum) + "  " + fileNum + "/" + length(filenames) + "  ****"])
 
     datafile_dir = "INPUT/" + filenames(fileNum) + "/";
@@ -71,7 +75,8 @@ for fileNum = 1:length(filenames)
     % param.rlimiter = A(13, 1);
     param.routine_num = 0;
     param.zlimiter = 0;
-    param.rlimiter = 0.1656627;
+    param.rlimiter = 0;
+    % param.rlimiter = 0.1656627;
 
     % ファイルから値の読み込み
     B = load(param.file2);
@@ -148,7 +153,12 @@ for fileNum = 1:length(filenames)
     % 変数の保存
     save(output_dir + "vars", "param", "psi", "mu_jt", "Ip", "p", "psi0");
     % gs_graph(param, psi, p, Ip, mu_jt)
+
+    endT = toc(startT);
+    fprintf(gsLog, "    dir:%s    ElapsedTime:%5d[s]    iters:%6d\n", filenames(fileNum), endT, param.routine_num);
 end
+
+fclose(gsLog);
 
 toc
 

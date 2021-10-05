@@ -3,7 +3,7 @@
 %% INTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 %% INTER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 function [PSI, DELGE, RCCS, ZCCS, XPSI] = INTER(PARAM, IGOAL, GETA, CR, CZ, FFOUT, ExtCOIL, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, NINT)
-    save("vars_inter")
+    % save("vars_inter")
     n100 = 250; % Max. No. of given data ( > NAPB+NFLX+MXCCS) %250
     n50 = 150; % Max. No. of unknowns ( > 2*MXCCS)
     Nedp = 150;

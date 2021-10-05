@@ -29,3 +29,7 @@ CCS_Set_NEWNEW/vars_aftermakeFFdata.mat
 CCS_Set_NEWNEW/vars_afterSVDCMP.mat
 CCS_Set_NEWNEW/vars_inLcurve.mat
 CCS_Set_NEWNEW/vars_SVSORT.mat
+*.log
+*.hdr
+*.dat
+*.png

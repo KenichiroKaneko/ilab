@@ -10,19 +10,12 @@ function CCS_UTST_matlab(inputfile)
     %MXINT = 10000;       % MAX! / NUMBER OF INTERNAL POINTS
 
     PARAM = loadinputfile(inputfile);
-    PARAM.dispFigures = 1;
 
-    REF = loadreference(PARAM);
+    CONFIG = loadConfigure("CCS_input/config1.dat");
 
-    % 2021/05/06実際のセンサー配置にするかどうか
-    % オリジナルのコード、入力は、末尾にRがないもの、UTST_numel_5,9が対応
-    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadsensordata(PARAM);
+    [REF, JEDDY] = loadreference(PARAM, CONFIG);
 
-    % 実際のセンサー位置で再構成するコード、入力は末尾がRと、実験データが対応(例)UTST_numel_2033R、180515_010_t9650
-    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadRealsensordata(PARAM);
-
-    % 法線方向、接線方向を考慮して読み込むためのコード、入力は末尾がRと、実験データが対応
-    % [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z,CCS_R] = loadRealsensordataTN(PARAM);
+    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R] = loadSensorDataX(PARAM, CONFIG);
 
     for i = 1:PARAM.CCS
         PARAM.Z0(i) = CCS_Z(i);
@@ -34,14 +27,14 @@ function CCS_UTST_matlab(inputfile)
     ExtCOIL = loadcoildata(PARAM);
 
     FFDAT = makeFFdata(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP);
-    save("vars_aftermakeFFdata");
+    % save("vars_aftermakeFFdata");
 
     GHR = zeros(1, 300);
     GHZ = zeros(1, 300);
     CCSDAT = makeCCSdata(PARAM, GHR, GHZ);
 
     % 各センサーポジションを表示する
-    if PARAM.dispFigures
+    if CONFIG.ShowFig
         dispSensorPosition(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, REF);
     end
 
@@ -53,7 +46,7 @@ function CCS_UTST_matlab(inputfile)
     end
 
     % 2021/05/08
-    save("vars_afterLoadData");
+    % save("vars_afterLoadData");
     % error('vars saved');
     % 2021/05/08
     %% *************************************************************
@@ -81,10 +74,10 @@ function CCS_UTST_matlab(inputfile)
 
     AA = zeros(NMAX, JMAX);
     [FC, BR, BZ, PSIFLX, PSIC, AA, FF] = ...
-        FORM(PARAM, AA, FF, ExtCOIL, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL);
+        FORM(PARAM, CONFIG, AA, FF, ExtCOIL, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL);
 
     % 2021/05/08
-    save('vars_afterForm');
+    % save('vars_afterForm');
     % error('saved vars')
     % 2021/05/08
 
@@ -95,6 +88,12 @@ function CCS_UTST_matlab(inputfile)
     AA(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM, :) = AA(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM, :) * fluxfactor;
     FC(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) = FC(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) * fluxfactor;
 
+    % KANEKO start
+    % fluxfactor = 0.05;
+    % FF(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) = FF(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) + fluxfactor;
+    % AA(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM, :) = AA(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM, :) + fluxfactor;
+    % FC(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) = FC(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) + fluxfactor;
+
     FLXLP = FFDAT(SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM) * fluxfactor;
 
     %% INOMOTO end
@@ -103,9 +102,10 @@ function CCS_UTST_matlab(inputfile)
     %% Singular Value Decompoition
 
     fprintf('NCCN/KNN/KSN = %d %d %d\n', sum(CCSDAT.NCCN), sum(WALL.KNN), sum(WALL.KSN));
-
+    % [C, W, U, V, FFOUT, XBFR, XMT] = ...
+    %     SVD_MT_matlab(PARAM, AA, FF, FC, 0, 0.0D0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP);
     [C, W, U, V, FFOUT, XBFR, XMT] = ...
-        SVD_MT_matlab2(PARAM, AA, FF, FC, 0, 0.0D0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP);
+        SVD_MT_matlab2(PARAM, CONFIG, AA, FF, FC, 0, 0.0D0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP, FF);
 
     % save("vars_afterSVD");
     % error('error description')
@@ -113,10 +113,10 @@ function CCS_UTST_matlab(inputfile)
     half_norm = sqrt((sum((FFOUT).^2)));
     fprintf('%s%d\r\n', 'norm of the solution vector = ', half_norm);
 
-    EDDYP(FFOUT, PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL);
+    % EDDYP(FFOUT, PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL);
 
     % plot eddy current
-    if PARAM.dispFigures
+    if CONFIG.ShowFig
         DISF = dlmread([PARAM.output_file_directory '/EddyCurrentProfile.txt']);
         figure('Name', 'Eddy Current Plofile', 'NumberTitle', 'off')
         plot(DISF(:, 1), DISF(:, 2), '-ko', 'MarkerEdgeColor', 'r', 'MarkerFaceColor', 'r', 'MarkerSize', 2)
@@ -128,11 +128,10 @@ function CCS_UTST_matlab(inputfile)
         axis([0 DISF(end, 1) -0.4 0.4])
         set(gca, 'FontSize', 14);
         hold on
-        JEDDY = dlmread(strcat([PARAM.input_file_directory '/jeddy.txt']));
-        plot(JEDDY(:, 1), JEDDY(:, 2), '-b')
+        % plot(JEDDY(:, 1), JEDDY(:, 2), '-b')
     end
 
-    if 0
+    if CONFIG.ShowFig
         % plot sensor position
         VV = dlmread([PARAM.temporary_file_directory '/VacuumVesselMeshPoints.txt']);
         SEN0 = dlmread([PARAM.temporary_file_directory '/SENPOS0.txt']);
@@ -191,8 +190,8 @@ function CCS_UTST_matlab(inputfile)
     JCRE = 2;
     NINT = 0;
 
-    % 再構成する磁束のサイズ
-    % cm単位の範囲の指定
+    % % 再構成する磁束のサイズ
+    % % cm単位の範囲の指定
     % MINR = 10.815;
     % MAXR = 88.80;
     % MINZ = -99.85;
@@ -231,13 +230,21 @@ function CCS_UTST_matlab(inputfile)
     CCR(1) = [];
     psi = reshape(PSI(1:numel(CCR) * numel(CCZ)), numel(CCZ), numel(CCR));
 
-    if PARAM.dispFigures
+    if CONFIG.ShowFig
+        % figure
+        % v = linspace(-20, 20, 41);
+        % contour(CCR, CCZ, psi * 1000, v, '-k');
+        % hold on
+        % contour(REF.R, REF.Z, REF.Flux * 1000, v, '--m'); % ????
+        % % scatter(CCSDAT.RCCN, CCSDAT.ZCCN, 'o')
+        % plot(CCSDAT.RGI, CCSDAT.ZGI);
         figure
         contour(CCR, CCZ, psi, '-k', 'LevelStep', 0.0003);
         hold on
-        % contour(REF.R, REF.Z, REF.Flux, '--m', 'LevelStep', 0.0003); % ????
-        % scatter(CCSDAT.RCCN, CCSDAT.ZCCN, 'o')
-        % plot(CCSDAT.RGI, CCSDAT.ZGI);
+        contour(REF.R, REF.Z, REF.Flux, '--m', 'LevelStep', 0.0003); % 正解
+        contour(CCR, CCZ, psi, [0 0], 'LineColor', 'c', 'LineWidth', 2);
+        contour(REF.R, REF.Z, REF.Flux, [0 0], 'LineColor', 'm', 'LineWidth', 2);
+        plot(CCSDAT.RGI, CCSDAT.ZGI);
         hold off
         xlabel({'r (m)'});
         ylabel({'z (m)'});
@@ -250,8 +257,8 @@ function CCS_UTST_matlab(inputfile)
     end
 
     % 評価関数
-    MSE = EVALUATE(psi, REF, PARAM, CCSDAT, CCR, CCZ)
-    save("vars_result_" + PARAM.input_file_directory, "psi", "REF", "PARAM", "CCR", "CCZ", "CCSDAT", "MSE");
+    % MSE = EVALUATE(psi, REF, PARAM, CONFIG, CCSDAT, CCR, CCZ)
+    % save("vars_result_ima1ji", "psi", "REF", "PARAM", "CCR", "CCZ", "CCSDAT", "MSE");
 
     fclose('all');
 end
