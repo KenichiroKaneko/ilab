@@ -11,7 +11,7 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
     realFlag = 0;
     % 保存するdir
     id = extractBetween(dirname, 2, 5);
-    save_dir = "CCS_dataset_gs_mini/UTST_numel_" + id;
+    save_dir = "CCS_dataset_gs/UTST_numel_" + id;
 
     if not(exist(save_dir, 'dir'))
         mkdir(save_dir);
@@ -439,7 +439,7 @@ function GSplot_CCS_for_finemesh_merge2(dirname)
         Br_CCS = [Br_CCS -fliplr(Br_CCS)];
         Bz_CCS = [Bz_CCS fliplr(Bz_CCS)];
         psi_CCS = [psi_CCS fliplr(psi_CCS)];
-        save([save_dir + '/merged.mat'], "r_CCS", "z_CCS", "psi_CCS", "Bz_CCS", "Br_CCS", "jeddy", "psi");
+        save([save_dir + '/merged.mat'], "r_CCS", "z_CCS", "psi_CCS", "Bz_CCS", "Br_CCS", "jeddy", "psi", "Bz", "Br", "z", "r", "env3c");
     end
 
 end

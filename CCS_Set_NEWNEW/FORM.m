@@ -92,7 +92,7 @@ function [FC, BR, BZ, PSIFLX, PSIC, AA, FF] = FORM(PARAM, CONFIG, AA, FF, ExtCOI
         end
 
         FF(L + NAPB) = FF(L + NAPB) - PSIFLX(L); %! 下駄処理を含む
-        FC(L + NAPB) = PSIFLX(L); %! コイル電流寄与
+        FC(L + NAPB) = PSIFLX(L); %! コイル電流がつくる磁束
     end
 
     %    !T-PROBE & N-PROBE

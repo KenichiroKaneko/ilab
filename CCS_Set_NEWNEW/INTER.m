@@ -215,40 +215,7 @@ function [PSI, DELGE, RCCS, ZCCS, XPSI] = INTER(PARAM, IGOAL, GETA, CR, CZ, FFOU
         % *******************************************************************
     end
 
-    %              L = 1:NINT;
-    % %             A = CR(L);
-    % %             B = CZ(L);
-    %              % *******************************************************************
-    %              [PSI(L),PSIA,PSIB] = QINTER(CR(L),CZ(L),GETA,RCCS,ZCCS,FFOUT,FI,DFI,...
-    %              n100,n50,RC,ZC,ECIGRP,ECI,KCMX,RCCN,ZCCN,NCCN,KNE,KNN,REV,ZEV,KSE,...
-    %              KSN,RES,ZES,Nedp,AMYU0,NONC,fid99,fid100,RMYU0,NE); % OK
-    %              % *******************************************************************
-    %
-    %          fid111 = fopen('CCSR_Check.txt','w');
-    % %          for I = 1:NCCS %   !RCCSR,ZCCSR（反時計回り）←RCCS,ZCCS(時計回り)
-    % %              IR = NCCS+1-I;
-    % %              RCCSR(I) = RCCS(IR);
-    % %              ZCCSR(I) = ZCCS(IR);
-    % %              fprintf(fid111,'%d %d\r\n', RCCSR(I),ZCCSR(I));
-    % %          end
-    % %image(unique(CR),unique(CZ),PSI);
-    %      for III = 1:numel(NCCS)
-    %          I = 1:NCCS(III); %   !RCCSR,ZCCSR（反時計回り）←RCCS,ZCCS(時計回り)
-    %          IR = NCCS(III)+1-I;
-    %          RCCSR(III,I) = RCCS(III,IR);
-    %          ZCCSR(III,I) = ZCCS(III,IR);
-    %          fprintf(fid111,'%d %d\r\n', horzcat(RCCSR(III,I)',ZCCSR(III,I)'));
-    %          fprintf(fid111,'%d %d\r\n', RCCSR(III,1),ZCCSR(III,1));
-    %          fprintf(fid111,'%s\r\n', '==');
-    %          fprintf(fid111,'%d %d %d\r\n', NINT,MXCCS,NCCS(III));
-    %          for I = 1:NINT
-    %              [WWW] = OUTIN(RCCSR,ZCCSR,CR(I),CZ(I),MXCCS,NCCS); % OK
-    %              if (WWW > 0.6D0)
-    %                  PSI(I) = FI(1);
-    %                  fprintf(fid111,'%s %d\r\n', 'WWW =',WWW);
-    %              end
-    %          end
-    %      end
+    %              L = 1:NINT; b
 end
 
 %% INTER kokomade!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
