@@ -205,9 +205,7 @@ function [BZ_Distribution, PSI_Distribution] = PreUTST(PARAM)
         BZ_Distribution(1, i) = BZ_t_minusTF(i, round(time_CCS / (0.5 * 0.001)));
     end
 
-    % BZ_Distribution = BZ_Distribution + Bz_EF_at_sensor_b;
-    BZ_Distribution(30) = [];
-    BZ_normalization_value(30) = [];
+    BZ_Distribution = BZ_Distribution + Bz_EF_at_sensor_b;
 
     FL_size = size(Flux_Loop);
     PSI_t = zeros(FL_size(1), FL_size(2));
@@ -401,7 +399,7 @@ function [Bz, Psi] = EF_calc_for_CCS_probe(r, z, r_size, z_size, V)
     Turn_EF = 200;
     mu0 = 4 * pi * 1e-7;
     % V = 120;
-    I = -(0.849 * (1.19 * V - 5.32) - 5.56);
+    I =- (0.849 * (1.19 * V - 5.32) - 5.56);
     Psi = zeros(z_size, r_size);
 
     for i = 1:1

@@ -34,7 +34,9 @@ function dispSensorPosition(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDA
 
     v = linspace(-20, 20, 11);
 
-    if REF ~= 0
+    check = exist('REF');
+
+    if check
         contour(REF.R, REF.Z, REF.Flux, '--k', "LineWidth", 1); % ????
     end
 

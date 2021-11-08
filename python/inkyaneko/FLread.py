@@ -17,12 +17,12 @@ plt.rcParams["font.size"] = 20
 
 utstpath = r"\\TEETH\utst"
 # dates = os.listdir("data/")
-dates = ["210720"]  # 実験日程指定、まとめても可能
+dates = ["211018"]  # 実験日程指定、とめても可能
 # dataposi = "Server"
 dataposi = "Local"
 # dataposi = "Storage"    #dataの場所、Localの場合、フォルダ内のdataを参照
 # figsave = "ys"
-figsave = "y"  # figをsaveするときは"y"、任意場所の場合は"ys"
+figsave = "no"  # figをsaveするときは"y"、任意場所の場合は"ys"
 # figsave = "n"
 figsize = (38.4, 21.6)  # 4Kサイズ
 figsize2k = (19.2, 10.8)  # 2Kサイズ
@@ -45,7 +45,7 @@ for date in dates:
         if i >= 10:
             shots.append("0{}".format(i))
 
-    shots = ["023"]  # 特定のショットだけ見るとき用、複数ショット指定可能、コメントアウトで全ショット
+    shots = ["004", "005", "006"]  # 特定のショットだけ見るとき用、複数ショット指定可能、コメントアウトで全ショット
 
     def readNf(Shot, Fn, format_file):  # Fn: NI, NJ
         if format_file == ".hdr":
@@ -174,12 +174,15 @@ for date in dates:
         ax.set_xlabel("time [$\mu$s]")
         ax.set_xlim(8000, 10000)
         plt.tight_layout()
+        plt.title("shot#{}".format(shot))
         plt.show()
         if figsave == "y":
             plt.savefig(fig_FL + "/{}#{}_all".format(date, shot))
         elif figsave == "ys":
             plt.savefig(fig_FL + "/{}#{}_all".format(date, shot))
         plt.close(fig)
+
+        # continue
 
         """
         FL５個ずつプロット
