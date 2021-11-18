@@ -1,7 +1,6 @@
-function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, ExtCOIL, CCS_Z, CCS_R] = loadLizzieData(PARAM, CONFIG)
+function [PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, ExtCOIL] = loadLizzieData(PARAM, CONFIG)
     % 生データをセンサーデータにするコード
-    [BZ_Distribution, PSI_Distribution, ExtCOIL] = PreUTST(PARAM);
-
+    [BZ_Distribution, PSI_Distribution, ExtCOIL, PSI_normalization_value] = PreUTST(PARAM);
     sensorPosB = fileread("./CCS_temporary/CCS_MP_sensor_position_i.txt");
     sensorPosB = strsplit(sensorPosB, {'\n', '\t', '\r'});
     sensorPosFL = fileread("./CCS_temporary/CCS_FLXLP_sensor_position_i.txt");
@@ -43,6 +42,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, ExtCOIL, CCS_Z, CCS_R] = loadL
         SENSOR_FLXLP.Z(i) = str2double(sensorPosFL{7 + (i - 1) * 5});
         % SENSOR_FLXLP.FLXLP(i) = PSI_Distribution(i) / (pi * SENSOR_FLXLP.R(i)^2);
         SENSOR_FLXLP.FLXLP(i) = PSI_Distribution(i);
+        % SENSOR_FLXLP.FLXLP(i) = PSI_normalization_value(i);
         % SENSOR_FLXLP.FLXLP(i) = 0;
         SENSOR_FLXLP.TET(i) = 1;
         SENSOR_FLXLP.ITYPE(i) = 0; % 使っていない
@@ -52,7 +52,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, ExtCOIL, CCS_Z, CCS_R] = loadL
     if CONFIG.DetermineCCSZPos
         RR = SENSOR_TPRB.R; ZZ = SENSOR_TPRB.Z;
         B = SENSOR_TPRB.TPRB;
-        RR0index = RR == min(RR);
+        RR0index = RR < min(RR) + 0.1;
         B = B(RR0index); ZZ = ZZ(RR0index);
         ZZ = ZZ'; B = B';
         f = fit(ZZ, B, 'smoothingspline', 'SmoothingParam', 1);
@@ -74,35 +74,38 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, ExtCOIL, CCS_Z, CCS_R] = loadL
             view(90, 90);
         end
 
-        if length(ZZ(lmax)) > 1
+        if 1 %length(ZZ(lmax)) > 1
+            PARAM.CCS = 2;
+            kanekoZ = [0.14, -0.14];
+            kanekoZ = [0.06, -0.06];
 
             for i = 1:2
-                CCS_Z(i) = matrix(i, 1);
+
+                PARAM.R0(i) = 0.35;
+                PARAM.Z0(i) = matrix(i, 1);
+                % PARAM.Z0(i) = kanekoZ(i);
+                PARAM.RR(i) = PARAM.RR(1);
+                PARAM.CAPPER(i) = PARAM.CAPPER(1);
+                PARAM.NE(i) = PARAM.NE(1);
+                PARAM.MSEC(i, 1) = PARAM.MSEC(1, 1);
+                PARAM.MSEC(i, 2) = PARAM.MSEC(1, 2);
+                PARAM.MSEC(i, 3) = PARAM.MSEC(1, 3);
+                PARAM.SOU(i) = PARAM.SOU(1);
+
             end
 
-        else
-            CCS_Z(1) = matrix(1, 1);
         end
 
-    else
-
-        for i = 1:PARAM.CCS
-            CCS_Z(i) = PARAM.Z0(i);
-            CCS_R(i) = PARAM.R0(i);
+        % CCS面の自動決定R方向
+        if CONFIG.DetermineCCSRPos
+            PARAM.R0 = CalcPlasmaCenter(PARAM, CONFIG, PARAM.Z0);
         end
 
-    end
-
-    % CCS面の自動決定R方向
-    if CONFIG.DetermineCCSRPos
-        CCS_R = CalcPlasmaCenter(PARAM, CONFIG, CCS_Z);
-        % CCS_R = CCS_R * 0.9;
-        % CCS_R = 0.295
     end
 
 end
 
-function [BZ_Distribution, PSI_Distribution, ExtCOIL] = PreUTST(PARAM)
+function [BZ_Distribution, PSI_Distribution, ExtCOIL, PSI_normalization_value] = PreUTST(PARAM)
 
     % function [BZ_normalization_value, PSI_normalization_value] = PreUTST(PARAM)
     %     =================================================================
@@ -118,13 +121,13 @@ function [BZ_Distribution, PSI_Distribution, ExtCOIL] = PreUTST(PARAM)
     EF_voltage = 120;
     foldername = PARAM.foldername;
     shotnum = PARAM.shotnum;
-    time_CCS = PARAM.time_CCS;
-    % time_CCS / (0.5 * 0.001)で30000点のデータの値になる
+    time_CCS = round(PARAM.time_CCS, 3);
+    % round(time_CCS / (0.5 * 0.001))で30000点のデータの値になる
 
     %% Here, the geometory should be derived from input file
     % コイル電流の値は後で読み込む
     ExtCOIL.NUM = 10;
-    ExtCOIL.NAME = ['EFL', 'EFU', 'PF1L', 'PF1U', 'PF2L', 'PF2U', 'PF3L', 'PF3U', 'PF4L', 'PF4U'];
+    ExtCOIL.NAME = ['EFL' 'EFU' 'PF1L' 'PF1U' 'PF2L' 'PF2U' 'PF3L' 'PF3U' 'PF4L' 'PF4U'];
     ExtCOIL.R = [0.80, 0.80, 0.20, 0.20, 0.665, 0.665, 0.750, 0.750, 0.685, 0.685];
     ExtCOIL.Z = [-1.07, 1.07, -1.10, 1.10, -0.80, 0.80, -0.675, 0.675, -0.50, 0.50];
     ExtCOIL.C = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
@@ -133,8 +136,8 @@ function [BZ_Distribution, PSI_Distribution, ExtCOIL] = PreUTST(PARAM)
 
     foldername_TF = foldername;
     shotnum_TF = '001';
-    [time, Plasma_Current_TFshot, Coil_Current_TFshot, Flux_Loop_TFshot, Magnetic_Probe_TFshot, Magnetic_Probe_Lowpass_TFshot] = read_CCS_data(foldername_TF, shotnum_TF);
-    [time, Plasma_Current, Coil_Current, Flux_Loop, Magnetic_Probe, Magnetic_Probe_Lowpass] = read_CCS_data(foldername, shotnum);
+    [time, Plasma_Current_TFshot, Coil_Current_TFshot, Flux_Loop_TFshot, Magnetic_Probe_TFshot, Magnetic_Probe_Lowpass_TFshot] = read_CCS_data(foldername_TF, shotnum_TF, PARAM);
+    [time, Plasma_Current, Coil_Current, Flux_Loop, Magnetic_Probe, Magnetic_Probe_Lowpass] = read_CCS_data(foldername, shotnum, PARAM);
 
     Plasma_Current_minus_offset = Plasma_Current - mean(Plasma_Current(1000:2000));
     Plasma_Current_minus_offset_smooth = smoothdata(Plasma_Current_minus_offset, 'gaussian', 200);
@@ -150,13 +153,13 @@ function [BZ_Distribution, PSI_Distribution, ExtCOIL] = PreUTST(PARAM)
     ylabel('Current [kA]');
     legend({}, 'FontSize', 5, 'Location', 'eastoutside')
     hold on
-    plot(time_CCS, Plasma_Current_minus_offset(time_CCS / (0.5 * 0.001)), 'o')
+    plot(time_CCS, Plasma_Current_minus_offset(round(time_CCS / (0.5 * 0.001))), 'o')
     PF_Current_for_CCS = zeros(4, 1);
 
     for i = 1:4
         PF_Current_for_CCS(i, 1) = (Coil_Current(2 * i - 1, round(time_CCS / (0.5 * 0.001))) + Coil_Current(2 * i, round(time_CCS / (0.5 * 0.001)))) / 2;
         PF_Current_for_CCS(i, 1) = round(PF_Current_for_CCS(i, 1), 5);
-        subplot(5, 1, i); plot(time, Coil_Current(2 * i - 1, :), time_CCS, Coil_Current(2 * i - 1, time_CCS / (0.5 * 0.001)), 'o', 'DisplayName', 'PF%d (upper side)')
+        subplot(5, 1, i); plot(time, Coil_Current(2 * i - 1, :), time_CCS, Coil_Current(2 * i - 1, round(time_CCS / (0.5 * 0.001))), 'o', 'DisplayName', 'PF%d (upper side)')
         subplot(5, 1, i); plot(time, Coil_Current(2 * i - 1, :), 'color', [0.7 0.7 0.7], 'DisplayName', 'PF#   current (upper side)')
         xlim([8.5, 10.5])
         ylim([-50, 100])
@@ -182,7 +185,7 @@ function [BZ_Distribution, PSI_Distribution, ExtCOIL] = PreUTST(PARAM)
             j = i + 1;
         end
 
-        ExtCOIL.I(j) = f(time_CCS / (0.5 * 0.001));
+        ExtCOIL.I(j) = f(round(time_CCS / (0.5 * 0.001))) * 1;
     end
 
     ExtCOIL.I(1) =- (0.849 * (1.19 * EF_voltage - 5.32) - 5.56) / 1000;
@@ -229,7 +232,7 @@ function [BZ_Distribution, PSI_Distribution, ExtCOIL] = PreUTST(PARAM)
     BZ_normalization_value = zeros(1, MP_size(1));
     EF_Distribution_MP = zeros(1, MP_size(1));
 
-    NS = 242; % コイルの巻き数ｘ断面積
+    NS = 242; % PUコイルの巻き数ｘ断面積
 
     for i = 1:MP_size(1)
         BZ_t(i, :) = cumtrapz(time, Magnetic_Probe(i, :));
@@ -248,37 +251,67 @@ function [BZ_Distribution, PSI_Distribution, ExtCOIL] = PreUTST(PARAM)
     EF_Distribution_FL = zeros(1, FL_size(1));
 
     % 202と37はそれぞれ増幅器の係数
+    FL_bai1 = 202;
+    FL_bai2 = 37;
+    FL_bai1 = 1;
+    FL_bai2 = 1;
+
+    figure('Name', 'FL sensor')
+    hold on
+    xline(round(time_CCS / (0.5 * 0.001)))
+
     for i = 1:FL_size(1)
 
         if and(1 <= i, i <= 19)
-            PSI_t(i, :) = (Flux_Loop(i, :) - Flux_Loop_TFshot(i, :)) / 202;
+            PSI_t(i, :) = (Flux_Loop(i, :) - Flux_Loop_TFshot(i, :)) / FL_bai1;
             PSI_t(i, :) = PSI_t(i, :) - mean(PSI_t(i, 1000:2000));
             PSI_Distribution(1, i) = PSI_t(i, round(time_CCS / (0.5 * 0.001)));
             PSI_normalization_value(1, i) = var(PSI_t(i, 1:1000));
         else
-            PSI_t(i, :) = (Flux_Loop(i, :) - Flux_Loop_TFshot(i, :)) / 37;
+            PSI_t(i, :) = (Flux_Loop(i, :) - Flux_Loop_TFshot(i, :)) / FL_bai2;
             PSI_t(i, :) = PSI_t(i, :) - mean(PSI_t(i, 1000:2000));
             PSI_Distribution(1, i) = PSI_t(i, round(time_CCS / (0.5 * 0.001)));
             PSI_normalization_value(1, i) = var(PSI_t(i, 1:1000));
         end
 
+        plot(PSI_t(i, :))
     end
 
+    legend('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35')
+
     % (kondo)
-    % figure('Name', 'PSI_normalization_value')
-    % subplot(1, 2, 1)
-    % plot(PSI_normalization_value(1, 1:19).^(0.5))
-    % hold on
-    % plot([0, 20], [mean(PSI_normalization_value(1, 1:19).^(0.5)), mean(PSI_normalization_value(1, 1:19).^(0.5))])
-    % subplot(1, 2, 2)
-    % plot(PSI_normalization_value(1, 20:35).^(0.5))
-    % hold on
-    % plot([0, 20], [mean(PSI_normalization_value(1, 20:35).^(0.5)), mean(PSI_normalization_value(1, 20:35).^(0.5))])
-    % mean(PSI_normalization_value(1, 1:19).^(0.5));
-    % mean(PSI_normalization_value(1, 20:35).^(0.5));
+    figure('Name', 'PSI_normalization_value')
+    subplot(1, 2, 1)
+    plot(PSI_normalization_value(1, 1:19).^(0.5))
+    hold on
+    plot([0, 20], [mean(PSI_normalization_value(1, 1:19).^(0.5)), mean(PSI_normalization_value(1, 1:19).^(0.5))])
+    subplot(1, 2, 2)
+    plot(PSI_normalization_value(1, 20:35).^(0.5))
+    hold on
+    plot([0, 20], [mean(PSI_normalization_value(1, 20:35).^(0.5)), mean(PSI_normalization_value(1, 20:35).^(0.5))])
+    mean(PSI_normalization_value(1, 1:19).^(0.5));
+    mean(PSI_normalization_value(1, 20:35).^(0.5));
     % pause
 
+    figure('Name', 'PSI')
+    hold on
+    plot(PSI_Distribution)
+    plot(Psi_EF_at_sensor_f)
+
     PSI_Distribution = PSI_Distribution + Psi_EF_at_sensor_f;
+    % plot(PSI_Distribution2)
+
+    % psi800 = load('psi800').psi800;
+    % POS = load('POS').POS;
+
+    % for i = 1:35
+    %     Psi_EF_at_sensor_f(i) = psi800(POS.indexFL_Z(i), POS.indexFL_R(i));
+    % end
+
+    % plot(Psi_EF_at_sensor_f)
+    % PSI_Distribution = PSI_Distribution .* PSI_normalization_value + Psi_EF_at_sensor_f;
+    % plot(PSI_Distribution)
+    % PSI_Distribution = PSI_Distribution;
 
     % figure('name', 'sensorData Bz')
     % plot(BZ_normalization_value)
@@ -291,11 +324,12 @@ function [BZ_Distribution, PSI_Distribution, ExtCOIL] = PreUTST(PARAM)
 end
 
 % need shot_no
-function [time, Plasma_Current, Coil_Current, Flux_Loop, Magnetic_Probe, Magnetic_Probe_Lowpass] = read_CCS_data(foldername, shotnum)
+function [time, Plasma_Current, Coil_Current, Flux_Loop, Magnetic_Probe, Magnetic_Probe_Lowpass] = read_CCS_data(foldername, shotnum, PARAM)
 
     lowpass_freq = 1000 * 1000;
 
     hdr_NJ = [foldername, '/NJ', shotnum, '.hdr'];
+    hdr_NJ = "./utst/210906/NJ007.hdr"; % FLの増幅率をchごとに書いたheaderファイル
     dat_NJ = [foldername, '/NJ', shotnum, '.dat'];
 
     % ######################
@@ -353,16 +387,28 @@ function [time, Plasma_Current, Coil_Current, Flux_Loop, Magnetic_Probe, Magneti
     % plot(time, Plasma_Current)
 
     % ##### input coil current data #####
-    Coil_Current = zeros(5, 30000);
+    % Coil_Current = zeros(5, 30000);
     % figure('Name','Coil Current','NumberTitle','off')
+    data_NJ = UTSTdataload('./', PARAM.date, PARAM.shotnum, 'NJ');
+
+    for i = 1:length(data_NJ)
+        % data_NJ(i).time(end - 24:end) = [];
+        % data_NJ(i).raw(end - 24:end) = [];
+        % data_NJ(i).sig(end - 24:end) = [];
+        offset = mean(data_NJ(i).sig(50:round(450 / data_NJ(i).freq / 1e6)));
+        data_NJ(i).sigint = cumtrapz(data_NJ(i).sig - offset) * data_NJ(i).freq;
+    end
+
     for i = 2:9
 
         if i == 9 % 16�Ԗڂ�PF4L_feed���i�[����Ă���
             Coil_Current(8, :) = data_binary(:, 16);
+            % Coil_Current(8, :) = data_NJ(16).sig;
             %         subplot(8, 1, 8); plot(time, Coil_Current(8, :))
             %         legend(name(16));
         else
             Coil_Current(i - 1, :) = data_binary(:, i);
+            % Coil_Current(i - 1, :) = data_NJ(i).sig;
             %         subplot(8, 1, i - 1); plot(time, Coil_Current(i - 1, :))
             %         legend(name(i));
         end
@@ -372,7 +418,6 @@ function [time, Plasma_Current, Coil_Current, Flux_Loop, Magnetic_Probe, Magneti
     % ##### input flux loop data #####
     Flux_Loop = zeros(35, 30000);
     % figure('Name','Flux Loop Signal (Gain multiplied (here, 1 or -1))','NumberTitle','off')
-    size(data_binary(:, 35));
 
     index = [19, 20, 21, 22, 27, 28, 29, 31, 32, 33, 37, 38, 41, 42, 44, 45, 48, 50, 51, 53];
 
@@ -393,6 +438,25 @@ function [time, Plasma_Current, Coil_Current, Flux_Loop, Magnetic_Probe, Magneti
         end
 
     end
+
+    % % f1 = figure('Name', 'nama')
+    % % f2 = figure('Name', 'FFT')
+    % freq = fftshift((0:length(Flux_Loop(1, :)) - 1) * 2000000 / length(Flux_Loop(1, :))) - 1000000;
+
+    % for i = 1:35
+    %     % figure(f1)
+    %     % hold on
+    %     % plot(Flux_Loop(i, :))
+    %     % hold off
+    %     FL = fft(Flux_Loop(i, :));
+    %     FL(freq > lowpass_freq) = 0;
+    %     FL(freq < -lowpass_freq) = 0;
+    %     Flux_Loop(i, :) = ifft(FL);
+    %     % figure(f2)
+    %     % hold on
+    %     % plot(Flux_Loop(i, :))
+    %     % hold off
+    % end
 
     % ##### input magnetic probe data #####
     Magnetic_Probe = zeros(40, 30000);
@@ -433,7 +497,7 @@ function [Bz, Psi] = EF_calc_for_CCS_probe(r, z, r_size, z_size, V)
     z_EF = 1.05;
     Turn_EF = 200;
     mu0 = 4 * pi * 1e-7;
-    % V = 120;
+    V = 120;
     I =- (0.849 * (1.19 * V - 5.32) - 5.56);
     Psi = zeros(z_size, r_size);
 

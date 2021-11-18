@@ -95,14 +95,16 @@ function [C, W, U, V, X, XBFR, XMT] = SVD_MT_matlab2(PARAM, CONFIG, A, B, FC, ..
     % hold off;
 
     % L-curve法 2021/05/17
-    KUP0 = LCURVE(PARAM, CONFIG, A, ss, vv, uu, X, FC) - 20;
-    % KUP0 = 10;
-    % KUP0 = 20;
+    KUP0 = LCURVE(PARAM, CONFIG, A, ss, vv, uu, X, FC);
+    % KUP0 = 17;
     % KUP0 = 18;
-    % KUP0 = 50;
-    % KUP0 = 63;
+    KUP0 = 30;
+    KUP0 = 40;
+    % KUP0 = 42;
+    % KUP0 = 55;
     % KUP0 = N - 10;
     % KUP0 = 69;
+    N
 
     % 2021/06/11 各要素の相対誤差を計算１
     f1 = figure();

@@ -178,8 +178,8 @@ function MSE = calcError(PARAM, CONFIG, LCFSrecon, LCFSref, MAxisR, MAxisZ, LCFS
     poly1 = polyshape(CCR(LCFSrecon.R(LCFSrecon.j)), CCZ(LCFSrecon.Z(LCFSrecon.j)));
 
     if CONFIG.ShowFig
-        % plot(poly2, 'FaceAlpha', 0.4, 'FaceColor', "none", 'EdgeColor', "m", "LineWidth", 3)
-        % plot(poly1, 'FaceAlpha', 0.4, 'FaceColor', "none", 'EdgeColor', "c", "LineWidth", 3)
+        plot(poly2, 'FaceAlpha', 0.4, 'FaceColor', "m", 'EdgeColor', "m", "LineWidth", 3)
+        plot(poly1, 'FaceAlpha', 0.4, 'FaceColor', "c", 'EdgeColor', "c", "LineWidth", 3)
         scatter(REFR(MAxisR), REFZ(MAxisZ));
     end
 
@@ -204,19 +204,19 @@ function MSE = calcError(PARAM, CONFIG, LCFSrecon, LCFSref, MAxisR, MAxisZ, LCFS
 
         x1 = in(1, 1); y1 = in(1, 2); x2 = in(end, 1); y2 = in(end, 2);
         L_recon = sqrt((x1 - x2)^2 + (y1 - y2)^2);
-        % plot(in(:, 1), in(:, 2), 'b')
-        % plot(out(:, 1), out(:, 2), 'r')
-        % scatter(in(end, 1), in(end, 2), "ro")
-        % scatter(in(1, 1), in(1, 2), "ro")
+        plot(in(:, 1), in(:, 2), 'b')
+        plot(out(:, 1), out(:, 2), 'r')
+        scatter(in(end, 1), in(end, 2), "ro")
+        scatter(in(1, 1), in(1, 2), "ro")
 
         % referenceLCFSと直線の交わり
         [in, out] = intersect(poly2, lineseg);
         x1 = in(1, 1); y1 = in(1, 2); x2 = in(end, 1); y2 = in(end, 2);
         L_ref = sqrt((x1 - x2)^2 + (y1 - y2)^2);
-        % plot(in(:, 1), in(:, 2), 'b')
-        % plot(out(:, 1), out(:, 2), 'r')
-        % scatter(in(end, 1), in(end, 2), "yo")
-        % scatter(in(1, 1), in(1, 2), "yo")
+        plot(in(:, 1), in(:, 2), 'b')
+        plot(out(:, 1), out(:, 2), 'r')
+        scatter(in(end, 1), in(end, 2), "yo")
+        scatter(in(1, 1), in(1, 2), "yo")
 
         error(i) = (L_recon - L_ref)^2;
 
