@@ -2,7 +2,7 @@
 %% loadwalldata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 %% loadwalldata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 %% loadwalldata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-function WALL = loadwalldata(PARAM)
+function WALL = loadwalldata(PARAM, CONFIG)
 
     %% Here, the geometory should be derived from input file
     %     R = [0.694D0, 0.694D0, 0.5985D0, 0.5985D0, 0.10815D0, 0.10815D0,...
@@ -35,29 +35,78 @@ function WALL = loadwalldata(PARAM)
     RSEC(13) = 0.694; ZSEC(13) = -0.285;
     RSEC(14) = 0.694; ZSEC(14) = 0.0;
     %% Modified_MI 20211103
-    RSEC(14) = []; ZSEC(14) = [];
-    RSEC(1) = []; ZSEC(1) = [];
-    % MSEC = [1, 1, 2, 1, 1, 3, 1, 1, 2, 1, 1]; %original
-    MSEC = [1, 1, 2, 2, 2, 3, 2, 2, 2, 1, 1]; % ほどほどにノード点を増やした
-    MAXM = 11;
+    % RSEC(14) = []; ZSEC(14) = [];
+    % RSEC(1) = []; ZSEC(1) = [];
+    MSEC = [1, 1, 2, 1, 1, 3, 1, 1, 2, 1, 1]; %original
+    % MSEC = [1, 1, 2, 2, 2, 4, 2, 2, 2, 1, 1]; % ほどほどにノード点を増やした
+    % MAXM = 11;
     %% Modified_MI 20211103 kokomade
-    % % kaneko
-    % RSEC_list = [0.7, 0.6, 0.6, 0.1];
-    % RSEC_list = [RSEC_list fliplr(RSEC_list)];
-    % ZSEC_list = [0.285, 0.285, 0.9985, 0.9985];
-    % ZSEC_list = [ZSEC_list -fliplr(ZSEC_list)];
 
-    % MAXM = length(RSEC_list) - 1;
+    if 0 %CONFIG.DataType == 0
+        % 数値解は完全導体を仮定しているので外側の渦電流ノードを消さない
+        % と思いきや凸部の渦電流を無視できそうなので全部else側に行かせてる
+        % kaneko
+        RSEC_list = [0.694, 0.694, 0.5985, 0.5985, 0.5985, 0.10185, 0.10185];
+        RSEC_list = [RSEC_list fliplr(RSEC_list)];
+        ZSEC_list = [0.0, 0.285, 0.285, 0.435, 0.9985, 0.9985, 0.5];
+        ZSEC_list = [ZSEC_list -fliplr(ZSEC_list)];
+        MAXM = length(RSEC_list) - 1;
+        % MSEC = [1, 2, 1, 2, 3, 1, 2, 1, 3, 2, 1, 2, 1];
+        MSEC = [1, 1, 1, 2, 1, 1, 3, 1, 1, 2, 1, 1, 1];
+        % MSEC = ones(MAXM);
 
-    % for i = 1:MAXM + 1
-    %     RSEC(i) = RSEC_list(i);
-    %     ZSEC(i) = ZSEC_list(i);
-    % end
+        for i = 1:MAXM + 1
+            RSEC(i) = RSEC_list(i);
+            ZSEC(i) = ZSEC_list(i);
+        end
 
-    % MSEC = ones(MAXM);
-    % % MSEC = [1, 5, 1, 1, 1, 5, 1];
-    % MSEC = MSEC + 1;
-    % kaneko
+        RWALL_list = [0.694, 0.694, 0.5985, 0.5985, 0.10185];
+        ZWALL_list = [0, 0.285, 0.285, 0.9985, 0.9985];
+
+    else
+        % UTSTは外側で渦電流が流れにくいので渦電流ノードを一部消す
+        % kaneko
+        RSEC_list = [0.694, 0.5985, 0.5985, 0.5985, 0.10185, 0.10185];
+        % RSEC_list = [0.694, 0.5985, 0.5985, 0.10185];
+        RSEC_list = [RSEC_list fliplr(RSEC_list)];
+        ZSEC_list = [0.285, 0.285, 0.435, 0.9985, 0.9985, 0.6];
+        % ZSEC_list = [0.285, 0.285, 0.9985, 0.9985];
+        ZSEC_list = [ZSEC_list -fliplr(ZSEC_list)];
+        MAXM = length(RSEC_list) - 1;
+        % MSEC = [2, 1, 2, 3, 1, 2, 1, 3, 2, 1, 2]; % 磁気軸１つだとこれで未知数＝既知数になる
+        % MSEC = [1, 1, 2, 2, 1, 3, 1, 2, 2, 1, 1]; % 磁気軸２つだとこれする必要がある
+        % MSEC = [1, 1, 2, 2, 1, 4, 1, 2, 2, 1, 1];
+        MSEC = [1, 1, 2, 1, 1, 3, 1, 1, 2, 1, 1]; %original
+        % MSEC = [1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1]; %kaneko
+        % MSEC = [1, 1, 1, 2, 1, 1, 1];
+        % MSEC = ones(MAXM);
+
+        for i = 1:MAXM + 1
+            RSEC(i) = RSEC_list(i);
+            ZSEC(i) = ZSEC_list(i);
+        end
+
+        RWALL_list = [0.694, 0.5985, 0.5985, 0.10185];
+        ZWALL_list = [0.285, 0.285, 0.9985, 0.9985];
+
+    end
+
+    %%
+    % eddycurrentのplot用にノード点の距離を取得
+    RWALL_list = [RWALL_list fliplr(RWALL_list)];
+    ZWALL_list = [ZWALL_list -fliplr(ZWALL_list)];
+    RWALL_list2 = abs(RWALL_list(1:end - 1) - RWALL_list(2:end));
+    ZWALL_list2 = abs(ZWALL_list(1:end - 1) - ZWALL_list(2:end));
+    WALL_dist_list = [];
+
+    for i = 1:length(RWALL_list) - 1
+        WALL_dist_list(i) = sum(RWALL_list2(1:i)) + sum(ZWALL_list2(1:i));
+    end
+
+    WALL.WALL_dist_list = [0 WALL_dist_list];
+    % plot用のコードここまで
+
+    %%
     fp = fopen([PARAM.temporary_file_directory '/VacuumVesselSegments.txt'], 'w');
 
     for i = 1:MAXM + 1

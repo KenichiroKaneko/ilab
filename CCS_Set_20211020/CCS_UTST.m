@@ -7,26 +7,31 @@ format long e;
 close all;
 
 % CONFIG : 2πR^2で割るかや、プロットの表示、実験データか数値解かを設定するファイル
-% CONFIG = loadConfigure("CCS_input/config1.dat");
+CONFIG = loadConfigure("CCS_input/config1.dat");
 CONFIG = loadConfigure("CCS_input/configForExp.dat");
 
 % 数値解はDataType=0
 if CONFIG.DataType == 0
     PARAM = loadinputfile('input_m2033.txt');
+    % PARAM.input_file_directory = 'CCS_dataset_gs/UTST_numel_2033eddy';
     [REF, JEDDY] = loadreference(PARAM, CONFIG);
-    WALL = loadwalldata(PARAM);
+    WALL = loadwalldata(PARAM, CONFIG);
     ExtCOIL = loadcoildata(PARAM);
-    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R, REF] = loadSampleData(PARAM, CONFIG);
+    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, REF] = loadSampleData(PARAM, CONFIG);
 elseif CONFIG.DataType == 1
     PARAM = loadinputfile('input_5.txt');
     REF = 0;
-    WALL = loadwalldata(PARAM);
+    WALL = loadwalldata(PARAM, CONFIG);
     % 211018 #004-#006 がデータが取れたショット
     PARAM.shotnum = '004';
-    PARAM.foldername = 'utst/211018';
-    PARAM.time_CCS = 9.553;
-    PARAM.time_CCS = 9.59;
-    [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, ExtCOIL, CCS_Z, CCS_R] = loadLizzieData(PARAM, CONFIG);
+    PARAM.date = '211018';
+    PARAM.foldername = ['utst/' PARAM.date];
+    PARAM.time_list = 9490:5:9645;
+    PARAM.time_list = round(PARAM.time_list, 3);
+    PARAM.time_step = 21;
+    PARAM.time_CCS = round(PARAM.time_list(PARAM.time_step) / 1000, 3);
+    [PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, ExtCOIL] = loadLizzieData(PARAM, CONFIG);
+    % error('error description', A1)
     % ExtCOIL.I = [0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 end
 
@@ -42,16 +47,9 @@ end
 % SENSOR_TPRB.TPRB(:) = abs(SENSOR_TPRB.TPRB(:));
 
 PARAM.IPCONST = 0;
-% 実験値のFLXLPとReferenceの磁場データ
-% AAAA = SENSOR_FLXLP.FLXLP;
-% BBBB = SENSOR_TPRB.TPRB;
-% SENSOR_FLXLP.FLXLP = AAAA;
-% SENSOR_TPRB.TPRB = BBBB;
 
 % 死んでそうな磁場センサーを消す
-% i = [19:24, 30, 34:40];
-i = [19, 20, 34, 39, 40];
-% i = [20, 22, 24, 26, 28, 30, 32, 34, 36, 38];
+i = [19, 20, 39, 40]; % 上下のセンサーあ
 % i = 34;
 % i = [];
 SENSOR_TPRB.R(i) = [];
@@ -62,20 +60,16 @@ SENSOR_TPRB.TNPRB(i) = [];
 SENSOR_TPRB.NUM = length(SENSOR_TPRB.TPRB);
 
 % 死んでそうなFLXLPセンサーを消す
-% i = [20, 35];
+% i = [20, 35]; % 上下のセンサー
+% i = [1, 26, 29];
+i = [1, 3:9, 11:17, 19:35];
+i = [1, 21, 24, 27];
 i = [1];
 SENSOR_FLXLP.R(i) = [];
 SENSOR_FLXLP.Z(i) = [];
 SENSOR_FLXLP.TET(i) = [];
 SENSOR_FLXLP.FLXLP(i) = [];
 SENSOR_FLXLP.NUM = length(SENSOR_FLXLP.FLXLP);
-% error('error description', A1)
-
-%
-for i = 1:PARAM.CCS
-    PARAM.Z0(i) = CCS_Z(i);
-    PARAM.R0(i) = CCS_R(i);
-end
 
 FFDAT = makeFFdata(PARAM, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP);
 GHR = zeros(1, 300);
@@ -91,10 +85,6 @@ if PARAM.IPCONST
     FC(end + 1) = 0;
 end
 
-% 2021/05/08
-% save("vars_afterLoadData");
-% error('vars saved');
-% 2021/05/08
 %% *************************************************************
 %%      iteration Start
 DELGE = 0.0;
@@ -130,16 +120,16 @@ end
 % 規格化に使うそれぞれのセンサーのインデックス
 range_b = 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM;
 range_FLXLP = SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM;
-range_CCS = SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM + CCSDAT.NCCN;
+range_CCS = SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM + 1:SENSOR_NPRB.NUM + SENSOR_TPRB.NUM + SENSOR_FLXLP.NUM + sum(CCSDAT.NCCN);
 %% Modified_MI 20211103
 range_FLXLP_IN = 40:58;
 range_FLXLP_OUT = 59:74;
 %% Modified_MI 20211103 kokomade
 
 % 平均が１になるように規格化→センサー信号が全て０付近の場合悪くなりそう
-% bfactor = 1 / mean(FF(range_b));
-% fluxfactor = 1 / mean(FF(range_FLXLP));
-% ccsfactor = 1 / mean(FF(range_CCS));
+bfactor = 1 / mean(FF(range_b));
+fluxfactor = 1 / mean(FF(range_FLXLP));
+ccsfactor = 1 / mean(FF(range_CCS));
 
 % 絶対値の最大値が１になるように規格化
 % bfactor = 1 / max(abs(FF(range_b)));
@@ -147,17 +137,18 @@ range_FLXLP_OUT = 59:74;
 % ccsfactor = 1 / max(abs(FF(range_CCS)));
 
 % ノルムで割る規格化
-% bfactor = 1 / norm(FF(range_b), 1);
-% fluxfactor = 1 / norm(FF(range_FLXLP), 1);
-% ccsfactor = 1 / norm(FF(range_CCS), 1);
+bfactor = 1 / norm(FF(range_b), 1);
+fluxfactor = 1 / norm(FF(range_FLXLP), 1);
+ccsfactor = 1 / norm(FF(range_CCS), 1);
 
 % 手動の規格化
-% bfactor = 1;
-% fluxfactor = 1;
+% bfactor = 0.001;
+% fluxfactor = 10;
 % ccsfactor = 1;
 
 %
 FF(range_b) = FF(range_b) * bfactor;
+FFDAT(range_b) = FFDAT(range_b) * bfactor;
 AA(range_b, :) = AA(range_b, :) * bfactor;
 FC(range_b) = FC(range_b) * bfactor;
 %% Modified_MI 20211103
@@ -165,6 +156,7 @@ FF(range_FLXLP) = FF(range_FLXLP) * fluxfactor;
 AA(range_FLXLP, :) = AA(range_FLXLP, :) * fluxfactor;
 FC(range_FLXLP) = FC(range_FLXLP) * fluxfactor;
 FLXLP = FFDAT(range_FLXLP) * fluxfactor;
+FFDAT(range_FLXLP) = FFDAT(range_FLXLP) * fluxfactor;
 % FF(range_FLXLP_IN) = FF(range_FLXLP_IN) * fluxfactor;
 % AA(range_FLXLP_IN, :) = AA(range_FLXLP_IN, :) * fluxfactor;
 % FC(range_FLXLP_IN) = FC(range_FLXLP_IN) * fluxfactor;
@@ -175,40 +167,6 @@ AA(range_CCS, :) = AA(range_CCS, :) * ccsfactor;
 FC(range_CCS) = FC(range_CCS) * ccsfactor;
 
 %% INOMOTO end
-
-%% Solve Matrix Equation
-%% Singular Value Decompoition
-
-fprintf('NCCN/KNN/KSN = %d %d %d\n', sum(CCSDAT.NCCN), sum(WALL.KNN), sum(WALL.KSN));
-% SVD_MT_matlab2でL-curve法を実装してある
-% [C, W, U, V, FFOUT, XBFR, XMT] = ...
-%     SVD_MT_matlab(PARAM, AA, FF, FC, 0, 0.0D0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP);
-[C, W, U, V, FFOUT, XBFR, XMT] = ...
-SVD_MT_matlab2(PARAM, CONFIG, AA, FF, FC, 0, 0.0D0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP, FF);
-
-half_norm = sqrt((sum((FFOUT).^2)));
-fprintf('%s%d\r\n', 'norm of the solution vector = ', half_norm);
-
-EDDYP(FFOUT, PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL);
-
-% plot eddy current
-if CONFIG.ShowFig
-    DISF = dlmread([PARAM.output_file_directory '/EddyCurrentProfile.txt']);
-    figure('Name', 'Eddy Current Plofile', 'NumberTitle', 'off')
-    plot(DISF(:, 1), DISF(:, 2), '-ko', 'MarkerEdgeColor', 'r', 'MarkerFaceColor', 'r', 'MarkerSize', 2)
-    xlabel({'Distance (m)'});
-    ylabel({'Eddy Current Density (MA/m)'});
-    axis([0 DISF(end, 1) -0.2 0.2])
-    set(gca, 'FontSize', 14);
-    axis([0 DISF(end, 1) -0.4 0.4])
-    set(gca, 'FontSize', 14);
-
-    if CONFIG.DataType == 0
-        hold on
-        plot(JEDDY(:, 1), JEDDY(:, 2), '-b')
-    end
-
-end
 
 if CONFIG.ShowFig
     % plot sensor position
@@ -269,6 +227,46 @@ if CONFIG.ShowFig
 
 end
 
+%% Solve Matrix Equation
+%% Singular Value Decompoition
+
+fprintf('NCCN/KNN/KSN = %d %d %d\n', sum(CCSDAT.NCCN), sum(WALL.KNN), sum(WALL.KSN));
+% SVD_MT_matlab2でL-curve法を実装してある
+% [C, W, U, V, FFOUT, XBFR, XMT] = ...
+%     SVD_MT_matlab(PARAM, AA, FF, FC, 0, 0.0D0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP);
+[C, W, U, V, FFOUT, XBFR, XMT] = ...
+SVD_MT_matlab2(PARAM, CONFIG, AA, FF, FC, 0, 0.0D0, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL, FLXLP, FF);
+
+half_norm = sqrt((sum((FFOUT).^2)));
+fprintf('%s%d\r\n', 'norm of the solution vector = ', half_norm);
+
+EDDYP(FFOUT, PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, WALL);
+
+% plot eddy current
+if CONFIG.ShowFig
+    DISF = dlmread([PARAM.output_file_directory '/EddyCurrentProfile.txt']);
+    figure('Name', 'Eddy Current Plofile', 'NumberTitle', 'off')
+    hold on
+    plot(DISF(:, 1), DISF(:, 2), '-ko', 'MarkerEdgeColor', 'r', 'MarkerFaceColor', 'r', 'MarkerSize', 2)
+
+    for i = 1:length(WALL.WALL_dist_list)
+        xline(WALL.WALL_dist_list(i), '--r');
+    end
+
+    xlabel({'Distance (m)'});
+    ylabel({'Eddy Current Density (MA/m)'});
+    axis([0 DISF(end, 1) -0.2 0.2])
+    set(gca, 'FontSize', 14);
+    axis([0 DISF(end, 1) -0.4 0.4])
+    set(gca, 'FontSize', 14);
+
+    if CONFIG.DataType == 0
+        % plot(JEDDY(:, 1), JEDDY(:, 2), '-b')
+        plot(JEDDY(:, 1) - JEDDY(285, 1), JEDDY(:, 2), '-b')
+    end
+
+end
+
 MINR = 10;
 MAXR = 90;
 MINZ = -100;
@@ -322,6 +320,7 @@ CCR(1) = [];
 psi = reshape(PSI(1:numel(CCR) * numel(CCZ)), numel(CCZ), numel(CCR));
 
 if CONFIG.ShowFig
+    tic
 
     if CONFIG.DataType == 0
         v = linspace(-20, 20, 81);
@@ -343,14 +342,29 @@ if CONFIG.ShowFig
 
         VV = dlmread([PARAM.temporary_file_directory '/VacuumVesselMeshPoints.txt']);
         figure
+        subplot(1, 2, 1);
+        hold on
+        contour(CCR, CCZ, psi * 1000, v);
+        contour(CCR, CCZ, psi, [0 0], 'LineColor', 'k', 'LineWidth', 2);
+        contour(REF.R, REF.Z, REF.Flux, [0 0], 'LineColor', 'm', 'LineWidth', 2);
+        plot(SENSOR_TPRB.R, SENSOR_TPRB.Z, 'ro')
+        plot(SENSOR_FLXLP.R, SENSOR_FLXLP.Z, 'bo')
+        plot(VVMESH(:, 1), VVMESH(:, 2), 'gx', 'MarkerSize', 16)
+        plot(VVSEG(:, 1), VVSEG(:, 2), 'mo', 'MarkerSize', 16)
+        plot(VVNODE(:, 1), VVNODE(:, 2), 'ko', 'MarkerFaceColor', 'k', 'MarkerSize', 8)
+        plot(CCSDAT.RGI, CCSDAT.ZGI);
+        plot(VV(:, 1), VV(:, 2), '-k'); % 容器壁
+        hold off
+        xlabel({'r (m)'});
+        ylabel({'z (m)'});
+        title("Reconstructed flux")
+        axis equal
+        subplot(1, 2, 2);
         hold on
         contour(CCR, CCZ, psi * 1000, v, '-k');
         contour(REF.R, REF.Z, REF.Flux * 1000, v, '--m'); % 正解
         contour(CCR, CCZ, psi, [0 0], 'LineColor', 'c', 'LineWidth', 2);
         contour(REF.R, REF.Z, REF.Flux, [0 0], 'LineColor', 'm', 'LineWidth', 2);
-        scatter(SENSOR_TPRB.R, SENSOR_TPRB.Z);
-        scatter(SENSOR_FLXLP.R, SENSOR_FLXLP.Z);
-        plot(CCSDAT.RGI, CCSDAT.ZGI);
         plot(VV(:, 1), VV(:, 2), '-k'); % 容器壁
         hold off
         xlabel({'r (m)'});
@@ -360,8 +374,9 @@ if CONFIG.ShowFig
 
     elseif CONFIG.DataType == 1
         figure
-        contour(CCR, CCZ, psi, 'LevelStep', 0.0003);
+        subplot(1, 2, 1);
         hold on
+        contour(CCR, CCZ, psi, 'LevelStep', 0.0003);
         contour(CCR, CCZ, psi, [0 0], 'LineColor', 'c', 'LineWidth', 2);
         plot(SENSOR_TPRB.R, SENSOR_TPRB.Z, 'ro')
         plot(SENSOR_FLXLP.R, SENSOR_FLXLP.Z, 'bo')
@@ -375,11 +390,30 @@ if CONFIG.ShowFig
         ylabel({'z (m)'});
         title("Reconstructed flux")
         axis equal
+        subplot(1, 2, 2);
+        hold on
+        mag = load('./utst/magplot/magdata2D_2110180049490.mat');
+        contour(CCR, CCZ, psi, 'LineColor', 'm', 'LevelStep', 0.0003);
+        contour(CCR, CCZ, psi, [0 0], 'LineColor', 'c', 'LineWidth', 2);
+        contour(mag.rr, mag.zz, squeeze(mag.data_line(PARAM.time_step, :, :)), 'LineColor', 'k')
+        contour(mag.rr, mag.zz, squeeze(mag.data_line(PARAM.time_step, :, :)), [-1e6 0 1e6], 'black', 'Linewidth', 2)
+        % legend('Reconstructed Flux', 'Reconstructed LCFS');
+        plot(CCSDAT.RGI, CCSDAT.ZGI);
+        hold off
+        xlabel({'r (m)'});
+        ylabel({'z (m)'});
+        title([num2str(mag.time_mag(PARAM.time_step), '%1.4f') 'ms'], 'FontWeight', 'bold');
+        axis equal
     end
 
     %% Data positions for 2D plot
     PLOT.R = 0.1:0.01:0.9;
     PLOT.Z = -1:0.02:1;
+    toc
+end
+
+if CONFIG.DataType == 0
+    EVALUATE(psi, REF, PARAM, CONFIG, CCSDAT, CCR, CCZ)
 end
 
 fclose('all');

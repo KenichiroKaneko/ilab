@@ -74,6 +74,7 @@ function CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, 
         plot(1:NAPB, AX(indexB_l:indexB_r), '-o');
         plot(1:NAPB, FF(indexB_l:indexB_r), '-o');
         title('sensor B'); legend('A*X', 'FF');
+        yline(0);
         hold off
 
         subplot(3, 1, 2);
@@ -81,6 +82,7 @@ function CalcMRE(PARAM, CONFIG, SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCSDAT, 
         plot(1:NFLX, AX(indexFL_l:indexFL_r), '-o');
         plot(1:NFLX, FF(indexFL_l:indexFL_r), '-o');
         title('sensor Flux Loop'); legend('A*X', 'FF');
+        yline(0);
         hold off
 
         subplot(3, 1, 3);

@@ -1,5 +1,8 @@
 *.mat
 *.zip
+*.mp4
+*.jpg
+*test*
 /CCS_temporary/
 CCS_Set_NEWNEW_0530.zip
 CCS_Set_NEWNEW/CCS_temporary/@AIC0.txt

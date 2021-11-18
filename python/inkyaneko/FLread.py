@@ -38,7 +38,7 @@ for date in dates:
     shotnum = int(len(files))
     # shotnum = 13
     # shots = ["007", "008", "010", "011", "012"]
-    shots = []
+    shots = ["004"]
     for i in np.arange(1, shotnum+1):
         if i < 10:
             shots.append("00{}".format(i))
@@ -46,6 +46,7 @@ for date in dates:
             shots.append("0{}".format(i))
 
     shots = ["004", "005", "006"]  # 特定のショットだけ見るとき用、複数ショット指定可能、コメントアウトで全ショット
+    shots = ["004"]
 
     def readNf(Shot, Fn, format_file):  # Fn: NI, NJ
         if format_file == ".hdr":
@@ -241,19 +242,19 @@ for date in dates:
         # """
         # MSまとめてプロット
         # """
-        # fig, ax = plt.subplots(1, 1, figsize=figsize2k)
-        # ax.plot(time, MS_sig)
-        # ax.set_ylim(-5, 5)
-        # ax.set_xlim(8000, 10000)
-        # ax.set_ylabel("Voltage [V]")
-        # ax.set_xlabel("time [$\mu$s]")
-        # plt.tight_layout()
-        # plt.show()
-        # if figsave == "y":
-        #     plt.savefig(fig_MS + "/{}#{}_all".format(date, shot))
-        # elif figsave == "ys":
-        #     plt.savefig(fig_MS + "/{}#{}_all".format(date, shot))
-        # plt.close(fig)
+        fig, ax = plt.subplots(1, 1, figsize=figsize2k)
+        ax.plot(time, MS_sig)
+        ax.set_ylim(-5, 5)
+        ax.set_xlim(8000, 10000)
+        ax.set_ylabel("Voltage [V]")
+        ax.set_xlabel("time [$\mu$s]")
+        plt.tight_layout()
+        plt.show()
+        if figsave == "y":
+            plt.savefig(fig_MS + "/{}#{}_all".format(date, shot))
+        elif figsave == "ys":
+            plt.savefig(fig_MS + "/{}#{}_all".format(date, shot))
+        plt.close(fig)
         """
         MS５個ずつプロット
         """

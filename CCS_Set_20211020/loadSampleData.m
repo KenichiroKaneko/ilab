@@ -1,9 +1,5 @@
 %% loadsensordata!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R, REF] = loadSampleData(PARAM, CONFIG)
-
-    % CCSセンサー位置を推定する用（R位置は使っていないのでPARAMの値を使用）
-    CCS_R = 0;
-    CCS_Z = 0;
+function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, REF] = loadSampleData(PARAM, CONFIG)
 
     % matファイルでの読み込み
     % GSplot_CCS_for_finemesh_merge2()でmerged.matファイルを作成した
@@ -20,6 +16,10 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R, REF] = loadSampl
     env.rmax = env.rmin + env.delr * (env.Nr - 1);
     psi800 = zeros(env.Nz, env.Nr);
     [env, psi800] = cal_psi(env, psi800);
+    % save('psi800', 'psi800')
+    % figure()
+    % contour(psi800)
+    % error('error description', A1)
     psi800 = psi800.';
 
     % プラズマ有りの容器内の磁束
@@ -44,7 +44,7 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R, REF] = loadSampl
     REF.Z = z;
 
     %% 実際のセンサー配置でデータを読み込む
-    sensorPosB = fileread("./CCS_temporary/CCS_MP_sensor_position_i.txt");
+    sensorPosB = fileread("./CCS_temporary/CCS_MP_sensor_position_2.txt");
     sensorPosB = strsplit(sensorPosB, {'\n', '\t', '\r'});
     sensorPosFL = fileread("./CCS_temporary/CCS_FLXLP_sensor_position_i.txt");
     sensorPosFL = strsplit(sensorPosFL, {'\n', '\t', '\r'});
@@ -75,6 +75,16 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R, REF] = loadSampl
     SENSOR_TPRB.Z = z(indexB_Z);
     SENSOR_FLXLP.R = r(indexFL_R);
     SENSOR_FLXLP.Z = z(indexFL_Z);
+
+    POS.indexB_R = indexB_R;
+    POS.indexB_Z = indexB_Z;
+    POS.indexFL_R = indexFL_R;
+    POS.indexFL_Z = indexFL_Z;
+    POS.TPRB_R = SENSOR_TPRB.R;
+    POS.TPRB_Z = SENSOR_TPRB.Z;
+    POS.FLXLP_R = SENSOR_FLXLP.R;
+    POS.FLXLP_Z = SENSOR_FLXLP.Z;
+    save('POS', 'POS')
 
     for i = 1:SENSOR_TPRB.NUM
         BR(i) = br(indexB_R(i), indexB_Z(i));
@@ -139,33 +149,18 @@ function [SENSOR_TPRB, SENSOR_NPRB, SENSOR_FLXLP, CCS_Z, CCS_R, REF] = loadSampl
         if length(ZZ(lmax)) > 1
 
             for i = 1:2
-                CCS_Z(i) = matrix(i, 1);
+                PARAM.Z0(i) = matrix(i, 1);
             end
 
         else
-            CCS_Z(1) = matrix(1, 1);
-        end
-
-    else
-
-        for i = 1:PARAM.CCS
-            CCS_Z(i) = PARAM.Z0(i);
+            PARAM.Z0(1) = matrix(1, 1);
         end
 
     end
 
     % CCS面の自動決定R方向（使っていない）
     if CONFIG.DetermineCCSRPos
-        CCS_R = CalcPlasmaCenter(PARAM, CONFIG, CCS_Z);
-        % CCS_R = CCS_R * 0.93;
-        % CCS_R = 0;
-
-    else
-
-        for i = 1:PARAM.CCS
-            CCS_R(i) = PARAM.R0(i);
-        end
-
+        PARAM.R0 = CalcPlasmaCenter(PARAM, CONFIG, PARAM.Z0);
     end
 
 end
